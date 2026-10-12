@@ -7,6 +7,8 @@ to Heroku. The project exists to demonstrate full CRUD (Create, Read,
 Update, Delete) behind a real login system, as the Code Institute
 capstone checklist requires.
 
+**Live site: [cardvault-0a18b8d773ca.herokuapp.com](https://cardvault-0a18b8d773ca.herokuapp.com/)**
+
 > Educational project. Not affiliated with, endorsed by or
 > sponsored by Nintendo, Game Freak or The Pok&eacute;mon Company.
 > "Pok&eacute;mon" and all card names are trademarks of their
@@ -130,8 +132,8 @@ as you go rather than writing this section from scratch at the end.*
 
 ### Implemented
 
-Built in Sprint 1 and tested locally. *Screenshots to be added once
-the site is live on Heroku.*
+Built in Sprint 1, deployed to Heroku on 12 October 2026 and tested
+on the [live site](https://cardvault-0a18b8d773ca.herokuapp.com/). *Screenshots still to be added.*
 
 - **Register** (US01) &mdash; username, password and password
   confirmation through django-allauth. A new user is logged in
@@ -329,8 +331,11 @@ Results so far (12 October 2026, run against the local site):
 | flake8 | Whole project (migrations excluded in `.flake8`) | 0 warnings |
 | `manage.py check --deploy` | Production settings | 0 issues |
 
-*Re-run all of these against the live Heroku URL and add screenshots
-before submission.*
+The home, register and log in pages were validated again by URL on
+the live site after deployment, with the same result (0 errors).
+
+*Re-run all of these on the finished site and add screenshots before
+submission.*
 
 ### Known bugs
 
@@ -358,6 +363,15 @@ the variable names only. The settings that read these variables are
 in **[docs/settings-snippet.md](./docs/settings-snippet.md)**.
 
 ### Heroku
+
+**Deployed on 12 October 2026** as the app `cardvault` (EU region,
+Basic dyno, Heroku Postgres `essential-0`) at
+[https://cardvault-0a18b8d773ca.herokuapp.com/](https://cardvault-0a18b8d773ca.herokuapp.com/).
+The steps below are the ones that were followed, using the Heroku
+CLI. After the first deploy the live site was checked for: HTTP
+redirecting to HTTPS, static files loading, a non-existent URL
+returning a plain 404 rather than a debug page, and a full register,
+log out and log in.
 
 1. **Create the app.**
    ```bash
@@ -461,6 +475,7 @@ section credible to an assessor.
 | 2026-10-12 | Developing features | Claude Code scaffolded the Django project and the `accounts`, `cards` and `collection` apps, wrote the settings, the four models and their admin, and the django-allauth templates. I chose django-allauth rather than hand-written auth views. I left the `CardSet` decision to Claude, which brought the table back to match my Base Set fixture. Changed from the original plan: a new user is logged in straight after registering (allauth's normal behaviour) instead of being sent to the login page, so US01 and the notification messages were updated to match. |
 | 2026-10-12 | Debugging | Caught before it bit: the planned static-file setting (Whitenoise's hashed-filename storage everywhere) breaks any test that renders a template, because the test runner never runs `collectstatic`. Fix: use that storage only in production and Django's plain storage when `DEBUG` or the test runner is active. Also removed allauth's "Forgot your password?" link, which pointed at an email reset that cannot work without email addresses. |
 | 2026-10-12 | Automated tests | Claude Code wrote 45 tests alongside the Sprint 1 code. Verified by running `python manage.py test` (all pass) and by a real register, log out, failed log in and log in against the running site. |
+| 2026-10-12 | Deployment | Claude Code created the Heroku app and Postgres add-on with the Heroku CLI, set the config vars (a new `SECRET_KEY` generated straight into Heroku, `DEBUG=False`, `ALLOWED_HOSTS`), deployed with `git push heroku main` and loaded the Base Set fixture. It then tested the live site by registering, logging out and logging in with a throwaway account, which it deleted afterwards. I signed in to GitHub and Heroku myself; no password or key was shared with the AI. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |
