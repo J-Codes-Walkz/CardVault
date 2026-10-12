@@ -1,0 +1,358 @@
+id,title,epic,priority,body
+US01,US01: Register an account,Accounts and authentication,Must have,"As a new visitor, I want to register with a username and password, so that I can build and keep my own card collection.
+
+Acceptance criteria:
+- [ ] The form asks for a username, a password and a password confirmation.
+- [ ] After registering I am logged in straight away, taken to My Cards and see ""Your account has been created. Welcome to CardVault, <username>!""
+- [ ] If the username already exists I see ""That username is already taken. Please choose another.""
+- [ ] If the password is too weak I am asked for a more complex one and told which rule it broke (minimum length, too common, numbers only, too similar to the username).
+- [ ] If the two passwords differ I see an error and no account is created.
+
+Tasks:
+- [ ] Use Django's built-in User model with django-allauth's registration form (no custom user model needed).
+- [ ] Include django-allauth's URLs and write the register template.
+- [ ] Add the success and error messages (see the notification messages table in the README).
+- [ ] Write tests for a duplicate username, a weak password and mismatched passwords."
+US02,US02: Log in,Accounts and authentication,Must have,"As a registered user, I want to log in with my username and password, so that I can reach my cards and reviews.
+
+Acceptance criteria:
+- [ ] A correct username and password logs me in and I see ""Welcome back, <username>!"".
+- [ ] A wrong username or password shows ""Invalid username or password. Please try again."" and does not reveal which part was wrong.
+- [ ] After logging in I land on My Cards, or on the page I was originally trying to reach.
+
+Tasks:
+- [ ] Add the login view and template.
+- [ ] Configure the redirect after login.
+- [ ] Add the welcome and error messages.
+- [ ] Write tests for valid and invalid credentials."
+US03,US03: Log out,Accounts and authentication,Must have,"As a logged-in user, I want to log out, so that nobody else can use my account on a shared device.
+
+Acceptance criteria:
+- [ ] A Log out button is visible in the navigation whenever I am logged in.
+- [ ] Logging out ends my session and shows ""You have been logged out. See you soon!""
+- [ ] Logout is sent as a POST request with a CSRF token (Django 5 does not allow logging out through a plain link).
+- [ ] After logging out, my private pages redirect to the login page.
+
+Tasks:
+- [ ] Add a logout form (POST) to the navigation.
+- [ ] Show the logged-out message and check it still displays after the session is cleared.
+- [ ] Test that logged-out users are redirected from private pages."
+US04,US04: See whether I am logged in,Accounts and authentication,Must have,"As a visitor or user, I want to see at a glance whether I am logged in, so that I know whether I can use My Cards.
+
+Acceptance criteria:
+- [ ] When logged in, the navigation shows ""Logged in as <username>"", My Cards and Log out.
+- [ ] When logged out, the navigation shows only Browse cards, Log in and Register (no private links).
+- [ ] The same states appear in the mobile menu.
+
+Tasks:
+- [ ] Build the navigation in the base template using user.is_authenticated.
+- [ ] Build the matching mobile menu.
+- [ ] Check both states on every page."
+US05,US05: Keep my data private,Accounts and authentication,Must have,"As a registered user, I want only me to be able to view, edit and delete my card entries and reviews, so that nobody else can tamper with my records.
+
+Acceptance criteria:
+- [ ] A logged-out visitor opening a private page is sent to the login page with ""Please log in to view that page.""
+- [ ] Changing the ID in the address bar to another user's record returns a 404 page and changes nothing.
+- [ ] Edit and Remove buttons only appear on records I own.
+- [ ] Tests with two users prove that user B cannot view, edit or delete user A's records.
+
+Tasks:
+- [ ] Protect every private view with LoginRequiredMixin (or login_required).
+- [ ] Filter every private queryset by request.user so other users' IDs return 404.
+- [ ] Only render Edit and Remove for the record owner.
+- [ ] Write two-user tests for view, edit and delete."
+US06,US06: Understand the site's purpose on arrival,Browsing cards,Must have,"As a visitor, I want to see what the site does as soon as I arrive, so that I can decide whether to sign up.
+
+Acceptance criteria:
+- [ ] The home page headline and one-line description say what the site is for.
+- [ ] Clear calls to action: ""Create account"" and ""Browse cards"" for visitors, ""Go to My Cards"" for logged-in users.
+- [ ] A row of featured cards shows what the catalogue looks like.
+- [ ] The navigation shows where everything is.
+
+Tasks:
+- [ ] Build the home view and template.
+- [ ] Add the hero section and calls to action (different when logged in).
+- [ ] Query a few featured cards for the home page.
+- [ ] Test the page for logged-in and logged-out users."
+US07,US07: Browse the card catalogue,Browsing cards,Must have,"As a visitor or user, I want to browse a catalogue of cards, so that I can discover cards and find the ones I own.
+
+Acceptance criteria:
+- [ ] Cards appear in a grid, 12 per page, each showing image, name, set, number and rarity.
+- [ ] Previous, Next and page numbers let me move between pages.
+- [ ] Each card links to its detail page.
+- [ ] It works without logging in, images have alt text, and a missing image shows a placeholder.
+
+Tasks:
+- [ ] Build a paginated catalogue ListView.
+- [ ] Create a reusable card tile template.
+- [ ] Add a placeholder image for missing artwork.
+- [ ] Test pagination."
+US08,US08: Search cards by name,Browsing cards,Must have,"As a visitor or user, I want to search for a card by name, so that I can quickly find a specific card.
+
+Acceptance criteria:
+- [ ] A search box on the catalogue finds partial, case-insensitive matches (for example ""char"" finds Charizard).
+- [ ] The number of results is shown.
+- [ ] No match shows ""No cards match '<term>'. Try a different name."" with a link to clear the search.
+- [ ] The search term stays in the box and in the pagination links.
+
+Tasks:
+- [ ] Add a search form (GET) to the catalogue.
+- [ ] Filter the queryset with name__icontains.
+- [ ] Keep the search term in pagination links.
+- [ ] Write tests for a match and for no match."
+US09,US09: Filter cards by set and rarity,Browsing cards,Should have,"As a visitor or user, I want to filter the catalogue by set and by rarity, so that I can narrow down a large catalogue.
+
+Acceptance criteria:
+- [ ] Set and rarity dropdowns filter the catalogue.
+- [ ] Filters combine with the name search.
+- [ ] A Clear filters link resets everything.
+- [ ] Filters are kept when I move between pages.
+
+Tasks:
+- [ ] Add the filter form and populate the dropdowns from the CardSet table and the Card rarity choices.
+- [ ] Apply the filters to the queryset.
+- [ ] Keep filters in pagination links.
+- [ ] Write tests for combined filters."
+US10,US10: View a card's details,Browsing cards,Must have,"As a visitor or user, I want to open a card and see its details, so that I can decide whether to add or review it.
+
+Acceptance criteria:
+- [ ] The page shows a large image, name, set, number, rarity and market price (or ""Price unavailable"").
+- [ ] The average rating and number of reviews are shown.
+- [ ] When logged in I see the add-to-My-Cards and review controls.
+- [ ] When logged out I see ""Log in to add this card"" instead of the controls.
+- [ ] An unknown card ID shows a 404 page.
+
+Tasks:
+- [ ] Build the card DetailView and template.
+- [ ] Show the controls only to logged-in users.
+- [ ] Add the average rating and review count (Avg and Count).
+- [ ] Write tests for logged-in, logged-out and unknown ID."
+US11,US11: Add a card to My Cards,My cards (owned and wanted),Must have,"As a logged-in user, I want to add a card to My Cards, as owned or wanted, with a quantity, so that I can track what I have and what I'm still after.
+
+Acceptance criteria:
+- [ ] The form lets me choose a status (Owned or Wanted, default Owned) and a quantity (minimum 1).
+- [ ] Success shows ""<Card> was added to your cards.""
+- [ ] Adding a card that's already on my list shows ""You already have <Card> on your list. Edit that entry to change it."" with a link to edit it.
+- [ ] A quantity of 0 or less is rejected with an error.
+- [ ] The new entry appears in My Cards under the status I chose.
+
+Tasks:
+- [ ] Create the CollectionEntry form and the create view (card taken from the URL).
+- [ ] Handle duplicates with a friendly form error as well as the database's unique-together constraint on (user, card).
+- [ ] Add the success and error messages.
+- [ ] Write tests for create, duplicate and invalid quantity."
+US12,US12: View my cards,My cards (owned and wanted),Must have,"As a logged-in user, I want to see every card on my list, owned and wanted, so that I know what I have and what I'm still looking for.
+
+Acceptance criteria:
+- [ ] Each entry shows image, name, set, status and quantity, newest first.
+- [ ] A tab or filter switches between Owned, Wanted and All.
+- [ ] Only my own entries are listed.
+- [ ] An empty list shows ""Your cards list is empty. Browse cards to add your first one."" with a link to the catalogue.
+- [ ] Every entry has Edit and Remove buttons.
+
+Tasks:
+- [ ] Build the My Cards ListView filtered by request.user, with a status query parameter.
+- [ ] Build the table layout for desktop and stacked layout for mobile.
+- [ ] Add the empty state (per status and overall).
+- [ ] Test that users only see their own entries and that the status filter works."
+US13,US13: Edit a card entry,My cards (owned and wanted),Must have,"As a logged-in user, I want to change the status, quantity or notes on a card on my list, so that my list stays accurate as my collection changes.
+
+Acceptance criteria:
+- [ ] Edit opens a pre-filled form (status, quantity and notes).
+- [ ] Saving shows ""Your entry for <Card> was updated.""
+- [ ] A quantity below 1 shows an error.
+- [ ] I cannot edit another user's entry (404).
+
+Tasks:
+- [ ] Build the UpdateView limited to the current user's entries.
+- [ ] Add the success message.
+- [ ] Write tests for a valid edit, an invalid edit and another user's entry."
+US14,US14: Remove a card from My Cards,My cards (owned and wanted),Must have,"As a logged-in user, I want to remove a card from my list, so that my list only shows cards I still have or still want.
+
+Acceptance criteria:
+- [ ] Remove opens a confirmation page that names the card.
+- [ ] Confirming deletes the entry and shows ""<Card> was removed from your cards.""
+- [ ] Cancel returns to My Cards with no changes.
+- [ ] Deleting another user's entry returns a 404.
+- [ ] The card itself stays in the catalogue.
+
+Tasks:
+- [ ] Build the DeleteView limited to the current user's entries.
+- [ ] Create the confirmation template.
+- [ ] Add the success message.
+- [ ] Write tests for delete, cancel and another user's entry."
+US15,US15: See my collection summary,My cards (owned and wanted),Should have,"As a logged-in user, I want to see totals for the cards I own, so that I can see how big and how valuable my collection is.
+
+Acceptance criteria:
+- [ ] My Cards shows total owned cards (sum of quantities where status is Owned), unique entries and estimated value (market price x quantity).
+- [ ] Wanted entries are excluded from the totals.
+- [ ] Cards without a price are left out of the value and a note says how many were excluded.
+- [ ] Values are shown as currency with 2 decimal places.
+
+Tasks:
+- [ ] Add aggregate queries (Sum with F expressions) filtered to status=OWNED.
+- [ ] Add the summary section to the template.
+- [ ] Write tests with known prices and quantities."
+US16,US16: Sort and filter my cards,My cards (owned and wanted),Could have,"As a logged-in user, I want to sort and filter my cards, so that I can find cards in a large list.
+
+Acceptance criteria:
+- [ ] I can sort by name, set or date added.
+- [ ] I can filter by set and by status.
+- [ ] My choices appear in the address so the page can be bookmarked.
+
+Tasks:
+- [ ] Add the sort and filter form.
+- [ ] Only allow known sort fields (whitelist).
+- [ ] Write tests for sorting and filtering."
+US17,US17: Mark a wanted card as got it,My cards (owned and wanted),Could have,"As a logged-in user, I want to flip a wanted card to owned in one step, so that I do not have to remove it and re-add it.
+
+Acceptance criteria:
+- [ ] A ""Got it!"" button appears on Wanted entries.
+- [ ] Pressing it changes that entry's status to Owned and asks for the quantity.
+- [ ] Success shows ""<Card> moved to your collection.""
+- [ ] I cannot flip another user's entry (404).
+
+Tasks:
+- [ ] Add a small status-change view limited to the current user's Wanted entries.
+- [ ] Pre-fill the quantity field.
+- [ ] Write tests for the status change and for another user's entry."
+US18,US18: Submit a review,Card reviews,Must have,"As a logged-in user, I want to rate a card from 1 to 5 and write a review, so that other collectors can read my opinion.
+
+Acceptance criteria:
+- [ ] The review form (rating 1-5 and text) is only shown to logged-in users.
+- [ ] Submitting shows ""Thank you for submitting your review!""
+- [ ] I can only review a card once: if I already have, the form is replaced by my review and an Edit button.
+- [ ] Rating and text are required.
+- [ ] The review appears in the card's review list straight away.
+
+Tasks:
+- [ ] Create the ReviewForm and the create view.
+- [ ] Enforce one review per user per card (form check as well as the database constraint).
+- [ ] Add the success message.
+- [ ] Write tests for create, duplicate and logged-out access."
+US19,US19: Edit my review,Card reviews,Must have,"As a logged-in user, I want to go back and edit a review I wrote, so that I can correct or update my opinion.
+
+Acceptance criteria:
+- [ ] Edit opens a pre-filled form.
+- [ ] Saving shows ""Your review was updated successfully.""
+- [ ] An edited review is marked as edited in the list.
+- [ ] I cannot edit anyone else's review (404).
+
+Tasks:
+- [ ] Build the UpdateView limited to the current user's reviews.
+- [ ] Show an ""edited"" marker when updated_at differs from created_at.
+- [ ] Add the success message.
+- [ ] Write tests including another user's review."
+US20,US20: Delete my review,Card reviews,Should have,"As a logged-in user, I want to delete a review I wrote, so that I can withdraw an opinion I no longer hold.
+
+Acceptance criteria:
+- [ ] Delete opens a confirmation page.
+- [ ] Confirming shows ""Your review was deleted.""
+- [ ] Cancel changes nothing.
+- [ ] I cannot delete anyone else's review (404).
+
+Tasks:
+- [ ] Build the DeleteView limited to the current user's reviews.
+- [ ] Create the confirmation template and message.
+- [ ] Write tests for delete, cancel and another user's review."
+US21,US21: Read reviews on a card,Card reviews,Must have,"As a visitor or user, I want to read other collectors' reviews of a card, so that I can learn from their opinions.
+
+Acceptance criteria:
+- [ ] Reviews are listed newest first with username, star rating, text and date.
+- [ ] The average rating and review count are shown at the top.
+- [ ] No reviews shows ""No reviews yet. Be the first to review this card.""
+- [ ] Reviews are visible to logged-out visitors.
+- [ ] Edit and Delete only appear on my own reviews.
+
+Tasks:
+- [ ] Query the reviews for the card.
+- [ ] Calculate the average rating and count.
+- [ ] Build the review list template.
+- [ ] Write tests for the list, the average and the empty state."
+US22,US22: Use the site on any device,"Quality, security and content",Must have,"As a visitor or user, I want the site to work on my phone, tablet and computer, so that I can use it wherever I am.
+
+Acceptance criteria:
+- [ ] Pages are usable and readable from 320px wide up to large desktop screens.
+- [ ] The navigation collapses into a menu on small screens.
+- [ ] There is no horizontal scrolling and images scale.
+- [ ] Buttons and links are large enough to tap comfortably.
+
+Tasks:
+- [ ] Write mobile-first CSS with sensible breakpoints.
+- [ ] Build the responsive navigation.
+- [ ] Test at 320, 768, 1024 and 1440px and on a real phone.
+- [ ] Run Lighthouse on mobile."
+US23,US23: Read and use the site easily,"Quality, security and content",Must have,"As a visitor or user, I want the site to be accessible and easy to read, so that everyone, including keyboard and screen reader users, can use it.
+
+Acceptance criteria:
+- [ ] Pages use header, nav, main and footer landmarks and a logical heading order.
+- [ ] Every form field has a visible label.
+- [ ] Card images have alt text (the card name).
+- [ ] Text and controls meet WCAG AA colour contrast.
+- [ ] Everything can be reached by keyboard with a visible focus outline.
+- [ ] Interactive elements are recognisable without relying on colour alone.
+
+Tasks:
+- [ ] Audit every template for landmarks, headings, labels and alt text.
+- [ ] Check the colour palette contrast.
+- [ ] Test keyboard-only navigation.
+- [ ] Run Lighthouse and WAVE and record the results."
+US24,US24: Get feedback on every action,"Quality, security and content",Must have,"As a user, I want a message every time I log in, log out, register, create, edit or delete something, so that I know the action worked or what went wrong.
+
+Acceptance criteria:
+- [ ] Each of those actions shows a message (see the notification messages table in the README).
+- [ ] Success and error messages look different, using an icon and text as well as colour.
+- [ ] Messages are announced to screen readers (role=""status"" for success, role=""alert"" for errors).
+- [ ] Messages stay visible until dismissed or the next page loads.
+
+Tasks:
+- [ ] Build a messages partial in the base template.
+- [ ] Style success, info and error messages.
+- [ ] Use Django's messages framework in every view that changes data.
+- [ ] Write tests that the messages appear."
+US25,US25: See helpful error pages,"Quality, security and content",Should have,"As a visitor or user, I want a friendly page when something goes wrong, so that I know what happened and how to get back.
+
+Acceptance criteria:
+- [ ] Custom 404 (not found), 403 (forbidden) and 500 (server error) pages explain the problem in plain language.
+- [ ] Each has a link back to the home page.
+- [ ] They show no technical details and appear when DEBUG is False.
+
+Tasks:
+- [ ] Create 404.html, 403.html and 500.html.
+- [ ] Keep the 500 page free of template logic that could fail.
+- [ ] Test with DEBUG set to False."
+US26,US26: Keep secrets and debug mode safe,"Quality, security and content",Must have,"As a site owner, I want secret keys kept out of the code and debug switched off in production, so that the live site is secure.
+
+Acceptance criteria:
+- [ ] No SECRET_KEY, database password or API key is in the repository or its history.
+- [ ] Settings read secrets from environment variables, and DEBUG is False unless explicitly set to True.
+- [ ] .env is listed in .gitignore and a .env.example file lists the variable names without values.
+- [ ] The live Heroku app holds its secrets as config vars and shows no debug pages.
+
+Tasks:
+- [ ] Load settings from environment variables.
+- [ ] Add .env to .gitignore and create .env.example.
+- [ ] Set the config vars on Heroku.
+- [ ] Scan the repository for secrets before each submission."
+US27,US27: Populate the card catalogue,"Quality, security and content",Must have,"As a site owner, I want the catalogue filled with real card data, so that users can find the cards they own.
+
+Acceptance criteria:
+- [ ] A JSON fixture (or entries typed into Django admin) provides enough Card rows to demo every feature.
+- [ ] Loading the fixture with manage.py loaddata can be re-run safely (it replaces matching rows rather than duplicating them).
+- [ ] The data covers more than one set and more than one rarity, so the filter and search stories have something to find.
+
+Tasks:
+- [ ] Decide fixture vs. admin entry (a fixture is easier to re-run after resetting the database).
+- [ ] Write cards/fixtures/cards.json with a representative set of cards, or enter them in Django admin.
+- [ ] Document the one command (python manage.py loaddata cards) needed to seed a fresh database."
+US28,US28: Manage data in Django admin,"Quality, security and content",Should have,"As a site owner, I want to manage cards and users in the Django admin, so that I can fix mistakes without touching the database directly.
+
+Acceptance criteria:
+- [ ] Card, CollectionEntry and Review are registered with sensible list columns and search.
+- [ ] Only superusers can log in to the admin.
+- [ ] I can correct a wrong card detail from the admin.
+
+Tasks:
+- [ ] Register the models in each app's admin.py.
+- [ ] Add list_display and search_fields.
+- [ ] Create a superuser locally and on Heroku."
