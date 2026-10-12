@@ -18,6 +18,7 @@ capstone checklist requires.
 
 - [UX design](#ux-design)
 - [Database design](#database-design)
+- [Project mind map](#project-mind-map)
 - [Features](#features)
 - [Agile methodology](#agile-methodology)
 - [Testing](#testing)
@@ -122,6 +123,34 @@ two user-owned tables that carry full CRUD &mdash; `CollectionEntry`
 user model, and owned/wanted as two tables instead of one), and why
 `CardSet` was cut and then brought back, is explained in
 [Why simplify](./docs/database-schema.md#why-simplify).
+
+## Project mind map
+
+A knowledge graph of the whole project (code, templates, docs and
+wireframes) is kept in `graphify-out/`, built with
+[graphify](https://github.com/safishamsi/graphify). It is used as a
+mind map: it shows which models, tests, user stories and wireframes
+connect to each other, and which parts everything else depends on.
+
+| File | What it is |
+|---|---|
+| [graphify-out/graph.html](./graphify-out/graph.html) | The interactive graph. GitHub shows this file as source code, so download it (or clone the repo) and open it in a browser. It loads one script from the internet, so it needs a connection. |
+| [graphify-out/GRAPH_REPORT.md](./graphify-out/GRAPH_REPORT.md) | A plain-language report: the most connected nodes, surprising connections and questions worth asking. |
+| [graphify-out/graph.json](./graphify-out/graph.json) | The raw graph data. |
+
+First built on 12 October 2026 from 56 files: 336 nodes, 578 links
+and 19 clusters. The most connected node is `CollectionEntry`, which
+matches the design: it is the table the main CRUD stories are built
+on. Links the report marks as "inferred" were reasoned by the AI
+rather than read directly from a file, and the build's health check
+flagged 62 links that point outside the graph (mostly imports of
+Django itself), so treat it as a guide, not a complete map.
+
+To refresh it after new work, run `/graphify . --update` in Claude
+Code. Only the three files above are committed; the cache stays local
+(see `.gitignore`).
+
+*Add a screenshot of the graph here.*
 
 ## Features
 
@@ -476,6 +505,7 @@ section credible to an assessor.
 | 2026-10-12 | Debugging | Caught before it bit: the planned static-file setting (Whitenoise's hashed-filename storage everywhere) breaks any test that renders a template, because the test runner never runs `collectstatic`. Fix: use that storage only in production and Django's plain storage when `DEBUG` or the test runner is active. Also removed allauth's "Forgot your password?" link, which pointed at an email reset that cannot work without email addresses. |
 | 2026-10-12 | Automated tests | Claude Code wrote 45 tests alongside the Sprint 1 code. Verified by running `python manage.py test` (all pass) and by a real register, log out, failed log in and log in against the running site. |
 | 2026-10-12 | Deployment | Claude Code created the Heroku app and Postgres add-on with the Heroku CLI, set the config vars (a new `SECRET_KEY` generated straight into Heroku, `DEBUG=False`, `ALLOWED_HOSTS`), deployed with `git push heroku main` and loaded the Base Set fixture. It then tested the live site by registering, logging out and logging in with a throwaway account, which it deleted afterwards. I signed in to GitHub and Heroku myself; no password or key was shared with the AI. |
+| 2026-10-12 | Planning (mind map) | Used the graphify skill in Claude Code to build a knowledge graph of the project (`graphify-out/`). Code was parsed structurally; docs, templates and wireframes were read by AI sub-agents. Before committing, the outputs were scanned to confirm they contain no secrets and no local file paths. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |
