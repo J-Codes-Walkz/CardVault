@@ -1,0 +1,13 @@
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    {% if message.level_tag == "error" %}
+    <p class="message message-error" role="alert"><strong>Error:</strong> {{ message }}</p>
+    {% elif message.level_tag == "success" %}
+    <p class="message message-success" role="status"><strong>Success:</strong> {{ message }}</p>
+    {% else %}
+    <p class="message message-info" role="status"><strong>Note:</strong> {{ message }}</p>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}

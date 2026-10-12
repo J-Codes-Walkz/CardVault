@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block head_title %}Log in | CardVault{% endblock head_title %}
+
+{% block content %}
+<section class="form-page">
+    <h1>Log in</h1>
+    <form method="post" action="{% url 'account_login' %}">
+        {% csrf_token %}
+        {% include "includes/form_fields.html" %}
+        {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+        {% endif %}
+        <button type="submit" class="button">Log in</button>
+    </form>
+    <p>New to CardVault? <a href="{% url 'account_signup' %}">Create an account</a>.</p>
+</section>
+{% endblock content %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block head_title %}My Cards | CardVault{% endblock head_title %}
+
+{% block content %}
+<h1>My Cards</h1>
+{% if entries %}
+<ul class="entry-list">
+    {% for entry in entries %}
+    <li>{{ entry.quantity }} x {{ entry.card.name }} ({{ entry.get_status_display }})</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Your cards list is empty.</p>
+{% endif %}
+{% endblock content %}

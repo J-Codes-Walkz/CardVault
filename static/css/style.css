@@ -1,0 +1,227 @@
+/* CardVault base styles: mobile first, neutral palette. */
+
+:root {
+    --ink: #1f2328;
+    --ink-soft: #4b5563;
+    --paper: #ffffff;
+    --surface: #f3f4f6;
+    --line: #9ca3af;
+    --success-bg: #e6f4ea;
+    --success-ink: #14532d;
+    --error-bg: #fdecea;
+    --error-ink: #7f1d1d;
+    --info-bg: #e8f0fe;
+    --info-ink: #1e3a8a;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--ink);
+    background-color: var(--paper);
+}
+
+a {
+    color: var(--ink);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+    outline: 3px solid #1d4ed8;
+    outline-offset: 2px;
+}
+
+/* Skip link: hidden until it receives keyboard focus. */
+.skip-link {
+    position: absolute;
+    left: -999px;
+    top: 0;
+    padding: 0.5rem 1rem;
+    color: var(--paper);
+    background-color: var(--ink);
+}
+
+.skip-link:focus {
+    left: 0;
+}
+
+/* Header and navigation */
+.site-header {
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--line);
+}
+
+.site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 0.75rem 1rem;
+}
+
+.brand {
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nav-links form {
+    margin: 0;
+}
+
+.nav-user {
+    color: var(--ink-soft);
+}
+
+/* Layout */
+.container {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+}
+
+h1 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+}
+
+.hero {
+    max-width: 40rem;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+/* Buttons */
+.button {
+    display: inline-block;
+    min-height: 2.75rem;
+    padding: 0.625rem 1.25rem;
+    font: inherit;
+    font-weight: 700;
+    color: var(--paper);
+    text-decoration: none;
+    background-color: var(--ink);
+    border: 2px solid var(--ink);
+    border-radius: 0.375rem;
+    cursor: pointer;
+}
+
+.button-quiet {
+    color: var(--ink);
+    background-color: var(--paper);
+}
+
+/* Forms */
+.form-page {
+    max-width: 28rem;
+}
+
+.field {
+    margin-bottom: 1.25rem;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 700;
+}
+
+.field input {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
+    font: inherit;
+    color: var(--ink);
+    background-color: var(--paper);
+    border: 1px solid var(--ink-soft);
+    border-radius: 0.375rem;
+}
+
+.field-help {
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+}
+
+.field-help ul {
+    margin: 0.25rem 0 0;
+    padding-left: 1.25rem;
+}
+
+.field-error,
+.form-errors p {
+    margin: 0.375rem 0 0;
+    padding: 0.5rem 0.75rem;
+    color: var(--error-ink);
+    background-color: var(--error-bg);
+    border-left: 4px solid var(--error-ink);
+}
+
+.form-errors {
+    margin-bottom: 1.25rem;
+}
+
+/* Messages */
+.messages {
+    margin-bottom: 1.5rem;
+}
+
+.message {
+    margin: 0 0 0.5rem;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid;
+}
+
+.message-success {
+    color: var(--success-ink);
+    background-color: var(--success-bg);
+}
+
+.message-error {
+    color: var(--error-ink);
+    background-color: var(--error-bg);
+}
+
+.message-info {
+    color: var(--info-ink);
+    background-color: var(--info-bg);
+}
+
+/* Footer */
+.site-footer {
+    padding: 1rem;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    text-align: center;
+    background-color: var(--surface);
+    border-top: 1px solid var(--line);
+}
+
+.site-footer p {
+    max-width: 60rem;
+    margin: 0 auto;
+}

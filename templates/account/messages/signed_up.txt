@@ -1,0 +1,1 @@
+Your account has been created. Welcome to CardVault, {{ user.username }}!

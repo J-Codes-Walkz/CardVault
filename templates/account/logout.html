@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block head_title %}Log out | CardVault{% endblock head_title %}
+
+{% block content %}
+<section class="form-page">
+    <h1>Log out</h1>
+    <p>Are you sure you want to log out?</p>
+    <form method="post" action="{% url 'account_logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="button">Log out</button>
+        <a class="button button-quiet" href="{% url 'collection:my_cards' %}">Cancel</a>
+    </form>
+</section>
+{% endblock content %}
