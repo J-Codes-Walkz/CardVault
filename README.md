@@ -128,7 +128,7 @@ user model, and owned/wanted as two tables instead of one), and why
 
 A knowledge graph of the whole project (code, templates, docs and
 wireframes) is kept in `graphify-out/`, built with
-[graphify](https://github.com/safishamsi/graphify). It is used as a
+[graphify](https://github.com/Graphify-Labs/graphify). It is used as a
 mind map: it shows which models, tests, user stories and wireframes
 connect to each other, and which parts everything else depends on.
 
