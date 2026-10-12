@@ -218,3 +218,17 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# CardVault: secrets. Only .env.example (names, no values) is tracked.
+*.env
+!.env.example
+
+# CardVault: Django
+*.sqlite3
+/staticfiles/
+/media/
+
+# CardVault: editors and OS
+.vscode/
+.idea/
+.DS_Store
