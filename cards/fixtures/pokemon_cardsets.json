@@ -1,0 +1,11 @@
+[
+  {
+    "model": "cards.cardset",
+    "pk": 1,
+    "fields": {
+      "name": "Base Set",
+      "quantity": 102
+    }
+  }
+]
+
