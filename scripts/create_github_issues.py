@@ -24,6 +24,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CSV_PATH = REPO_ROOT / "docs" / "github-issues.csv"
 
+# Shown when gh refuses an issue, usually because a label is missing.
+LABEL_HINT = "  (Create the priority:* and epic:* labels in the repo first.)"
+
 PRIORITY_LABEL = {
     "Must have": "priority:must",
     "Should have": "priority:should",
@@ -32,21 +35,23 @@ PRIORITY_LABEL = {
 
 
 def epic_label(epic_name: str) -> str:
-    return "epic:" + epic_name.lower().replace(" ", "-").replace(
-        "(", "").replace(")", "").replace(",", "")
+    """Turn an epic name such as "Card reviews" into "epic:card-reviews"."""
+    slug = epic_name.lower().replace(" ", "-")
+    for character in "(),":
+        slug = slug.replace(character, "")
+    return "epic:" + slug
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dry-run", action="store_true",
-                        help="Print what would be created; create nothing.")
-    parser.add_argument("--only", nargs="*", default=None,
-                        help="Only create these story IDs, e.g. US01 US02.")
+    dry_run_help = "Print what would be created; create nothing."
+    only_help = "Only create these story IDs, e.g. US01 US02."
+    parser.add_argument("--dry-run", action="store_true", help=dry_run_help)
+    parser.add_argument("--only", nargs="*", default=None, help=only_help)
     args = parser.parse_args()
 
     if not CSV_PATH.exists():
-        sys.exit(f"Can't find {CSV_PATH}. Run this from the repo root, "
-                 "or check docs/github-issues.csv exists.")
+        sys.exit(f"Can't find {CSV_PATH}. Run this from the repo root.")
 
     with CSV_PATH.open(newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
@@ -61,18 +66,18 @@ def main():
     if not rows:
         sys.exit("Nothing to create.")
 
-    print(f"{'Would create' if args.dry_run else 'Creating'} "
-          f"{len(rows)} issue(s)...\n")
+    action = "Would create" if args.dry_run else "Creating"
+    print(f"{action} {len(rows)} issue(s)...\n")
 
     for row in rows:
-        labels = [PRIORITY_LABEL.get(row["priority"], "priority:must"),
-                  epic_label(row["epic"])]
+        priority = PRIORITY_LABEL.get(row["priority"], "priority:must")
+        labels = [priority, epic_label(row["epic"])]
         if args.dry_run:
             print(f"- {row['title']}  [{', '.join(labels)}]")
             continue
 
-        cmd = ["gh", "issue", "create", "--title", row["title"],
-               "--body", row["body"]]
+        cmd = ["gh", "issue", "create", "--title", row["title"]]
+        cmd += ["--body", row["body"]]
         for label in labels:
             cmd += ["--label", label]
 
@@ -80,16 +85,12 @@ def main():
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
             print(f"  FAILED: {result.stderr.strip()}", file=sys.stderr)
-            print("  (Labels must already exist in the repo - create "
-                  "priority:must/should/could and the epic:* labels "
-                  "first, or drop --label and add them manually.)",
-                  file=sys.stderr)
+            print(LABEL_HINT, file=sys.stderr)
         else:
             print(f"  {result.stdout.strip()}")
 
     if args.dry_run:
-        print("\nDry run only - nothing was created. Remove --dry-run "
-              "to actually create these issues.")
+        print("\nDry run only: nothing was created.")
 
 
 if __name__ == "__main__":

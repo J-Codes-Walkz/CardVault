@@ -24,9 +24,8 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 # Off unless explicitly switched on, so a missing variable fails safe.
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = [
-    host for host in os.environ.get("ALLOWED_HOSTS", "").split(",") if host
-]
+HOSTS = os.environ.get("ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = [host for host in HOSTS.split(",") if host]
 if DEBUG:
     ALLOWED_HOSTS += ["localhost", "127.0.0.1"]
 
@@ -110,16 +109,12 @@ LOGIN_REDIRECT_URL = "collection:my_cards"
 LOGOUT_REDIRECT_URL = "home"
 ACCOUNT_LOGOUT_REDIRECT_URL = "home"
 
+VALIDATION = "django.contrib.auth.password_validation"
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation."
-             "UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation."
-             "MinimumLengthValidator",
-     "OPTIONS": {"min_length": 8}},
-    {"NAME": "django.contrib.auth.password_validation."
-             "CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation."
-             "NumericPasswordValidator"},
+    {"NAME": f"{VALIDATION}.UserAttributeSimilarityValidator"},
+    {"NAME": f"{VALIDATION}.MinimumLengthValidator"},
+    {"NAME": f"{VALIDATION}.CommonPasswordValidator"},
+    {"NAME": f"{VALIDATION}.NumericPasswordValidator"},
 ]
 
 # --- Internationalisation -------------------------------------------------
@@ -135,21 +130,16 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # The hashed-filename storage needs `collectstatic` to have run, which
 # is true on Heroku but not in local development or the test runner.
+STATIC_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 if DEBUG or TESTING:
-    STATICFILES_BACKEND = (
-        "django.contrib.staticfiles.storage.StaticFilesStorage"
-    )
-else:
-    STATICFILES_BACKEND = (
-        "whitenoise.storage.CompressedManifestStaticFilesStorage"
-    )
+    STATIC_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": STATICFILES_BACKEND,
+        "BACKEND": STATIC_STORAGE,
     },
 }
 

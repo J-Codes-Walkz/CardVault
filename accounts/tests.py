@@ -18,11 +18,14 @@ class RegisterTests(TestCase):
     """US01: register an account."""
 
     def register(self, username, password1, password2=None):
-        return self.client.post(reverse("account_signup"), {
+        if password2 is None:
+            password2 = password1
+        data = {
             "username": username,
             "password1": password1,
-            "password2": password1 if password2 is None else password2,
-        })
+            "password2": password2,
+        }
+        return self.client.post(reverse("account_signup"), data)
 
     def test_form_asks_for_username_and_both_passwords(self):
         response = self.client.get(reverse("account_signup"))

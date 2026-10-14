@@ -71,8 +71,8 @@ class ReviewTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user("ash", password="Vault-Pass-2026")
-        cls.card = make_card(CardSet.objects.create(name="Base Set",
-                                                    quantity=102))
+        base_set = CardSet.objects.create(name="Base Set", quantity=102)
+        cls.card = make_card(base_set)
 
     def review(self, rating=5, user=None):
         return Review(

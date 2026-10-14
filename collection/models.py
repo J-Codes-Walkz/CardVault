@@ -48,7 +48,5 @@ class CollectionEntry(models.Model):
         ]
 
     def __str__(self):
-        return (
-            f"{self.user}: {self.quantity} x {self.card.name} "
-            f"({self.get_status_display()})"
-        )
+        status = self.get_status_display()
+        return f"{self.user}: {self.quantity} x {self.card.name} ({status})"

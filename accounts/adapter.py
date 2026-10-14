@@ -8,20 +8,19 @@ from allauth.account.adapter import DefaultAccountAdapter
 LOGGED_IN_TEMPLATE = "account/messages/logged_in.txt"
 SIGNED_UP_TEMPLATE = "account/messages/signed_up.txt"
 
+USERNAME_TAKEN = "That username is already taken. Please choose another."
+LOGIN_FAILED = "Invalid username or password. Please try again."
+
 
 class AccountAdapter(DefaultAccountAdapter):
     """Account adapter with CardVault's own error and success text."""
 
     error_messages = {
         **DefaultAccountAdapter.error_messages,
-        "username_taken": (
-            "That username is already taken. Please choose another."
-        ),
+        "username_taken": USERNAME_TAKEN,
         # One message for both cases, so the form never reveals whether
         # it was the username or the password that was wrong.
-        "username_password_mismatch": (
-            "Invalid username or password. Please try again."
-        ),
+        "username_password_mismatch": LOGIN_FAILED,
     }
 
     def post_login(self, request, user, **kwargs):
@@ -29,12 +28,9 @@ class AccountAdapter(DefaultAccountAdapter):
         self.is_signup = kwargs.get("signup", False)
         return super().post_login(request, user, **kwargs)
 
-    def add_message(self, request, level, message_template=None,
-                    *args, **kwargs):
+    def add_message(self, request, level, template=None, *args, **kwargs):
         """Greet a brand-new user differently from a returning one."""
         just_registered = getattr(self, "is_signup", False)
-        if just_registered and message_template == LOGGED_IN_TEMPLATE:
-            message_template = SIGNED_UP_TEMPLATE
-        super().add_message(
-            request, level, message_template, *args, **kwargs
-        )
+        if just_registered and template == LOGGED_IN_TEMPLATE:
+            template = SIGNED_UP_TEMPLATE
+        super().add_message(request, level, template, *args, **kwargs)
