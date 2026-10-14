@@ -1,7 +1,7 @@
 """Customises django-allauth's wording to match CardVault's messages.
 
 The exact text of every message is listed in
-docs/notification-messages.md.
+docs/NOTIFICATION_MESSAGES.md.
 """
 from allauth.account.adapter import DefaultAccountAdapter
 

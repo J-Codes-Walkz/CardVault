@@ -79,7 +79,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "home"
   there is nothing to verify and no email service to configure.
 - **`accounts.adapter.AccountAdapter`** replaces allauth's default
   wording with the messages in
-  [notification-messages.md](./notification-messages.md).
+  [NOTIFICATION_MESSAGES.md](./NOTIFICATION_MESSAGES.md).
 - **`accounts.forms.LoginForm`** removes the "Forgot your password?"
   link, because password reset works by email.
 - **`allauth.account.middleware.AccountMiddleware`** is the last entry

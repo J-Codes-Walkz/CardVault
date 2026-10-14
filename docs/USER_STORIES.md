@@ -42,7 +42,7 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 - **Must have** (21): US01, US02, US03, US04, US05, US06, US07, US08, US10, US11, US12, US13, US14, US18, US19, US21, US22, US23, US24, US26, US27
 - **Should have** (5): US09, US15, US20, US25, US28
 - **Could have** (2): US16, US17
-- **Won't have (this submission)**: nothing is scoped out yet within this story set — see [Potential upscale](./potential-upscale.md) for features deliberately parked for after submission.
+- **Won't have (this submission)**: nothing is scoped out yet within this story set — see [Potential upscale](./POTENTIAL_UPSCALE.md) for features deliberately parked for after submission.
 
 ## Stories by epic
 

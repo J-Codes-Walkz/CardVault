@@ -6,7 +6,7 @@ Effort is a rough shirt size: **Small** fits in an existing view or template; **
 
 ## Should if — next in line
 
-The natural next features once the Must and Should have stories above are done. Each builds on tables that already exist, so none of them need a redesign of the schema in docs/database-schema.md.
+The natural next features once the Must and Should have stories above are done. Each builds on tables that already exist, so none of them need a redesign of the schema in docs/DATABASE_SCHEMA.md.
 
 | Feature | What if… | What it would need | Effort |
 |---|---|---|---|

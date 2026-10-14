@@ -42,7 +42,7 @@ to be.
 
 The full set of 28 user stories, written as `As a / I want / so that`
 with acceptance criteria, development tasks and a manual test for
-each, lives in **[docs/user-stories.md](./docs/user-stories.md)**.
+each, lives in **[docs/USER_STORIES.md](./docs/USER_STORIES.md)**.
 They're prioritised with MoSCoW:
 
 | Priority | Count |
@@ -52,7 +52,7 @@ They're prioritised with MoSCoW:
 | Could have | 2 |
 
 Ideas that came up but were deliberately left out of this submission
-are in **[docs/potential-upscale.md](./docs/potential-upscale.md)**
+are in **[docs/POTENTIAL_UPSCALE.md](./docs/POTENTIAL_UPSCALE.md)**
 ("Should if / Could if / Won't if"), answering the "what ifs" a tutor
 is likely to ask.
 
@@ -77,7 +77,7 @@ Home page, as an example:
 ![Wireframe of the CardVault home page, showing the navigation bar, a hero section with Create account and Browse cards buttons, three feature blocks and a row of featured card tiles](./docs/wireframes/01-home.svg)
 
 Blue tags on every wireframe (e.g. `US11`) link that part of the
-screen back to its user story in `docs/user-stories.md`.
+screen back to its user story in `docs/USER_STORIES.md`.
 
 *Replace the wireframes above with real screenshots here as each
 screen is built, and keep the wireframes in `docs/wireframes/` for
@@ -102,7 +102,7 @@ section asks for screenshots of the finished site, not the plan.*
 PostgreSQL in every environment, reached entirely through Django's
 ORM. Full write-up, the entity-relationship diagram and the reasoning
 behind each constraint are in
-**[docs/database-schema.md](./docs/database-schema.md)**.
+**[docs/DATABASE_SCHEMA.md](./docs/DATABASE_SCHEMA.md)**.
 
 ```mermaid
 erDiagram
@@ -122,7 +122,7 @@ two user-owned tables that carry full CRUD &mdash; `CollectionEntry`
 `collection/models.py`. What was considered and set aside (a custom
 user model, and owned/wanted as two tables instead of one), and why
 `CardSet` was cut and then brought back, is explained in
-[Why simplify](./docs/database-schema.md#why-simplify).
+[Why simplify](./docs/DATABASE_SCHEMA.md#why-simplify).
 
 ## Project mind map
 
@@ -156,7 +156,7 @@ Code. Only the three files above are committed; the cache stays local
 
 *Fill this section in as each feature is actually built, with a
 screenshot. The list below is the planned feature set, grouped to
-match the epics in `docs/user-stories.md`, so you can tick items off
+match the epics in `docs/USER_STORIES.md`, so you can tick items off
 as you go rather than writing this section from scratch at the end.*
 
 ### Implemented
@@ -203,7 +203,7 @@ on the [live site](https://cardvault-0a18b8d773ca.herokuapp.com/). *Screenshots 
 
 Every notification message the app shows (login success, duplicate
 username, "thank you for your review", and so on) is written out
-exactly in **[docs/notification-messages.md](./docs/notification-messages.md)**,
+exactly in **[docs/NOTIFICATION_MESSAGES.md](./docs/NOTIFICATION_MESSAGES.md)**,
 so the UI text stays consistent across views as it's built.
 
 ## Agile methodology
@@ -228,7 +228,7 @@ MoSCoW priority and epic, and grouped into three sprint
    progress) makes sprint planning easier.
 3. **Create one issue per user story.** Each issue title starts with
    the story ID, e.g. `US01: Register an account`, with the
-   acceptance criteria and tasks from `docs/user-stories.md` pasted
+   acceptance criteria and tasks from `docs/USER_STORIES.md` pasted
    into the issue body as a checklist. **[docs/github-issues.csv](./docs/github-issues.csv)**
    has every story pre-formatted (title, epic, priority, body), and
    **[scripts/create_github_issues.py](./scripts/create_github_issues.py)**
@@ -266,7 +266,7 @@ MoSCoW priority and epic, and grouped into three sprint
    not just in the docs &mdash; group or filter the board by label.
 5. **Link this README** to the board once it exists, and update the
    "GitHub Projects board" link near the top of
-   `docs/user-stories.md`.
+   `docs/USER_STORIES.md`.
 
 ### Sprints
 
@@ -294,81 +294,7 @@ in the catalogue before reviews mean anything):
 
 ## Testing
 
-*This section needs real results once the app exists. The structure
-below is ready to fill in.*
-
-### Manual testing
-
-Each user story's "Manual test" entry in `docs/user-stories.md` is a
-ready-made test case. Record results in a table like this (one row
-per story, updated as you test):
-
-| Story | Action | Expected | Actual | Pass? |
-|---|---|---|---|---|
-| US01 | Register with a new username and a strong password, then a duplicate username | New account created with success message; duplicate shows the "already taken" error | | |
-| US02 | Log in with valid, then invalid, credentials | Welcome message + redirect; then the invalid-credentials error | | |
-| &hellip; | | | | |
-
-### Automated testing
-
-Django's test runner (`python manage.py test`) should cover, at
-minimum, one test per acceptance criterion that isn't purely visual:
-registration (duplicate username, weak password, mismatched
-passwords), login (valid/invalid), ownership checks (user B cannot
-edit/delete user A's records &mdash; this is the most
-important test in the whole suite, since it's a security boundary,
-not just a feature), and the CRUD paths for `CollectionEntry`
-(both the Owned and Wanted status) and `Review`.
-
-**Current state (12 October 2026, end of Sprint 1 build):** 45
-automated tests, all passing, covering registration (valid, duplicate
-username, each of the four password rules, mismatched passwords),
-login (valid, wrong password, unknown username, return to the
-requested page), logout (POST logs out, GET does not, private pages
-then redirect), the navigation's two states, every model constraint,
-and the Base Set fixture loading twice without duplicates. They live
-in `accounts/tests.py`, `cards/tests.py` and `collection/tests.py`.
-
-Run with coverage:
-
-```bash
-pip install coverage
-coverage run --source='.' manage.py test
-coverage report -m
-```
-
-### Validators
-
-- **HTML**: run every rendered template through the
-  [W3C HTML validator](https://validator.w3.org/) (paste the page
-  source, or validate by URL once deployed).
-- **CSS**: run your stylesheet through
-  [Jigsaw](https://jigsaw.w3.org/css-validator/).
-- **Python**: `pip install flake8` and run `flake8 .` from the
-  project root; fix or justify every warning (PEP8 line length is 79
-  characters &mdash; see the note on wrapping model fields in
-  [docs/database-schema.md](./docs/database-schema.md#pep8-and-the-models)).
-- **Accessibility/performance**: run Lighthouse (Chrome DevTools) on
-  each major page, logged in and out, and record the four scores.
-
-Results so far (12 October 2026, run against the local site):
-
-| Check | Scope | Result |
-|---|---|---|
-| W3C HTML validator | Home, Register, Log in, Log in with an error, Log out, My Cards | 0 errors, 0 warnings on each page |
-| Jigsaw CSS validator | `static/css/style.css` | 0 errors (1 warning: `system-ui` is flagged as a vendor extension) |
-| flake8 | Whole project (migrations excluded in `.flake8`) | 0 warnings |
-| `manage.py check --deploy` | Production settings | 0 issues |
-
-The home, register and log in pages were validated again by URL on
-the live site after deployment, with the same result (0 errors).
-
-*Re-run all of these on the finished site and add screenshots before
-submission.*
-
-### Known bugs
-
-*(none logged yet)*
+The full testing write-up is in **[TESTING.md](./TESTING.md)**: manual tests for every user story, the automated test suite, validator results (HTML, CSS, Python) and every bug found, each logged as a GitHub issue labelled [`bug`](https://github.com/J-Codes-Walkz/CardVault/issues?q=label%3Abug).
 
 ## Deployment
 
@@ -389,7 +315,7 @@ python manage.py runserver
 
 `.env` is never committed (see `.gitignore`); `.env.example` lists
 the variable names only. The settings that read these variables are
-in **[docs/settings-snippet.md](./docs/settings-snippet.md)**.
+in **[docs/SETTINGS_SNIPPET.md](./docs/SETTINGS_SNIPPET.md)**.
 
 ### Heroku
 
@@ -452,7 +378,7 @@ log out and log in.
    heroku run python manage.py loaddata pokemon_cardsets
    ```
    (Or add the cards through `/admin/` instead &mdash; see
-   [Populating the catalogue](./docs/database-schema.md#populating-the-catalogue).)
+   [Populating the catalogue](./docs/DATABASE_SCHEMA.md#populating-the-catalogue).)
 7. **Verify production settings**: visit a URL that doesn't exist on
    the live app and confirm you get the custom 404 page, not a Django
    debug page. If you see a debug page, `DEBUG` is still `True` on
