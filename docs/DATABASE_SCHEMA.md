@@ -157,7 +157,7 @@ card = models.ForeignKey(
 )
 ```
 
-`flake8 .` (see the Testing section of the README) is run regularly
+`flake8 .` (see [TESTING.md](../TESTING.md)) is run regularly
 while building, not just at the end. Generated migration files are
 excluded in `.flake8`.
 

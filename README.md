@@ -14,18 +14,6 @@ capstone checklist requires.
 > "Pok&eacute;mon" and all card names are trademarks of their
 > respective owners, used here for identification only.
 
-## Contents
-
-- [UX design](#ux-design)
-- [Database design](#database-design)
-- [Project mind map](#project-mind-map)
-- [Features](#features)
-- [Agile methodology](#agile-methodology)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [Credits](#credits)
-- [Usage of AI](#usage-of-ai)
-
 ## UX design
 
 ### Purpose and audience
