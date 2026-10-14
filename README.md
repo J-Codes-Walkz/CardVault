@@ -429,11 +429,18 @@ log out and log in.
    **Since 14 October 2026 deploys are automatic from GitHub.** On the
    app's Deploy tab in the Heroku dashboard, the deployment method is
    GitHub (repository `J-Codes-Walkz/CardVault`), with **Automatic
-   deploys** from `main` and **Wait for CI to pass before deploy**
-   switched on. Every push to `main` on GitHub now deploys by itself,
+   deploys** from `main`. Every push to `main` on GitHub now deploys by itself,
    so `git push heroku main` is no longer needed. Each deploy is also
    recorded on GitHub, under **Deployments** on the repository's main
    page and as an environment under Settings &rarr; Environments.
+
+   **Bug found while setting this up:** **Wait for CI to pass before
+   deploy** was ticked, but the repository had no CI yet. GitHub then
+   reports every commit's checks as "pending" for ever, so Heroku
+   received each push and never deployed it. The option was switched
+   off; it goes back on once the GitHub Actions workflow (issue #39)
+   is running, so that a commit with failing tests can never reach the
+   live site.
 5. **Create a superuser on Heroku** (one-off, after the first
    deploy):
    ```bash
