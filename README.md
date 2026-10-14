@@ -130,13 +130,17 @@ connect to each other, and which parts everything else depends on.
 | [graphify-out/GRAPH_REPORT.md](./graphify-out/GRAPH_REPORT.md) | A plain-language report: the most connected nodes, surprising connections and questions worth asking. |
 | [graphify-out/graph.json](./graphify-out/graph.json) | The raw graph data. |
 
-First built on 12 October 2026 from 56 files: 336 nodes, 578 links
-and 19 clusters. The most connected node is `CollectionEntry`, which
-matches the design: it is the table the main CRUD stories are built
-on. Links the report marks as "inferred" were reasoned by the AI
-rather than read directly from a file, and the build's health check
-flagged 62 links that point outside the graph (mostly imports of
-Django itself), so treat it as a guide, not a complete map.
+First built on 12 October 2026 from 56 files (336 nodes, 578 links,
+19 clusters) and updated on 14 October 2026 after the front-end CRUD
+work: it now has 597 nodes, 1,120 links and 48 clusters. The most
+connected nodes are the README, the user stories, TESTING.md and the
+`Card`, `CollectionEntry`, `CardSet` and `Review` models, which
+matches the design: the CRUD stories are built on those tables. Links
+the report marks as "inferred" were reasoned by the AI rather than
+read directly from a file, so treat the graph as a guide, not a
+complete map. Screenshots are left out of the graph (see
+`.graphifyignore`), because they are test evidence rather than
+project structure.
 
 To refresh it after new work, run `/graphify . --update` in Claude
 Code. Only the three files above are committed; the cache stays local
