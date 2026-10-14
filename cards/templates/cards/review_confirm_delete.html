@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block head_title %}Delete your review | CardVault{% endblock head_title %}
+
+{% block content %}
+<section class="form-page">
+    <h1>Delete your review of {{ review.card.name }}?</h1>
+    <p>This removes your rating and comment. It cannot be undone.</p>
+    <form method="post">
+        {% csrf_token %}
+        <p class="actions">
+            <button type="submit" class="button button-danger">Delete review</button>
+            <a class="button button-quiet" href="{% url 'cards:card_detail' review.card.pk %}">Cancel</a>
+        </p>
+    </form>
+</section>
+{% endblock content %}

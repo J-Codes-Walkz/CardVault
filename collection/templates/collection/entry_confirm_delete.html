@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block head_title %}Remove {{ entry.card.name }} | CardVault{% endblock head_title %}
+
+{% block content %}
+<section class="form-page">
+    <h1>Remove {{ entry.card.name }} from My Cards?</h1>
+    <p>This removes your entry ({{ entry.get_status_display }}, quantity {{ entry.quantity }}). The card stays in the catalogue, so you can add it again later.</p>
+    <form method="post">
+        {% csrf_token %}
+        <p class="actions">
+            <button type="submit" class="button button-danger">Remove</button>
+            <a class="button button-quiet" href="{% url 'collection:my_cards' %}">Cancel</a>
+        </p>
+    </form>
+</section>
+{% endblock content %}

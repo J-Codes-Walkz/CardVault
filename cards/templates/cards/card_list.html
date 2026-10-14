@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block head_title %}Browse cards | CardVault{% endblock head_title %}
+
+{% block content %}
+<h1>Browse cards</h1>
+
+<form class="search-form" method="get" action="{% url 'cards:card_list' %}" role="search">
+    <label for="id_q">Search by card name</label>
+    <div class="search-row">
+        <input type="search" name="q" id="id_q" value="{{ query }}">
+        <button type="submit" class="button">Search</button>
+    </div>
+</form>
+
+{% if query %}
+<p class="result-count">{{ paginator.count }} card{{ paginator.count|pluralize }} found for "{{ query }}". <a href="{% url 'cards:card_list' %}">Clear search</a></p>
+{% endif %}
+
+{% if cards %}
+<div class="card-grid">
+    {% for card in cards %}
+    {% include "includes/card_tile.html" %}
+    {% endfor %}
+</div>
+{% elif query %}
+<p>No cards match "{{ query }}". Try a different name.</p>
+{% else %}
+<p>There are no cards in the catalogue yet.</p>
+{% endif %}
+
+{% if is_paginated %}
+<nav class="pagination" aria-label="Pages">
+    {% if page_obj.has_previous %}
+    <a href="?{% if query %}q={{ query|urlencode }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
+    {% for number in paginator.page_range %}
+    {% if number == page_obj.number %}
+    <span aria-current="page">{{ number }}</span>
+    {% else %}
+    <a href="?{% if query %}q={{ query|urlencode }}&amp;{% endif %}page={{ number }}">{{ number }}</a>
+    {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+    <a href="?{% if query %}q={{ query|urlencode }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+    {% endif %}
+</nav>
+{% endif %}
+{% endblock content %}

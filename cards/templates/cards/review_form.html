@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block head_title %}{% if object %}Edit your review{% else %}Review {{ card.name }}{% endif %} | CardVault{% endblock head_title %}
+
+{% block content %}
+<section class="form-page">
+    <h1>{% if object %}Edit your review of {{ card.name }}{% else %}Review {{ card.name }}{% endif %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {% include "includes/form_fields.html" %}
+        <p class="actions">
+            <button type="submit" class="button">{% if object %}Save changes{% else %}Submit review{% endif %}</button>
+            <a class="button button-quiet" href="{% url 'cards:card_detail' card.pk %}">Cancel</a>
+        </p>
+    </form>
+</section>
+{% endblock content %}

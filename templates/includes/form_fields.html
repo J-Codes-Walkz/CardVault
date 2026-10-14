@@ -6,6 +6,17 @@
 </div>
 {% endif %}
 {% for field in form.visible_fields %}
+{% if field.widget_type == "radioselect" %}
+<fieldset class="field field-choices">
+    <legend>{{ field.label }}</legend>
+    {% for choice in field %}
+    <label class="choice" for="{{ choice.id_for_label }}">{{ choice.tag }} {{ choice.choice_label }}</label>
+    {% endfor %}
+    {% for error in field.errors %}
+    <p class="field-error"><strong>Error:</strong> {{ error }}</p>
+    {% endfor %}
+</fieldset>
+{% else %}
 <div class="field">
     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
     {{ field }}
@@ -16,5 +27,6 @@
     <p class="field-error"><strong>Error:</strong> {{ error }}</p>
     {% endfor %}
 </div>
+{% endif %}
 {% endfor %}
 {% for field in form.hidden_fields %}{{ field }}{% endfor %}

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static card_extras %}
+
+{% block head_title %}{{ card.name }} | CardVault{% endblock head_title %}
+
+{% block content %}
+<article class="card-detail">
+    <div class="card-detail-image">
+        {% if card.image_url %}
+        <img src="{{ card.image_url }}" alt="{{ card.name }}" width="245" height="342">
+        {% else %}
+        <img src="{% static 'images/card-placeholder.svg' %}" alt="{{ card.name }}: no image yet" width="245" height="342">
+        {% endif %}
+    </div>
+
+    <div class="card-detail-info">
+        <h1>{{ card.name }}</h1>
+        <dl class="card-facts">
+            <dt>Set</dt>
+            <dd>{{ card.card_set.name }}</dd>
+            <dt>Number</dt>
+            <dd>{{ card.number }}</dd>
+            <dt>Rarity</dt>
+            <dd>{{ card.get_rarity_display }}</dd>
+            <dt>Market price</dt>
+            <dd>{% if card.market_price is not None %}£{{ card.market_price }}{% else %}Price unavailable{% endif %}</dd>
+        </dl>
+
+        <p class="rating-summary">
+            {% if rating.count %}
+            <span class="stars" aria-hidden="true">{{ rating.average|stars }}</span>
+            Average {{ rating.average|floatformat:1 }} out of 5 from {{ rating.count }} review{{ rating.count|pluralize }}
+            {% else %}
+            No reviews yet. Be the first to review this card.
+            {% endif %}
+        </p>
+
+        <section class="panel" aria-labelledby="my-cards-heading">
+            <h2 id="my-cards-heading">My Cards</h2>
+            {% if not user.is_authenticated %}
+            <p><a href="{% url 'account_login' %}?next={{ request.path|urlencode }}">Log in to add this card</a> to your cards.</p>
+            {% elif my_entry %}
+            <p>On your list: <strong>{{ my_entry.get_status_display }}</strong>, quantity {{ my_entry.quantity }}.</p>
+            <p class="actions">
+                <a class="button" href="{% url 'collection:edit_entry' my_entry.pk %}">Edit entry</a>
+                <a class="button button-quiet" href="{% url 'collection:delete_entry' my_entry.pk %}">Remove</a>
+            </p>
+            {% else %}
+            <form method="post" action="{% url 'collection:add_entry' card.pk %}">
+                {% csrf_token %}
+                {% with form=entry_form %}{% include "includes/form_fields.html" %}{% endwith %}
+                <button type="submit" class="button">Add to My Cards</button>
+            </form>
+            {% endif %}
+        </section>
+    </div>
+</article>
+
+<section class="reviews" aria-labelledby="reviews-heading">
+    <h2 id="reviews-heading">Reviews</h2>
+
+    {% if not user.is_authenticated %}
+    <p><a href="{% url 'account_login' %}?next={{ request.path|urlencode }}">Log in to write a review</a>.</p>
+    {% elif not my_review %}
+    <div class="panel">
+        <h3>Write a review</h3>
+        <form method="post" action="{% url 'cards:add_review' card.pk %}">
+            {% csrf_token %}
+            {% with form=review_form %}{% include "includes/form_fields.html" %}{% endwith %}
+            <button type="submit" class="button">Submit review</button>
+        </form>
+    </div>
+    {% endif %}
+
+    {% if reviews %}
+    <ul class="review-list">
+        {% for review in reviews %}
+        <li class="review">
+            <p class="review-meta">
+                <strong>{{ review.user.username }}</strong>
+                <span class="stars" aria-hidden="true">{{ review.rating|stars }}</span>
+                <span class="visually-hidden">{{ review.rating }} out of 5 stars</span>
+                <span class="review-date">{{ review.created_at|date:"j M Y" }}{% if review.is_edited %} (edited){% endif %}</span>
+            </p>
+            <p>{{ review.body|linebreaksbr }}</p>
+            {% if review.user == user %}
+            <p class="actions">
+                <a class="button" href="{% url 'cards:edit_review' review.pk %}">Edit review</a>
+                <a class="button button-quiet" href="{% url 'cards:delete_review' review.pk %}">Delete review</a>
+            </p>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</section>
+{% endblock content %}

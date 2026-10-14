@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block head_title %}{% if entry %}Edit {{ card.name }}{% else %}Add {{ card.name }}{% endif %} | CardVault{% endblock head_title %}
+
+{% block content %}
+<section class="form-page">
+    <h1>{% if entry %}Edit your entry for {{ card.name }}{% else %}Add {{ card.name }} to My Cards{% endif %}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {% include "includes/form_fields.html" %}
+        <p class="actions">
+            <button type="submit" class="button">{% if entry %}Save changes{% else %}Add to My Cards{% endif %}</button>
+            <a class="button button-quiet" href="{% if entry %}{% url 'collection:my_cards' %}{% else %}{% url 'cards:card_detail' card.pk %}{% endif %}">Cancel</a>
+        </p>
+    </form>
+</section>
+{% endblock content %}
