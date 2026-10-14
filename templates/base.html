@@ -8,6 +8,8 @@
     <meta name="description" content="CardVault: track the Pokémon cards you own and the ones you want.">
     <title>{% block head_title %}CardVault{% endblock head_title %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script>document.documentElement.classList.add("js");</script>
+    <script src="{% static 'js/nav.js' %}" defer></script>
     {% block extra_head %}{% endblock extra_head %}
 </head>
 
@@ -17,10 +19,12 @@
     <header class="site-header">
         <nav class="site-nav" aria-label="Main">
             <a class="brand" href="{% url 'home' %}">CardVault</a>
-            <ul class="nav-links">
+            <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">Menu</button>
+            <ul class="nav-links" id="nav-menu">
+                <li><a href="{% url 'cards:card_list' %}">Browse cards</a></li>
                 {% if user.is_authenticated %}
-                <li class="nav-user">Logged in as <strong>{{ user.username }}</strong></li>
                 <li><a href="{% url 'collection:my_cards' %}">My Cards</a></li>
+                <li class="nav-user">Logged in as <strong>{{ user.username }}</strong></li>
                 <li>
                     <form method="post" action="{% url 'account_logout' %}">
                         {% csrf_token %}
