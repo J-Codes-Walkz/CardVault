@@ -1,7 +1,10 @@
 """Catalogue models: card sets, cards and the reviews written on them."""
+from datetime import timedelta
+
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.urls import reverse
 
 
 class CardSet(models.Model):
@@ -53,6 +56,9 @@ class Card(models.Model):
     def __str__(self):
         return f"{self.name} ({self.card_set} #{self.number})"
 
+    def get_absolute_url(self):
+        return reverse("cards:card_detail", args=[self.pk])
+
 
 class Review(models.Model):
     """A user's rating and written review of a card."""
@@ -88,3 +94,8 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.user} rated {self.card.name} {self.rating}/5"
+
+    @property
+    def is_edited(self):
+        """True once the review has been changed after it was written."""
+        return self.updated_at - self.created_at > timedelta(seconds=1)
