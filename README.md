@@ -146,52 +146,101 @@ Code. Only the three files above are committed; the cache stays local
 
 ## Features
 
-*Fill this section in as each feature is actually built, with a
-screenshot. The list below is the planned feature set, grouped to
-match the epics in `docs/USER_STORIES.md`, so you can tick items off
-as you go rather than writing this section from scratch at the end.*
+Everything below is live on
+[the Heroku site](https://cardvault-0a18b8d773ca.herokuapp.com/) and
+was tested there on 14 October 2026 (see [TESTING.md](./TESTING.md)).
+Screenshots are from that test run, using the AAA, BBB and CCC tester
+cards.
 
-### Implemented
+### Accounts
 
-Built in Sprint 1, deployed to Heroku on 12 October 2026 and tested
-on the [live site](https://cardvault-0a18b8d773ca.herokuapp.com/). *Screenshots still to be added.*
+- **Register** (US01): username, password and password confirmation
+  through django-allauth. A new user is logged in straight away with
+  "Your account has been created. Welcome to CardVault,
+  &lt;username&gt;!". A taken username, a weak password (naming the
+  rule it broke) or mismatched passwords each show an error and
+  create no account.
+- **Log in and log out** (US02, US03): "Welcome back,
+  &lt;username&gt;!" and "You have been logged out. See you soon!".
+  A wrong password shows one generic error that does not reveal
+  which part was wrong. Log out is a POST form with a CSRF token.
+- **Always know if you are logged in** (US04): the navigation shows
+  "Logged in as &lt;username&gt;", My Cards and Log out, or Log in
+  and Register.
+- **Private data stays private** (US05): logged-out visitors are sent
+  to Log in with "Please log in to view that page.", and another
+  user's entries and reviews return a 404 page.
 
-- **Register** (US01) &mdash; username, password and password
-  confirmation through django-allauth. A new user is logged in
-  straight away and sees "Your account has been created. Welcome to
-  CardVault, &lt;username&gt;!". A taken username, a weak password
-  (naming the rule it broke) or mismatched passwords each show an
-  error and create no account.
-- **Log in** (US02) &mdash; shows "Welcome back, &lt;username&gt;!" and
-  lands on My Cards, or on the page originally requested. Wrong
-  details show one generic error that does not reveal which part was
-  wrong.
-- **Log out** (US03) &mdash; a POST form with a CSRF token in the
-  navigation; shows "You have been logged out. See you soon!".
-- **Logged-in state** (US04) &mdash; the navigation shows "Logged in
-  as &lt;username&gt;", My Cards and Log out, or Log in and Register.
-- **Data models** &mdash; `CardSet`, `Card`, `CollectionEntry` and
-  `Review`, with database constraints, all registered in Django admin.
-- **Base Set fixture** &mdash; first step of US27; safe to load twice.
-- **Secrets and debug** (US26) &mdash; every secret read from
-  environment variables, `DEBUG` off by default.
+![The registration success message and logged-in navigation](./docs/images/screenshots/register-success.png)
 
-### Planned
+### Browsing cards
 
-- **Accounts** &mdash; register, log in, log out, with a visible
-  logged-in/out state and a message on every transition (US01&ndash;US05)
-- **Browse cards** &mdash; paginated catalogue, name search, set/rarity
-  filters, a detail page per card (US06&ndash;US10)
-- **My Cards** &mdash; add a card as Owned or Wanted with a quantity,
-  edit or remove an entry, a totals summary, sort/filter, and a
-  one-click "Got it!" to flip a Wanted card to Owned
-  (US11&ndash;US17)
-- **Reviews** &mdash; rate and review a card, edit or delete your own
-  review, read everyone else's (US18&ndash;US21)
-- **Quality and security** &mdash; responsive layout, accessible
-  markup, a message on every action, friendly error pages, no secrets
-  in source, `DEBUG` off in production, a seeded catalogue (fixture or
-  Django admin), and a Django admin for maintenance (US22&ndash;US28)
+- **Home page** (US06): says what the site is for, with Create
+  account and Browse cards buttons (Go to My Cards when logged in)
+  and a row of featured cards.
+- **Catalogue** (US07): a responsive grid, 12 cards a page with
+  page links; a placeholder image when a card has no picture.
+- **Search** (US08): partial, case-insensitive name search with a
+  result count and a clear-search link.
+- **Card page** (US10): set, number, rarity, price (or "Price
+  unavailable"), average star rating and every review.
+
+![Browse cards showing the AAA, BBB and CCC tester cards](./docs/images/screenshots/catalogue.png)
+
+### My Cards: full front-end CRUD
+
+From any card's page a logged-in user can:
+
+- **Create** (US11): add the card to My Cards as Owned or Wanted, with
+  a quantity (at least 1) and notes. Adding a card already on the
+  list goes to that entry's edit page instead of creating a second
+  one.
+- **Read** (US12): My Cards lists every entry with All, Owned and
+  Wanted tabs. On phones each row stacks into a labelled card.
+- **Update** (US13): change the status, quantity or notes.
+- **Delete** (US14): remove the entry after a confirmation page that
+  names the card. The card itself stays in the catalogue.
+
+![My Cards after adding AAA, with Edit and Remove buttons](./docs/images/screenshots/add-card-success.png)
+
+### Reviews: comments and star ratings
+
+- **Create** (US18): rate a card from 1 to 5 stars and write a
+  comment. Each user reviews a card once; after that the form is
+  replaced by their review with Edit and Delete buttons.
+- **Read** (US21): reviews are listed newest first with the
+  username, stars, date and comment, under the card's average rating.
+- **Update** (US19): edit your own review; it is then marked
+  "(edited)".
+- **Delete** (US20): delete your own review after a confirmation
+  page.
+
+![A 4-star review with its comment and the card's average rating](./docs/images/screenshots/review-success.png)
+
+### Quality and security
+
+- **Responsive** (US22): mobile first, no sideways scrolling from
+  320px up. On phones the navigation collapses behind a Menu button,
+  and the footer sits at the bottom of the window on short pages.
+- **Feedback on every action** (US24): a success, error or info
+  message with a word ("Success:", "Error:") as well as colour, and
+  `role="status"` or `role="alert"` for screen readers.
+- **Secrets and debug** (US26): every secret read from environment
+  variables, `DEBUG` off by default, and a [security policy](./SECURITY.md)
+  for reporting vulnerabilities privately.
+
+<p>
+  <img src="./docs/images/screenshots/mobile-menu-closed.png" alt="Phone width with the menu closed" width="240">
+  <img src="./docs/images/screenshots/mobile-menu-open.png" alt="Phone width with the menu open" width="240">
+  <img src="./docs/images/screenshots/my-cards-mobile.png" alt="My Cards stacked on a phone" width="240">
+</p>
+
+### Still to build
+
+- Filter the catalogue by set and rarity (US09)
+- My Cards totals, sorting and a one-click "Got it!" (US15 to US17)
+- Custom 404, 403 and 500 pages (US25)
+- The real Base Set cards (US27), and the favicon and brand (#35)
 
 Every notification message the app shows (login success, duplicate
 username, "thank you for your review", and so on) is written out
@@ -300,6 +349,7 @@ createdb cardvault                 # a local PostgreSQL database
 cp .env.example .env               # then fill in SECRET_KEY and DATABASE_URL
 python manage.py migrate
 python manage.py loaddata pokemon_cardsets
+python manage.py loaddata tester_cards
 python manage.py createsuperuser
 python manage.py test
 python manage.py runserver
@@ -368,7 +418,10 @@ log out and log in.
    `cards/fixtures/pokemon_cardsets.json`:
    ```bash
    heroku run python manage.py loaddata pokemon_cardsets
+   heroku run python manage.py loaddata tester_cards
    ```
+   The tester cards (AAA, BBB and CCC) were loaded on the live site on
+   14 October 2026 for front-end CRUD testing.
    (Or add the cards through `/admin/` instead &mdash; see
    [Populating the catalogue](./docs/DATABASE_SCHEMA.md#populating-the-catalogue).)
 7. **Verify production settings**: visit a URL that doesn't exist on
@@ -440,6 +493,10 @@ section credible to an assessor.
 | 2026-10-12 | Automated tests | Claude Code wrote 45 tests alongside the Sprint 1 code. Verified by running `python manage.py test` (all pass) and by a real register, log out, failed log in and log in against the running site. |
 | 2026-10-12 | Deployment | Claude Code created the Heroku app and Postgres add-on with the Heroku CLI, set the config vars (a new `SECRET_KEY` generated straight into Heroku, `DEBUG=False`, `ALLOWED_HOSTS`), deployed with `git push heroku main` and loaded the Base Set fixture. It then tested the live site by registering, logging out and logging in with a throwaway account, which it deleted afterwards. I signed in to GitHub and Heroku myself; no password or key was shared with the AI. |
 | 2026-10-12 | Planning (mind map) | Used the graphify skill in Claude Code to build a knowledge graph of the project (`graphify-out/`). Code was parsed structurally; docs, templates and wireframes were read by AI sub-agents. Before committing, the outputs were scanned to confirm they contain no secrets and no local file paths. |
+| 2026-10-14 | Debugging | Heroku stopped deploying after the GitHub connection was made. Claude Code checked GitHub's webhook deliveries (Heroku received every push) and the commit status ("pending", with no checks at all), and found "Wait for CI to pass" was waiting for a CI that does not exist yet. Logged as bug #41 and fixed by switching the option off until #39. |
+| 2026-10-14 | Debugging | Acted on an assessor's masterclass feedback: logged each point as a bug issue (#43 to #46), then fixed them (trimmed `.gitignore`, single-line Python, no table of contents, capitalised Markdown names). Claude also spotted that the mentor's sticky-footer CSS selector `.html, body` should be `html, body`. |
+| 2026-10-14 | Developing features | Claude Code built the front-end CRUD (browse and search cards, card pages, add/edit/remove My Cards entries, 1 to 5 star reviews with comments) and the responsive header and footer. I chose the scope (frontend CRUD with tester cards AAA, BBB, CCC) and the sticky footer. |
+| 2026-10-14 | Automated tests | Claude Code wrote 51 more tests (96 in total), including two-user tests proving one user cannot edit or delete another's records. It then drove a real Chrome browser through every user action on the live site (39 checks, all passing) and took the screenshots used in this README and TESTING.md. It found and fixed a table layout bug on My Cards that the unit tests could not see. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |

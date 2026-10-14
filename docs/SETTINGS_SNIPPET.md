@@ -13,9 +13,8 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.environ["SECRET_KEY"]
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = [
-    host for host in os.environ.get("ALLOWED_HOSTS", "").split(",") if host
-]
+HOSTS = os.environ.get("ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = [host for host in HOSTS.split(",") if host]
 if DEBUG:
     ALLOWED_HOSTS += ["localhost", "127.0.0.1"]
 ```
@@ -85,22 +84,19 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "home"
 - **`allauth.account.middleware.AccountMiddleware`** is the last entry
   in `MIDDLEWARE`, as allauth requires.
 - **`AUTH_PASSWORD_VALIDATORS`** keeps all four of Django's
-  validators with a minimum length of 8, which is what makes the
-  "more complex password" part of US01 work.
+  validators (`MinimumLengthValidator` defaults to 8 characters),
+  which is what makes the "more complex password" part of US01 work.
+  The module path is held in one `VALIDATION` variable so each entry
+  fits on a single line.
 - There is no `AUTH_USER_MODEL` setting: Django's built-in `User`
   model is used as-is.
 
 ## Static files
 
 ```python
+STATIC_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 if DEBUG or TESTING:
-    STATICFILES_BACKEND = (
-        "django.contrib.staticfiles.storage.StaticFilesStorage"
-    )
-else:
-    STATICFILES_BACKEND = (
-        "whitenoise.storage.CompressedManifestStaticFilesStorage"
-    )
+    STATIC_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 ```
 
 - **Whitenoise** serves CSS and images directly from the Django

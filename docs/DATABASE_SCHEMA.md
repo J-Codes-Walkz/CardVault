@@ -136,11 +136,18 @@ them (there is an automated test for this).
 
 ```bash
 python manage.py loaddata pokemon_cardsets
+python manage.py loaddata tester_cards
 ```
 
-`cards/fixtures/pokemon_cardsets.json` currently seeds one set, Base
-Set. The cards themselves are added in Sprint 2 (US27), either as a
-second fixture or through Django admin.
+| Fixture | What it seeds | Primary keys used |
+|---|---|---|
+| `cards/fixtures/pokemon_cardsets.json` | The Base Set (102 cards), as a `CardSet` only | `CardSet` 1 |
+| `cards/fixtures/tester_cards.json` | A "Tester Set" with three placeholder cards, AAA (Common, £0.50), BBB (Uncommon, £1.25) and CCC (Rare Holo, no price), for testing the front-end CRUD | `CardSet` 2, `Card` 1 to 3 |
+
+The tester cards have no image, so the site shows its placeholder
+image, and CCC has no price, so its page shows "Price unavailable".
+The real Base Set cards still to come (US27) must use `Card` primary
+keys from 4 upwards so they do not overwrite the tester cards.
 
 ## PEP8 and the models
 

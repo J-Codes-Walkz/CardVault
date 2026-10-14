@@ -20,11 +20,12 @@ are placeholders filled in per request.
 | Log out | Success | You have been logged out. See you soon! | US03 |
 | Private page while logged out | Info | Please log in to view that page. | US05 |
 | My Cards: add | Success | {card} was added to your cards. | US11 |
-| My Cards: duplicate | Error | You already have {card} on your list. Edit that entry to change it. | US11 |
+| My Cards: duplicate | Error | You already have {card} on your list. Edit that entry to change it. (shown on that entry's edit page) | US11 |
 | My Cards: edit | Success | Your entry for {card} was updated. | US13 |
 | My Cards: remove | Success | {card} was removed from your cards. | US14 |
 | My Cards: got it! (Wanted &rarr; Owned) | Success | {card} moved to your collection. | US17 |
 | Review: submit | Success | Thank you for submitting your review! | US18 |
+| Review: already reviewed this card | Info | You have already reviewed {card}. You can edit it here. (shown on the edit page) | US18 |
 | Review: edit | Success | Your review was updated successfully. | US19 |
 | Review: delete | Success | Your review was deleted. | US20 |
 | Any form with errors | Error | Please correct the errors below and try again. | US24 |
