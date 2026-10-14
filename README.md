@@ -425,6 +425,15 @@ log out and log in.
    ```
    The `Procfile`'s `release` line runs `migrate` automatically on
    every deploy, so the schema stays in sync without a manual step.
+
+   **Since 14 October 2026 deploys are automatic from GitHub.** On the
+   app's Deploy tab in the Heroku dashboard, the deployment method is
+   GitHub (repository `J-Codes-Walkz/CardVault`), with **Automatic
+   deploys** from `main` and **Wait for CI to pass before deploy**
+   switched on. Every push to `main` on GitHub now deploys by itself,
+   so `git push heroku main` is no longer needed. Each deploy is also
+   recorded on GitHub, under **Deployments** on the repository's main
+   page and as an environment under Settings &rarr; Environments.
 5. **Create a superuser on Heroku** (one-off, after the first
    deploy):
    ```bash
