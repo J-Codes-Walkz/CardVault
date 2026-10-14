@@ -9,6 +9,10 @@ capstone checklist requires.
 
 **Live site: [cardvault-0a18b8d773ca.herokuapp.com](https://cardvault-0a18b8d773ca.herokuapp.com/)**
 
+Found a bug? Open an issue with the **Bug report** template. Found a
+security problem? Please report it privately, as described in the
+[security policy](./SECURITY.md).
+
 > Educational project. Not affiliated with, endorsed by or
 > sponsored by Nintendo, Game Freak or The Pok&eacute;mon Company.
 > "Pok&eacute;mon" and all card names are trademarks of their
