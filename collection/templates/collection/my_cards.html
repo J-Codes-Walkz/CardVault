@@ -31,9 +31,9 @@
             <td data-label="Card">
                 <a class="entry-card" href="{% url 'cards:card_detail' entry.card.pk %}">
                     {% if entry.card.image_url %}
-                    <img src="{{ entry.card.image_url }}" alt="" width="49" height="68" data-fallback="{% static 'images/card-placeholder.svg' %}">
+                    <img src="{{ entry.card.image_url }}" alt="" width="48" height="66" data-fallback="{% static 'images/card-placeholder.svg' %}">
                     {% else %}
-                    <img src="{% static 'images/card-placeholder.svg' %}" alt="" width="49" height="68">
+                    <img src="{% static 'images/card-placeholder.svg' %}" alt="" width="48" height="66">
                     {% endif %}
                     {{ entry.card.name }}
                 </a>
