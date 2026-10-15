@@ -12,7 +12,7 @@ class CardSetAdmin(admin.ModelAdmin):
 
 @admin.register(Card)
 class CardAdmin(admin.ModelAdmin):
-    list_display = ("name", "card_set", "number", "rarity", "market_price")
+    list_display = ("name", "card_set", "number", "rarity")
     list_filter = ("card_set", "rarity")
     search_fields = ("name",)
 

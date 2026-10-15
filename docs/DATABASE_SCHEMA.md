@@ -37,7 +37,6 @@ erDiagram
         string name
         int number
         string rarity
-        decimal market_price
         string image_url
     }
     COLLECTION_ENTRY {
@@ -67,7 +66,7 @@ erDiagram
 |---|---|---|---|
 | `User` | Django's own `django.contrib.auth` | Login credentials, no custom fields | django-allauth (register, log in, log out) |
 | `CardSet` | `cards` | A released set: its name and how many cards it contains | Seeded via fixture/admin, read-only in the UI |
-| `Card` | `cards` | One card: name, set, number, rarity, optional price and image | Seeded via fixture/admin, read-only in the UI |
+| `Card` | `cards` | One card: name, set, number, rarity and an optional image | Seeded via fixture/admin, read-only in the UI |
 | `CollectionEntry` | `collection` | A card on a user's list, as `OWNED` or `WANTED`, with a quantity and notes | Full CRUD (US11&ndash;US14, US17) |
 | `Review` | `cards` | A user's rating (1 to 5) and text review of a card | Full CRUD (US18&ndash;US20) |
 
@@ -123,9 +122,15 @@ reasoning at each step:
 - **A set that still has cards cannot be deleted.** `Card.card_set`
   uses `on_delete=PROTECT`. Deleting a user, by contrast, cascades to
   their own entries and reviews.
-- **Price and image are optional.** `market_price` may be empty (the
-  card page then shows "Price unavailable", US10) and `image_url` may
-  be blank (a placeholder is shown, US07).
+- **The image is optional.** `image_url` may be blank, and a
+  placeholder is shown instead (US07).
+- **No prices (decided 15 October 2026).** An earlier version had a
+  `market_price` field. It was removed (migration
+  `cards/0002_remove_card_market_price`) because prices bring
+  currencies, exchange rates and keeping values up to date, none of
+  which the project needs; see
+  [Potential upscale](./POTENTIAL_UPSCALE.md) for what adding them
+  back would take.
 
 ## Populating the catalogue
 
@@ -142,10 +147,10 @@ python manage.py loaddata tester_cards
 | Fixture | What it seeds | Primary keys used |
 |---|---|---|
 | `cards/fixtures/pokemon_cardsets.json` | The Base Set (102 cards), as a `CardSet` only | `CardSet` 1 |
-| `cards/fixtures/tester_cards.json` | A "Tester Set" with three placeholder cards, AAA (Common, £0.50), BBB (Uncommon, £1.25) and CCC (Rare Holo, no price), for testing the front-end CRUD | `CardSet` 2, `Card` 1 to 3 |
+| `cards/fixtures/tester_cards.json` | A "Tester Set" with three placeholder cards, AAA (Common), BBB (Uncommon) and CCC (Rare Holo), for testing the front-end CRUD | `CardSet` 2, `Card` 1 to 3 |
 
 The tester cards have no image, so the site shows its placeholder
-image, and CCC has no price, so its page shows "Price unavailable".
+image.
 The real Base Set cards still to come (US27) must use `Card` primary
 keys from 4 upwards so they do not overwrite the tester cards.
 

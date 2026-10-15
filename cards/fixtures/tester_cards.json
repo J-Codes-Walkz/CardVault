@@ -15,7 +15,6 @@
       "card_set": 2,
       "number": 1,
       "rarity": "COMMON",
-      "market_price": "0.50",
       "image_url": ""
     }
   },
@@ -27,7 +26,6 @@
       "card_set": 2,
       "number": 2,
       "rarity": "UNCOMMON",
-      "market_price": "1.25",
       "image_url": ""
     }
   },
@@ -39,7 +37,6 @@
       "card_set": 2,
       "number": 3,
       "rarity": "RARE_HOLO",
-      "market_price": null,
       "image_url": ""
     }
   }

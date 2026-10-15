@@ -57,7 +57,7 @@ site on 12 October 2026, with the expected message at each step
 | US07 | Open Browse cards | AAA, BBB and CCC tiles with set, number, rarity and a placeholder image | Pass | [catalogue](./docs/images/screenshots/catalogue.png) |
 | US08 | Search for `bb` | Only BBB, with "1 card found" | Pass | [search-result](./docs/images/screenshots/search-result.png) |
 | US08 | Search for `zzz` | 'No cards match "zzz". Try a different name.' | Pass | |
-| US10 | Open a card | Image, set, number, rarity, price, rating summary, add and review forms | Pass | [card-detail](./docs/images/screenshots/card-detail.png) |
+| US10 | Open a card | Image, set, number, rarity, rating summary, add and review forms | Pass | [card-detail](./docs/images/screenshots/card-detail.png) |
 
 ### My Cards: create, read, update, delete (US11 to US14)
 

@@ -71,6 +71,12 @@ Home page, as an example:
 Blue tags on every wireframe (e.g. `US11`) link that part of the
 screen back to its user story in `docs/USER_STORIES.md`.
 
+Wireframes 4 and 5 still show a card price and a collection value.
+Prices were dropped on 15 October 2026
+([issue #48](https://github.com/J-Codes-Walkz/CardVault/issues/48)),
+so the built pages differ there; the wireframes are kept as the
+record of the original plan.
+
 *Replace the wireframes above with real screenshots here as each
 screen is built, and keep the wireframes in `docs/wireframes/` for
 the record of how the design evolved &mdash; the checklist's Features
@@ -186,8 +192,8 @@ cards.
   page links; a placeholder image when a card has no picture.
 - **Search** (US08): partial, case-insensitive name search with a
   result count and a clear-search link.
-- **Card page** (US10): set, number, rarity, price (or "Price
-  unavailable"), average star rating and every review.
+- **Card page** (US10): set, number, rarity, average star rating and
+  every review.
 
 ![Browse cards showing the AAA, BBB and CCC tester cards](./docs/images/screenshots/catalogue.png)
 

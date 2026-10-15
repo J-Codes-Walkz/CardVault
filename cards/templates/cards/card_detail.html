@@ -22,8 +22,6 @@
             <dd>{{ card.number }}</dd>
             <dt>Rarity</dt>
             <dd>{{ card.get_rarity_display }}</dd>
-            <dt>Market price</dt>
-            <dd>{% if card.market_price is not None %}£{{ card.market_price }}{% else %}Price unavailable{% endif %}</dd>
         </dl>
 
         <p class="rating-summary">

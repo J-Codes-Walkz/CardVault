@@ -39,9 +39,6 @@ class Card(models.Model):
         help_text="The card's number within its set."
     )
     rarity = models.CharField(max_length=10, choices=Rarity.choices)
-    market_price = models.DecimalField(
-        max_digits=8, decimal_places=2, null=True, blank=True
-    )
     image_url = models.URLField(blank=True)
 
     class Meta:

@@ -280,7 +280,7 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] The page shows a large image, name, set, number, rarity and market price (or "Price unavailable").
+- [ ] The page shows a large image, name, set, number and rarity.
 - [ ] The average rating and number of reviews are shown.
 - [ ] When logged in I see the add-to-My-Cards and review controls.
 - [ ] When logged out I see "Log in to add this card" instead of the controls.
@@ -406,25 +406,23 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Priority:** `Should have`
 
-> As a **logged-in user**, I want **to see totals for the cards I own**, so that **I can see how big and how valuable my collection is**.
+> As a **logged-in user**, I want **to see totals for the cards I own**, so that **I can see how big my collection is**.
 
 **Acceptance criteria**
 
-- [ ] My Cards shows total owned cards (sum of quantities where status is Owned), unique entries and estimated value (market price x quantity).
+- [ ] My Cards shows total owned cards (sum of quantities where status is Owned) and the number of different cards owned.
 - [ ] Wanted entries are excluded from the totals.
-- [ ] Cards without a price are left out of the value and a note says how many were excluded.
-- [ ] Values are shown as currency with 2 decimal places.
 
 **Development tasks**
 
-- [ ] Add aggregate queries (Sum with F expressions) filtered to status=OWNED.
+- [ ] Add aggregate queries (Sum and Count) filtered to status=OWNED.
 - [ ] Add the summary section to the template.
-- [ ] Write tests with known prices and quantities.
+- [ ] Write tests with known quantities.
 
 **Manual test**
 
-- Action: Add Owned cards with known prices and quantities, one without a price, and a Wanted card.
-- Expected result: Totals match a manual calculation of the Owned cards only, and the exclusion note appears.
+- Action: Add Owned cards with known quantities and a Wanted card.
+- Expected result: Totals match a manual count of the Owned cards only.
 
 ### US16 — Sort and filter my cards
 

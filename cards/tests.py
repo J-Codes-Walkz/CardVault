@@ -54,9 +54,8 @@ class CardTests(TestCase):
     def test_str_names_the_card_set_and_number(self):
         self.assertEqual(str(self.card), "Charizard (Base Set #4)")
 
-    def test_price_and_image_are_optional(self):
+    def test_image_is_optional(self):
         self.card.full_clean()
-        self.assertIsNone(self.card.market_price)
         self.assertEqual(self.card.image_url, "")
 
     def test_number_is_unique_within_a_set(self):
@@ -246,7 +245,7 @@ class CardDetailTests(TestCase):
     def test_logged_out_visitor_sees_details_and_login_prompts(self):
         response = self.client.get(self.url)
         self.assertContains(response, "Charizard")
-        self.assertContains(response, "Price unavailable")
+        self.assertNotContains(response, "price")
         self.assertContains(response, "Log in to add this card")
         self.assertContains(response, "Log in to write a review")
         self.assertNotIn("entry_form", response.context)
@@ -256,11 +255,6 @@ class CardDetailTests(TestCase):
         response = self.client.get(self.url)
         self.assertContains(response, "Add to My Cards")
         self.assertContains(response, "Submit review")
-
-    def test_price_is_shown_when_known(self):
-        self.card.market_price = "12.50"
-        self.card.save()
-        self.assertContains(self.client.get(self.url), "£12.50")
 
     def test_unknown_card_is_404(self):
         response = self.client.get(reverse("cards:card_detail", args=[999]))
