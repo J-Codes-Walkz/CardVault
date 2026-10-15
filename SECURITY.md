@@ -24,8 +24,13 @@ place, reviewed on 15 October 2026
 
 Only a username, a password (stored as a salted PBKDF2 hash, never as
 the password itself), and the cards and reviews you add. No email
-address, real name or payment details are collected, so there is very
-little personal data to lose.
+address, real name or payment details are collected, and the date of
+birth asked for at registration (to refuse under-13s) is checked and
+thrown away, never stored. There is very little personal data to
+lose, and you can delete all of it yourself (Delete my account, in
+the footer). The site's own
+[Privacy and cookies page](https://cardvault-0a18b8d773ca.herokuapp.com/privacy/)
+explains this for users.
 
 ### Logging in
 

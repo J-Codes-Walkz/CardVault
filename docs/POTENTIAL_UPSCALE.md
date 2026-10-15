@@ -10,6 +10,7 @@ The natural next features once the Must and Should have stories above are done. 
 
 | Feature | What if… | What it would need | Effort |
 |---|---|---|---|
+| **Download my data** | What if I want a copy of everything CardVault holds about me? | A view that builds a JSON or CSV file of your account, My Cards list and reviews (the UK GDPR right of access and data portability). Left out on 15 October 2026 because deleting your account already covers the rights this project needs. | Small |
 | **Password reset by email** | What if someone forgets their password? | Email service (SMTP) and Django's built-in reset views; an email address becomes a required field. | Medium |
 | **Set completion tracker** | What if I want to know how close I am to finishing a set? | Count owned cards per set against `CardSet.quantity`; a progress bar on each set's cards. No new tables. | Small |
 | **CSV export of my cards** | What if I want a backup or to use a spreadsheet? | A view that streams a CSV using Python's csv module. Import can follow later with validation. | Small |

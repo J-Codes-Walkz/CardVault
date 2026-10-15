@@ -46,6 +46,13 @@
     </main>
 
     <footer class="site-footer">
+        <nav class="footer-links" aria-label="Footer">
+            <a href="{% url 'privacy' %}">Privacy and cookies</a>
+            <a href="{% url 'accessibility' %}">Accessibility</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'delete_account' %}">Delete my account</a>
+            {% endif %}
+        </nav>
         <p>CardVault is an educational project. It is not affiliated with, endorsed by or sponsored by Nintendo, Game Freak or The Pokémon Company.</p>
     </footer>
     {% block extra_body %}{% endblock extra_body %}

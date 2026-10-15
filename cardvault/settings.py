@@ -108,7 +108,10 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 ACCOUNT_ADAPTER = "accounts.adapter.AccountAdapter"
-ACCOUNT_FORMS = {"login": "accounts.forms.LoginForm"}
+ACCOUNT_FORMS = {
+    "login": "accounts.forms.LoginForm",
+    "signup": "accounts.forms.SignupForm",
+}
 ACCOUNT_LOGIN_METHODS = {"username"}
 ACCOUNT_SIGNUP_FIELDS = ["username*", "password1*", "password2*"]
 # No email address is collected, so there is nothing to verify.
@@ -117,6 +120,10 @@ ACCOUNT_SESSION_REMEMBER = True
 # django-allauth's default rate limits stay on: at most 30 log ins a
 # minute per IP address, and after 5 wrong passwords for one username
 # that username is locked for 5 minutes (10 a minute per IP address).
+
+# Keep messages in the session, so the site sets no cookie beyond the
+# two it needs (sessionid and csrftoken); see the privacy page.
+MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
 LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "collection:my_cards"

@@ -32,15 +32,15 @@ to be.
 
 ### User stories
 
-The full set of 28 user stories, written as `As a / I want / so that`
+The full set of 32 user stories, written as `As a / I want / so that`
 with acceptance criteria, development tasks and a manual test for
 each, lives in **[docs/USER_STORIES.md](./docs/USER_STORIES.md)**.
 They're prioritised with MoSCoW:
 
 | Priority | Count |
 |---|---|
-| Must have | 21 |
-| Should have | 5 |
+| Must have | 24 |
+| Should have | 6 |
 | Could have | 2 |
 
 Ideas that came up but were deliberately left out of this submission
@@ -227,6 +227,27 @@ From any card's page a logged-in user can:
 
 ![A 4-star review with its comment and the card's average rating](./docs/images/screenshots/review-success.png)
 
+### Privacy, safety and accessibility
+
+- **Age check** (US29): registration asks for a date of birth and
+  refuses anyone under 13 ("Sorry, you need to be 13 or older to
+  create a CardVault account."), then stays closed for that browser
+  session. The date is checked and thrown away, never stored. This
+  follows COPPA in the US and the UK Children's Code.
+- **Delete my account** (US30): a footer link, a page listing what
+  will be deleted, and a password check; then the account, its cards
+  and reviews are deleted.
+- **Privacy and cookies** (US31): a plain-English page listing what is
+  stored, the only two cookies (`sessionid` and `csrftoken`, both
+  strictly necessary, so no cookie banner is needed) and the other
+  services involved.
+- **Accessibility** (US32): works at 200% zoom, switches to a
+  high-contrast style when the device asks for it, passes an automated
+  WCAG 2.2 AA check on every page, and has an accessibility statement.
+  CardVault has no audio or video, so nothing depends on hearing.
+
+![Registration refused for an under-13 date of birth](./docs/images/screenshots/signup-under-13.png)
+
 ### Quality and security
 
 - **Responsive** (US22): mobile first, no sideways scrolling from
@@ -310,6 +331,12 @@ MoSCoW priority and epic, and grouped into three sprint
    supports. Running the script again would create duplicates. The
    issues were added to the board with the GitHub CLI
    (`gh project item-add`).
+
+   **Added on 15 October 2026:** four more stories, US29 to US32
+   (age check, delete my account, privacy and cookies, accessibility),
+   in a sixth epic, "Privacy, safety and accessibility". They are
+   issues #52 to #55, so from here on the issue number and the story
+   number differ; each issue title still starts with its story ID.
 4. **Move cards as you work**: `Backlog` &rarr; `To do` when you
    start a sprint/session, `In progress` while coding, `Done` once
    its manual test passes. The `priority:*` and `epic:*` labels from

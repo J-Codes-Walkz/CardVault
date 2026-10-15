@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block head_title %}Accessibility | CardVault{% endblock head_title %}
+
+{% block content %}
+<article class="prose">
+    <h1>Accessibility</h1>
+    <p>Last updated 15 October 2026.</p>
+
+    <p>CardVault aims to be usable by everyone, and to meet the <strong>Web Content Accessibility Guidelines (WCAG) 2.2 at level AA</strong>.</p>
+
+    <h2>If you have low vision</h2>
+    <ul>
+        <li>Text and buttons meet WCAG AA colour contrast, and links in text are underlined, so nothing relies on colour alone.</li>
+        <li>You can zoom to 200% or more without losing content or scrolling sideways; the layout works down to 320 pixels wide.</li>
+        <li>If your device asks for more contrast, CardVault switches to stronger, darker colours and thicker borders.</li>
+        <li>Every card picture has a text alternative giving the card's name, and star ratings are also given as text, for example "4 out of 5 stars".</li>
+        <li>Pages use proper headings, labels and landmarks, so screen readers such as VoiceOver, NVDA and TalkBack can move around them.</li>
+        <li>Success and error messages are read out by screen readers, and start with the word "Success" or "Error", not just a colour.</li>
+    </ul>
+
+    <h2>If you are deaf or hard of hearing</h2>
+    <p>CardVault has no sound, audio or video. Everything, including every message, is written text on screen, so nothing depends on hearing. If video is ever added, it will have captions.</p>
+
+    <h2>If you use a keyboard</h2>
+    <ul>
+        <li>Everything can be reached and used with the keyboard, with a clear outline showing where you are.</li>
+        <li>A "Skip to main content" link is the first thing on every page.</li>
+    </ul>
+
+    <h2>Movement</h2>
+    <p>CardVault has no animation, flashing or moving content.</p>
+
+    <h2>Known limitations</h2>
+    <ul>
+        <li>The text printed on each card picture (its attacks and description) is part of the image and is not described in words beyond the card's name, set, number and rarity.</li>
+        <li>Card pictures come from another service. If it cannot be reached, a placeholder is shown instead.</li>
+    </ul>
+
+    <h2>How this was tested</h2>
+    <p>Every page passes the W3C HTML validator and an automated accessibility check (axe), and was tested with the keyboard alone and at narrow widths. Details are in the project's <a href="https://github.com/J-Codes-Walkz/CardVault/blob/main/TESTING.md">testing record</a>.</p>
+
+    <h2>Tell us about a problem</h2>
+    <p>If anything on CardVault is hard to use, please open an issue on the project's <a href="https://github.com/J-Codes-Walkz/CardVault/issues">GitHub page</a> and describe what happened. Accessibility problems are treated as bugs.</p>
+</article>
+{% endblock content %}

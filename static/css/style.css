@@ -574,3 +574,79 @@ h2 {
     max-width: 60rem;
     margin: 0 auto;
 }
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.footer-links a {
+    display: inline-block;
+    padding: 0.375rem 0;
+    color: var(--ink);
+}
+
+/* Long-form pages: privacy and accessibility */
+.prose {
+    max-width: 45rem;
+}
+
+.prose h2 {
+    margin-top: 2rem;
+}
+
+.prose li {
+    margin-bottom: 0.375rem;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+.table-scroll table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-scroll th,
+.table-scroll td {
+    padding: 0.5rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--line);
+}
+
+/* People who ask their device for more contrast get darker text,
+   darker borders and thicker outlines. */
+@media (prefers-contrast: more) {
+    :root {
+        --ink: #000000;
+        --ink-soft: #1f2328;
+        --line: #1f2328;
+        --surface: #ffffff;
+    }
+
+    .card-tile img,
+    .panel,
+    .field input:not([type="radio"]),
+    .field select,
+    .field textarea,
+    .search-row input,
+    .tabs a,
+    .pagination a,
+    .pagination span {
+        border-width: 2px;
+        border-color: #000000;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+        outline-width: 4px;
+    }
+}

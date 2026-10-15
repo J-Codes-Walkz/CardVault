@@ -5,6 +5,8 @@ docs/NOTIFICATION_MESSAGES.md.
 """
 from allauth.account.adapter import DefaultAccountAdapter
 
+from .forms import UNDER_AGE_SESSION_KEY
+
 LOGGED_IN_TEMPLATE = "account/messages/logged_in.txt"
 SIGNED_UP_TEMPLATE = "account/messages/signed_up.txt"
 
@@ -22,6 +24,10 @@ class AccountAdapter(DefaultAccountAdapter):
         # it was the username or the password that was wrong.
         "username_password_mismatch": LOGIN_FAILED,
     }
+
+    def is_open_for_signup(self, request):
+        """Close registration for a browser that gave an age under 13."""
+        return not request.session.get(UNDER_AGE_SESSION_KEY, False)
 
     def post_login(self, request, user, **kwargs):
         """Remember whether this login is the end of a registration."""

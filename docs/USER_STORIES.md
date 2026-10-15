@@ -36,11 +36,15 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 | US26 | Keep secrets and debug mode safe | Quality, security and content | Must have |
 | US27 | Populate the card catalogue | Quality, security and content | Must have |
 | US28 | Manage data in Django admin | Quality, security and content | Should have |
+| US29 | Check my age when I register | Privacy, safety and accessibility | Must have |
+| US30 | Delete my account | Privacy, safety and accessibility | Must have |
+| US31 | Know how my data and cookies are used | Privacy, safety and accessibility | Must have |
+| US32 | Use CardVault with low vision, hearing loss or a keyboard | Privacy, safety and accessibility | Should have |
 
 ## MoSCoW breakdown
 
-- **Must have** (21): US01, US02, US03, US04, US05, US06, US07, US08, US10, US11, US12, US13, US14, US18, US19, US21, US22, US23, US24, US26, US27
-- **Should have** (5): US09, US15, US20, US25, US28
+- **Must have** (24): US01, US02, US03, US04, US05, US06, US07, US08, US10, US11, US12, US13, US14, US18, US19, US21, US22, US23, US24, US26, US27, US29, US30, US31
+- **Should have** (6): US09, US15, US20, US25, US28, US32
 - **Could have** (2): US16, US17
 - **Won't have (this submission)**: nothing is scoped out yet within this story set — see [Potential upscale](./POTENTIAL_UPSCALE.md) for features deliberately parked for after submission.
 
@@ -746,3 +750,108 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 - Action: Log in to /admin/ as a superuser and as an ordinary user.
 - Expected result: The superuser can edit a card; the ordinary user is refused.
+
+## 6. Privacy, safety and accessibility
+
+### US29 — Check my age when I register
+
+**Priority:** `Must have`
+
+> As a **parent or regulator**, I want **CardVault to refuse accounts for children under 13**, so that **the site follows children's privacy rules such as COPPA and the UK Children's Code**.
+
+**Acceptance criteria**
+
+- [ ] The registration form asks for a date of birth, not "Are you 13 or older?", so it does not hint at the answer.
+- [ ] Anyone under 13 sees "Sorry, you need to be 13 or older to create a CardVault account." and no account is created.
+- [ ] After an under-13 attempt, registration stays closed for the rest of that browser session.
+- [ ] A date in the future or more than 120 years ago is rejected.
+- [ ] The date of birth is checked and thrown away: it is never stored.
+
+**Development tasks**
+
+- [ ] Add a date of birth field to the allauth signup form and check the age.
+- [ ] Close registration for the session after an under-13 attempt (adapter `is_open_for_signup`).
+- [ ] Override the registration-closed template.
+- [ ] Write tests for exactly 13 today, one day short, a future date and the closed session.
+
+**Manual test**
+
+- Action: Register with a date of birth 10 years ago, then try again with an adult date.
+- Expected result: The first attempt is refused with the message; the second shows the registration-closed page.
+
+### US30 — Delete my account
+
+**Priority:** `Must have`
+
+> As a **registered user**, I want **to delete my account and everything in it**, so that **I can leave CardVault and take my data with me (the right to erasure)**.
+
+**Acceptance criteria**
+
+- [ ] A Delete my account link is in the footer when logged in.
+- [ ] The page lists what will be deleted (my account, my cards and my reviews) and asks for my password.
+- [ ] A wrong password deletes nothing and shows "That password is not correct."
+- [ ] The right password deletes the account, its cards and reviews, logs me out and shows "Your account, cards and reviews have been deleted."
+- [ ] Other users' data and the cards in the catalogue are not affected.
+
+**Development tasks**
+
+- [ ] Build the delete account view with a password confirmation form.
+- [ ] Log out, then delete the user (entries and reviews cascade).
+- [ ] Link it from the footer and the privacy page.
+- [ ] Write tests for logged out, wrong password, right password and other users' data.
+
+**Manual test**
+
+- Action: Log in, open Delete my account, enter a wrong password, then the right one, then try to log in again.
+- Expected result: The wrong password is refused; the right one deletes the account with the message; logging in again fails.
+
+### US31 — Know how my data and cookies are used
+
+**Priority:** `Must have`
+
+> As a **visitor or user**, I want **a plain-English page about my data and the site's cookies**, so that **I can trust CardVault with my account**.
+
+**Acceptance criteria**
+
+- [ ] A Privacy and cookies page is linked in the footer of every page.
+- [ ] It lists exactly what is stored, how long it is kept and how to delete it.
+- [ ] It lists every cookie the site sets (only sessionid and csrftoken), what each does and how long it lasts.
+- [ ] It explains why there is no cookie banner: both cookies are strictly necessary.
+- [ ] It names the other services involved (Heroku, the Pokémon TCG image server).
+
+**Development tasks**
+
+- [ ] Write the privacy page and link it in the footer.
+- [ ] Store messages in the session so the site sets no extra `messages` cookie.
+- [ ] Write tests for the page, the footer link and the absence of a messages cookie.
+
+**Manual test**
+
+- Action: Open the Privacy and cookies page from the footer, then check the browser's stored cookies.
+- Expected result: The page loads and the browser holds only sessionid and csrftoken.
+
+### US32 — Use CardVault with low vision, hearing loss or a keyboard
+
+**Priority:** `Should have`
+
+> As a **user with a disability**, I want **CardVault to work with zoom, high contrast, screen readers and a keyboard**, so that **I can use it as easily as anyone else**.
+
+**Acceptance criteria**
+
+- [ ] Every page works at 200% zoom without sideways scrolling.
+- [ ] If the device asks for more contrast, the site switches to darker text and thicker borders.
+- [ ] Every page passes an automated WCAG 2.2 AA check (axe) with no violations, logged in and out.
+- [ ] Nothing depends on sound: there is no audio or video, and every message is on-screen text.
+- [ ] An Accessibility page in the footer states the standard, what was tested, known limitations and how to report a problem.
+
+**Development tasks**
+
+- [ ] Add a `prefers-contrast: more` style.
+- [ ] Write the accessibility statement page and link it in the footer.
+- [ ] Run axe on every page and check 200% zoom; record the results in TESTING.md.
+- [ ] Test with VoiceOver by hand.
+
+**Manual test**
+
+- Action: Zoom the browser to 200%, switch on Increase contrast in the system settings, and move through the site with the keyboard only.
+- Expected result: Everything stays readable and usable, with no sideways scrolling and a visible focus outline.

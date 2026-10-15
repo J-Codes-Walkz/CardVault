@@ -1,12 +1,20 @@
-"""Tests for registering, logging in and logging out (US01 to US04)."""
+"""Tests for accounts: register, log in and out, age check, deleting
+an account, the information pages and security."""
+from datetime import timedelta
+
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
+
+from cards.models import Card, CardSet, Review
+from collection.models import CollectionEntry
 
 User = get_user_model()
 
 STRONG_PASSWORD = "Vault-Pass-2026"
+ADULT_BIRTHDAY = "1995-06-15"
 
 
 def message_texts(response):
@@ -24,15 +32,16 @@ class RegisterTests(TestCase):
             "username": username,
             "password1": password1,
             "password2": password2,
+            "date_of_birth": ADULT_BIRTHDAY,
         }
         return self.client.post(reverse("account_signup"), data)
 
-    def test_form_asks_for_username_and_both_passwords(self):
+    def test_form_asks_for_username_birthday_and_both_passwords(self):
         response = self.client.get(reverse("account_signup"))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             list(response.context["form"].fields),
-            ["username", "password1", "password2"],
+            ["username", "date_of_birth", "password1", "password2"],
         )
 
     def test_valid_details_create_the_account_and_log_in(self):
@@ -272,3 +281,155 @@ class AdminLoginTests(TestCase):
         url = reverse("admin:login") + "?next=https://evil.example/"
         response = self.client.get(url)
         self.assertRedirects(response, reverse("admin:index"))
+
+
+def years_ago(years, days=0):
+    """A date of birth exactly `years` years ago, plus `days` days."""
+    today = timezone.localdate()
+    try:
+        born = today.replace(year=today.year - years)
+    except ValueError:
+        born = today.replace(year=today.year - years, day=28)
+    return (born + timedelta(days=days)).isoformat()
+
+
+class AgeCheckTests(TestCase):
+    """US29: you must be 13 or older to register."""
+
+    def register(self, date_of_birth, username="newbie"):
+        data = {
+            "username": username,
+            "date_of_birth": date_of_birth,
+            "password1": STRONG_PASSWORD,
+            "password2": STRONG_PASSWORD,
+        }
+        return self.client.post(reverse("account_signup"), data)
+
+    def test_thirteenth_birthday_today_can_register(self):
+        response = self.register(years_ago(13))
+        self.assertRedirects(response, reverse("collection:my_cards"))
+        self.assertTrue(User.objects.filter(username="newbie").exists())
+
+    def test_one_day_short_of_thirteen_is_refused(self):
+        response = self.register(years_ago(13, days=1))
+        self.assertRedirects(response, reverse("account_signup"))
+        self.assertFalse(User.objects.exists())
+
+    def test_registration_stays_closed_after_an_under_age_attempt(self):
+        self.register(years_ago(10))
+        response = self.client.get(reverse("account_signup"))
+        self.assertContains(response, "you need to be 13 or older")
+        self.assertNotContains(response, 'name="password1"')
+        response = self.register(ADULT_BIRTHDAY, username="liar")
+        self.assertFalse(User.objects.exists())
+
+    def test_date_in_the_future_is_rejected(self):
+        response = self.register(years_ago(-1))
+        self.assertFormError(
+            response.context["form"], "date_of_birth",
+            "Please enter your real date of birth.",
+        )
+        self.assertFalse(User.objects.exists())
+
+    def test_date_of_birth_is_required(self):
+        response = self.register("")
+        self.assertIn("date_of_birth", response.context["form"].errors)
+        self.assertFalse(User.objects.exists())
+
+    def test_date_of_birth_is_not_stored(self):
+        self.register(ADULT_BIRTHDAY)
+        field_names = [f.name for f in User._meta.get_fields()]
+        self.assertNotIn("date_of_birth", field_names)
+
+
+class DeleteAccountTests(TestCase):
+    """US30: delete my account and everything in it."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("ash", password=STRONG_PASSWORD)
+        self.other = User.objects.create_user(
+            "misty", password=STRONG_PASSWORD
+        )
+        card_set = CardSet.objects.create(name="Set", quantity=1)
+        self.card = Card.objects.create(
+            name="Pikachu", card_set=card_set, number=58,
+            rarity=Card.Rarity.COMMON,
+        )
+        for user in (self.user, self.other):
+            CollectionEntry.objects.create(user=user, card=self.card)
+            Review.objects.create(
+                user=user, card=self.card, rating=5, body="Great"
+            )
+        self.url = reverse("delete_account")
+
+    def test_logged_out_visitor_is_asked_to_log_in(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith(reverse("account_login")))
+
+    def test_page_lists_what_will_be_deleted(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertContains(response, "the 1 card on your My Cards list")
+        self.assertContains(response, "the 1 review you have written")
+
+    def test_wrong_password_deletes_nothing(self):
+        self.client.force_login(self.user)
+        data = {"password": "Wrong-Pass-2026"}
+        response = self.client.post(self.url, data)
+        self.assertFormError(
+            response.context["form"], "password",
+            "That password is not correct.",
+        )
+        self.assertTrue(User.objects.filter(pk=self.user.pk).exists())
+
+    def test_correct_password_deletes_account_cards_and_reviews(self):
+        self.client.force_login(self.user)
+        response = self.client.post(self.url, {"password": STRONG_PASSWORD})
+        self.assertRedirects(response, reverse("home"))
+        self.assertFalse(User.objects.filter(pk=self.user.pk).exists())
+        self.assertFalse(CollectionEntry.objects.filter(user_id=self.user.pk))
+        self.assertFalse(Review.objects.filter(user_id=self.user.pk))
+        expected = ["Your account, cards and reviews have been deleted."]
+        self.assertEqual(message_texts(response), expected)
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+    def test_other_users_and_the_card_are_untouched(self):
+        self.client.force_login(self.user)
+        self.client.post(self.url, {"password": STRONG_PASSWORD})
+        self.assertTrue(User.objects.filter(pk=self.other.pk).exists())
+        self.assertEqual(CollectionEntry.objects.count(), 1)
+        self.assertEqual(Review.objects.count(), 1)
+        self.assertTrue(Card.objects.filter(pk=self.card.pk).exists())
+
+
+class PrivacyAndAccessibilityPageTests(TestCase):
+    """US31 and US32: the information pages, linked from every page."""
+
+    def test_pages_load_and_are_linked_in_the_footer(self):
+        home = self.client.get(reverse("home"))
+        for name in ("privacy", "accessibility"):
+            with self.subTest(page=name):
+                response = self.client.get(reverse(name))
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(home, reverse(name))
+
+    def test_privacy_page_lists_both_cookies(self):
+        response = self.client.get(reverse("privacy"))
+        self.assertContains(response, "sessionid")
+        self.assertContains(response, "csrftoken")
+
+    def test_delete_link_only_shown_when_logged_in(self):
+        delete_url = reverse("delete_account")
+        response = self.client.get(reverse("home"))
+        self.assertNotContains(response, delete_url)
+        user = User.objects.create_user("ash", password=STRONG_PASSWORD)
+        self.client.force_login(user)
+        response = self.client.get(reverse("home"))
+        self.assertContains(response, delete_url)
+
+    def test_messages_do_not_set_their_own_cookie(self):
+        User.objects.create_user("misty", password=STRONG_PASSWORD)
+        data = {"login": "misty", "password": STRONG_PASSWORD}
+        response = self.client.post(reverse("account_login"), data)
+        self.assertNotIn("messages", response.cookies)

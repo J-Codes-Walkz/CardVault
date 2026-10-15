@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block head_title %}Privacy and cookies | CardVault{% endblock head_title %}
+
+{% block content %}
+<article class="prose">
+    <h1>Privacy and cookies</h1>
+    <p>Last updated 15 October 2026.</p>
+
+    <p>CardVault is an educational project built for a Code Institute course. It keeps as little personal information as it can, never sells or shares it, and shows no adverts.</p>
+
+    <h2>What we store</h2>
+    <ul>
+        <li><strong>Your username.</strong> It is shown next to your reviews.</li>
+        <li><strong>Your password,</strong> stored only as a scrambled, one-way hash. Nobody, including us, can read it.</li>
+        <li><strong>The cards on your My Cards list</strong> (owned or wanted, quantity and notes) and <strong>the reviews you write</strong>.</li>
+    </ul>
+    <p>We do not ask for your email address, real name, address or payment details.</p>
+
+    <h2>Your age</h2>
+    <p>You must be 13 or older to create an account. When you register we ask for your date of birth, check it, and then throw it away. It is never stored.</p>
+
+    <h2>How long we keep it</h2>
+    <p>Until you delete your account. Deleting it removes your account, your My Cards list and your reviews straight away, and it cannot be undone.</p>
+    {% if user.is_authenticated %}
+    <p><a href="{% url 'delete_account' %}">Delete my account</a></p>
+    {% else %}
+    <p>Log in, then use the "Delete my account" link at the bottom of any page.</p>
+    {% endif %}
+
+    <h2>Cookies</h2>
+    <p>CardVault uses only the two cookies it needs to work. Because they are strictly necessary, the law does not require us to ask before setting them, so there is no cookie banner. There are no analytics, advertising or tracking cookies.</p>
+    <div class="table-scroll">
+        <table>
+            <caption class="visually-hidden">Cookies CardVault sets</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Cookie</th>
+                    <th scope="col">What it does</th>
+                    <th scope="col">How long it lasts</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>sessionid</code></td>
+                    <td>Keeps you logged in and carries one-off messages such as "Welcome back".</td>
+                    <td>2 weeks, or until you log out</td>
+                </tr>
+                <tr>
+                    <td><code>csrftoken</code></td>
+                    <td>Protects every form from being sent by another website pretending to be you.</td>
+                    <td>1 year</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>Other services</h2>
+    <ul>
+        <li>CardVault is hosted by <strong>Heroku</strong> (Salesforce) in its European region, with the database on Heroku Postgres.</li>
+        <li>Card pictures are loaded from the <strong>Pokémon TCG API</strong>'s image server (images.pokemontcg.io). Like any website, that server sees your IP address when your browser fetches a picture. It sets no cookies on CardVault.</li>
+    </ul>
+
+    <h2>Your rights and questions</h2>
+    <p>You can delete your account and everything in it at any time. If you have a question about your data, or think something is wrong, open an issue on the project's <a href="https://github.com/J-Codes-Walkz/CardVault/issues">GitHub page</a>, without including any personal details. Security problems should be reported privately, as described in the <a href="https://github.com/J-Codes-Walkz/CardVault/blob/main/SECURITY.md">security policy</a>.</p>
+</article>
+{% endblock content %}

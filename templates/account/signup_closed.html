@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block head_title %}Registration closed | CardVault{% endblock head_title %}
+
+{% block content %}
+<section class="form-page">
+    <h1>You cannot register</h1>
+    <p>Sorry, you need to be 13 or older to create a CardVault account.</p>
+    <p>You can still <a href="{% url 'cards:card_list' %}">browse the cards</a> and read reviews without an account.</p>
+</section>
+{% endblock content %}
