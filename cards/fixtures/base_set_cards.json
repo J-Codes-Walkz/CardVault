@@ -1,0 +1,1124 @@
+[
+  {
+    "model": "cards.card",
+    "pk": 4,
+    "fields": {
+      "name": "Alakazam",
+      "card_set": 1,
+      "number": 1,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/1.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 5,
+    "fields": {
+      "name": "Blastoise",
+      "card_set": 1,
+      "number": 2,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/2.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 6,
+    "fields": {
+      "name": "Chansey",
+      "card_set": 1,
+      "number": 3,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/3.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 7,
+    "fields": {
+      "name": "Charizard",
+      "card_set": 1,
+      "number": 4,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/4.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 8,
+    "fields": {
+      "name": "Clefairy",
+      "card_set": 1,
+      "number": 5,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/5.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 9,
+    "fields": {
+      "name": "Gyarados",
+      "card_set": 1,
+      "number": 6,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/6.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 10,
+    "fields": {
+      "name": "Hitmonchan",
+      "card_set": 1,
+      "number": 7,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/7.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 11,
+    "fields": {
+      "name": "Machamp",
+      "card_set": 1,
+      "number": 8,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/8.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 12,
+    "fields": {
+      "name": "Magneton",
+      "card_set": 1,
+      "number": 9,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/9.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 13,
+    "fields": {
+      "name": "Mewtwo",
+      "card_set": 1,
+      "number": 10,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/10.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 14,
+    "fields": {
+      "name": "Nidoking",
+      "card_set": 1,
+      "number": 11,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/11.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 15,
+    "fields": {
+      "name": "Ninetales",
+      "card_set": 1,
+      "number": 12,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/12.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 16,
+    "fields": {
+      "name": "Poliwrath",
+      "card_set": 1,
+      "number": 13,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/13.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 17,
+    "fields": {
+      "name": "Raichu",
+      "card_set": 1,
+      "number": 14,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/14.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 18,
+    "fields": {
+      "name": "Venusaur",
+      "card_set": 1,
+      "number": 15,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/15.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 19,
+    "fields": {
+      "name": "Zapdos",
+      "card_set": 1,
+      "number": 16,
+      "rarity": "RARE_HOLO",
+      "image_url": "https://images.pokemontcg.io/base1/16.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 20,
+    "fields": {
+      "name": "Beedrill",
+      "card_set": 1,
+      "number": 17,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/17.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 21,
+    "fields": {
+      "name": "Dragonair",
+      "card_set": 1,
+      "number": 18,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/18.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 22,
+    "fields": {
+      "name": "Dugtrio",
+      "card_set": 1,
+      "number": 19,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/19.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 23,
+    "fields": {
+      "name": "Electabuzz",
+      "card_set": 1,
+      "number": 20,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/20.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 24,
+    "fields": {
+      "name": "Electrode",
+      "card_set": 1,
+      "number": 21,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/21.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 25,
+    "fields": {
+      "name": "Pidgeotto",
+      "card_set": 1,
+      "number": 22,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/22.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 26,
+    "fields": {
+      "name": "Arcanine",
+      "card_set": 1,
+      "number": 23,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/23.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 27,
+    "fields": {
+      "name": "Charmeleon",
+      "card_set": 1,
+      "number": 24,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/24.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 28,
+    "fields": {
+      "name": "Dewgong",
+      "card_set": 1,
+      "number": 25,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/25.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 29,
+    "fields": {
+      "name": "Dratini",
+      "card_set": 1,
+      "number": 26,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/26.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 30,
+    "fields": {
+      "name": "Farfetch'd",
+      "card_set": 1,
+      "number": 27,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/27.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 31,
+    "fields": {
+      "name": "Growlithe",
+      "card_set": 1,
+      "number": 28,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/28.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 32,
+    "fields": {
+      "name": "Haunter",
+      "card_set": 1,
+      "number": 29,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/29.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 33,
+    "fields": {
+      "name": "Ivysaur",
+      "card_set": 1,
+      "number": 30,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/30.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 34,
+    "fields": {
+      "name": "Jynx",
+      "card_set": 1,
+      "number": 31,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/31.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 35,
+    "fields": {
+      "name": "Kadabra",
+      "card_set": 1,
+      "number": 32,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/32.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 36,
+    "fields": {
+      "name": "Kakuna",
+      "card_set": 1,
+      "number": 33,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/33.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 37,
+    "fields": {
+      "name": "Machoke",
+      "card_set": 1,
+      "number": 34,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/34.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 38,
+    "fields": {
+      "name": "Magikarp",
+      "card_set": 1,
+      "number": 35,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/35.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 39,
+    "fields": {
+      "name": "Magmar",
+      "card_set": 1,
+      "number": 36,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/36.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 40,
+    "fields": {
+      "name": "Nidorino",
+      "card_set": 1,
+      "number": 37,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/37.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 41,
+    "fields": {
+      "name": "Poliwhirl",
+      "card_set": 1,
+      "number": 38,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/38.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 42,
+    "fields": {
+      "name": "Porygon",
+      "card_set": 1,
+      "number": 39,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/39.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 43,
+    "fields": {
+      "name": "Raticate",
+      "card_set": 1,
+      "number": 40,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/40.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 44,
+    "fields": {
+      "name": "Seel",
+      "card_set": 1,
+      "number": 41,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/41.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 45,
+    "fields": {
+      "name": "Wartortle",
+      "card_set": 1,
+      "number": 42,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/42.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 46,
+    "fields": {
+      "name": "Abra",
+      "card_set": 1,
+      "number": 43,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/43.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 47,
+    "fields": {
+      "name": "Bulbasaur",
+      "card_set": 1,
+      "number": 44,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/44.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 48,
+    "fields": {
+      "name": "Caterpie",
+      "card_set": 1,
+      "number": 45,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/45.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 49,
+    "fields": {
+      "name": "Charmander",
+      "card_set": 1,
+      "number": 46,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/46.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 50,
+    "fields": {
+      "name": "Diglett",
+      "card_set": 1,
+      "number": 47,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/47.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 51,
+    "fields": {
+      "name": "Doduo",
+      "card_set": 1,
+      "number": 48,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/48.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 52,
+    "fields": {
+      "name": "Drowzee",
+      "card_set": 1,
+      "number": 49,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/49.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 53,
+    "fields": {
+      "name": "Gastly",
+      "card_set": 1,
+      "number": 50,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/50.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 54,
+    "fields": {
+      "name": "Koffing",
+      "card_set": 1,
+      "number": 51,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/51.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 55,
+    "fields": {
+      "name": "Machop",
+      "card_set": 1,
+      "number": 52,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/52.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 56,
+    "fields": {
+      "name": "Magnemite",
+      "card_set": 1,
+      "number": 53,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/53.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 57,
+    "fields": {
+      "name": "Metapod",
+      "card_set": 1,
+      "number": 54,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/54.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 58,
+    "fields": {
+      "name": "Nidoran ♂",
+      "card_set": 1,
+      "number": 55,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/55.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 59,
+    "fields": {
+      "name": "Onix",
+      "card_set": 1,
+      "number": 56,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/56.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 60,
+    "fields": {
+      "name": "Pidgey",
+      "card_set": 1,
+      "number": 57,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/57.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 61,
+    "fields": {
+      "name": "Pikachu",
+      "card_set": 1,
+      "number": 58,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/58.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 62,
+    "fields": {
+      "name": "Poliwag",
+      "card_set": 1,
+      "number": 59,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/59.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 63,
+    "fields": {
+      "name": "Ponyta",
+      "card_set": 1,
+      "number": 60,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/60.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 64,
+    "fields": {
+      "name": "Rattata",
+      "card_set": 1,
+      "number": 61,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/61.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 65,
+    "fields": {
+      "name": "Sandshrew",
+      "card_set": 1,
+      "number": 62,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/62.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 66,
+    "fields": {
+      "name": "Squirtle",
+      "card_set": 1,
+      "number": 63,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/63.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 67,
+    "fields": {
+      "name": "Starmie",
+      "card_set": 1,
+      "number": 64,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/64.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 68,
+    "fields": {
+      "name": "Staryu",
+      "card_set": 1,
+      "number": 65,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/65.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 69,
+    "fields": {
+      "name": "Tangela",
+      "card_set": 1,
+      "number": 66,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/66.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 70,
+    "fields": {
+      "name": "Voltorb",
+      "card_set": 1,
+      "number": 67,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/67.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 71,
+    "fields": {
+      "name": "Vulpix",
+      "card_set": 1,
+      "number": 68,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/68.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 72,
+    "fields": {
+      "name": "Weedle",
+      "card_set": 1,
+      "number": 69,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/69.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 73,
+    "fields": {
+      "name": "Clefairy Doll",
+      "card_set": 1,
+      "number": 70,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/70.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 74,
+    "fields": {
+      "name": "Computer Search",
+      "card_set": 1,
+      "number": 71,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/71.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 75,
+    "fields": {
+      "name": "Devolution Spray",
+      "card_set": 1,
+      "number": 72,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/72.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 76,
+    "fields": {
+      "name": "Impostor Professor Oak",
+      "card_set": 1,
+      "number": 73,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/73.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 77,
+    "fields": {
+      "name": "Item Finder",
+      "card_set": 1,
+      "number": 74,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/74.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 78,
+    "fields": {
+      "name": "Lass",
+      "card_set": 1,
+      "number": 75,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/75.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 79,
+    "fields": {
+      "name": "Pokémon Breeder",
+      "card_set": 1,
+      "number": 76,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/76.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 80,
+    "fields": {
+      "name": "Pokémon Trader",
+      "card_set": 1,
+      "number": 77,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/77.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 81,
+    "fields": {
+      "name": "Scoop Up",
+      "card_set": 1,
+      "number": 78,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/78.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 82,
+    "fields": {
+      "name": "Super Energy Removal",
+      "card_set": 1,
+      "number": 79,
+      "rarity": "RARE",
+      "image_url": "https://images.pokemontcg.io/base1/79.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 83,
+    "fields": {
+      "name": "Defender",
+      "card_set": 1,
+      "number": 80,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/80.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 84,
+    "fields": {
+      "name": "Energy Retrieval",
+      "card_set": 1,
+      "number": 81,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/81.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 85,
+    "fields": {
+      "name": "Full Heal",
+      "card_set": 1,
+      "number": 82,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/82.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 86,
+    "fields": {
+      "name": "Maintenance",
+      "card_set": 1,
+      "number": 83,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/83.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 87,
+    "fields": {
+      "name": "PlusPower",
+      "card_set": 1,
+      "number": 84,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/84.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 88,
+    "fields": {
+      "name": "Pokémon Center",
+      "card_set": 1,
+      "number": 85,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/85.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 89,
+    "fields": {
+      "name": "Pokémon Flute",
+      "card_set": 1,
+      "number": 86,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/86.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 90,
+    "fields": {
+      "name": "Pokédex",
+      "card_set": 1,
+      "number": 87,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/87.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 91,
+    "fields": {
+      "name": "Professor Oak",
+      "card_set": 1,
+      "number": 88,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/88.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 92,
+    "fields": {
+      "name": "Revive",
+      "card_set": 1,
+      "number": 89,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/89.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 93,
+    "fields": {
+      "name": "Super Potion",
+      "card_set": 1,
+      "number": 90,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/90.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 94,
+    "fields": {
+      "name": "Bill",
+      "card_set": 1,
+      "number": 91,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/91.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 95,
+    "fields": {
+      "name": "Energy Removal",
+      "card_set": 1,
+      "number": 92,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/92.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 96,
+    "fields": {
+      "name": "Gust of Wind",
+      "card_set": 1,
+      "number": 93,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/93.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 97,
+    "fields": {
+      "name": "Potion",
+      "card_set": 1,
+      "number": 94,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/94.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 98,
+    "fields": {
+      "name": "Switch",
+      "card_set": 1,
+      "number": 95,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/95.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 99,
+    "fields": {
+      "name": "Double Colorless Energy",
+      "card_set": 1,
+      "number": 96,
+      "rarity": "UNCOMMON",
+      "image_url": "https://images.pokemontcg.io/base1/96.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 100,
+    "fields": {
+      "name": "Fighting Energy",
+      "card_set": 1,
+      "number": 97,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/97.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 101,
+    "fields": {
+      "name": "Fire Energy",
+      "card_set": 1,
+      "number": 98,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/98.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 102,
+    "fields": {
+      "name": "Grass Energy",
+      "card_set": 1,
+      "number": 99,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/99.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 103,
+    "fields": {
+      "name": "Lightning Energy",
+      "card_set": 1,
+      "number": 100,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/100.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 104,
+    "fields": {
+      "name": "Psychic Energy",
+      "card_set": 1,
+      "number": 101,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/101.png"
+    }
+  },
+  {
+    "model": "cards.card",
+    "pk": 105,
+    "fields": {
+      "name": "Water Energy",
+      "card_set": 1,
+      "number": 102,
+      "rarity": "COMMON",
+      "image_url": "https://images.pokemontcg.io/base1/102.png"
+    }
+  }
+]

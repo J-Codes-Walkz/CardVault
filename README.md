@@ -250,7 +250,7 @@ From any card's page a logged-in user can:
 - Filter the catalogue by set and rarity (US09)
 - My Cards totals, sorting and a one-click "Got it!" (US15 to US17)
 - Custom 404, 403 and 500 pages (US25)
-- The real Base Set cards (US27), and the favicon and brand (#35)
+- The favicon and brand (#35)
 
 Every notification message the app shows (login success, duplicate
 username, "thank you for your review", and so on) is written out
@@ -359,6 +359,7 @@ createdb cardvault                 # a local PostgreSQL database
 cp .env.example .env               # then fill in SECRET_KEY and DATABASE_URL
 python manage.py migrate
 python manage.py loaddata pokemon_cardsets
+python manage.py loaddata base_set_cards
 python manage.py loaddata tester_cards
 python manage.py createsuperuser
 python manage.py test
@@ -428,6 +429,7 @@ log out and log in.
    `cards/fixtures/pokemon_cardsets.json`:
    ```bash
    heroku run python manage.py loaddata pokemon_cardsets
+   heroku run python manage.py loaddata base_set_cards
    heroku run python manage.py loaddata tester_cards
    ```
    The tester cards (AAA, BBB and CCC) were loaded on the live site on
@@ -467,11 +469,15 @@ cd <your-repo>
 
 ### Content
 
-- Card data: *(name your chosen source here once picked, e.g. the
-  [Pok&eacute;mon TCG API](https://pokemontcg.io) &mdash; a free,
-  community-run, unofficial API; credit it by name, link to it, and
-  keep the "not affiliated with..." disclaimer at the top of this
-  README, since the card data and imagery are not yours)*.
+- Card data and card images: the
+  [Pok&eacute;mon TCG API](https://pokemontcg.io), a free,
+  community-run, unofficial API. It was called **once**, by
+  `scripts/build_base_set_fixture.py`, to build
+  `cards/fixtures/base_set_cards.json` (the 102 Base Set cards). The
+  live site never calls the API; card pictures are shown from the
+  API's image host, `images.pokemontcg.io`. Pok&eacute;mon card names
+  and artwork belong to their owners (see the disclaimer at the top of
+  this README).
 - Placeholder/UI imagery: *(credit here if you use any stock icons or
   illustrations)*.
 

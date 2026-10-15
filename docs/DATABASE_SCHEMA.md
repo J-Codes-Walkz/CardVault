@@ -141,18 +141,21 @@ them (there is an automated test for this).
 
 ```bash
 python manage.py loaddata pokemon_cardsets
+python manage.py loaddata base_set_cards
 python manage.py loaddata tester_cards
 ```
 
 | Fixture | What it seeds | Primary keys used |
 |---|---|---|
 | `cards/fixtures/pokemon_cardsets.json` | The Base Set (102 cards), as a `CardSet` only | `CardSet` 1 |
+| `cards/fixtures/base_set_cards.json` | All 102 Base Set cards: name, number, rarity and image link. Built once from the [Pokémon TCG API](https://pokemontcg.io) by `scripts/build_base_set_fixture.py` | `Card` 4 to 105 (Base Set card N is pk N + 3) |
 | `cards/fixtures/tester_cards.json` | A "Tester Set" with three placeholder cards, AAA (Common), BBB (Uncommon) and CCC (Rare Holo), for testing the front-end CRUD | `CardSet` 2, `Card` 1 to 3 |
 
 The tester cards have no image, so the site shows its placeholder
 image.
-The real Base Set cards still to come (US27) must use `Card` primary
-keys from 4 upwards so they do not overwrite the tester cards.
+The API gives the six basic Energy cards no rarity; the script marks
+them Common, as the printed set does. Load `pokemon_cardsets` before
+`base_set_cards`, because each card points at the Base Set row.
 
 ## PEP8 and the models
 

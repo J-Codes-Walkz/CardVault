@@ -405,3 +405,36 @@ class HomePageTests(TestCase):
         response = self.client.get(reverse("home"))
         self.assertContains(response, "Create account")
         self.assertContains(response, "Browse cards")
+
+
+class BaseSetCardsFixtureTests(TestCase):
+    """US27: the 102 Base Set cards built once from the Pokémon TCG API."""
+
+    def load(self):
+        call_command("loaddata", "pokemon_cardsets", verbosity=0)
+        call_command("loaddata", "base_set_cards", verbosity=0)
+
+    def test_all_102_cards_load_into_the_base_set(self):
+        self.load()
+        base_set = CardSet.objects.get(name="Base Set")
+        self.assertEqual(base_set.cards.count(), 102)
+        self.assertEqual(base_set.cards.count(), base_set.quantity)
+
+    def test_card_details_match_the_printed_set(self):
+        self.load()
+        charizard = Card.objects.get(card_set__name="Base Set", number=4)
+        self.assertEqual(charizard.name, "Charizard")
+        self.assertEqual(charizard.rarity, Card.Rarity.RARE_HOLO)
+        self.assertTrue(charizard.image_url.startswith("https://images."))
+
+    def test_loading_twice_does_not_duplicate(self):
+        self.load()
+        self.load()
+        self.assertEqual(Card.objects.count(), 102)
+
+    def test_tester_cards_are_kept_alongside(self):
+        call_command("loaddata", "tester_cards", verbosity=0)
+        self.load()
+        self.assertEqual(Card.objects.count(), 105)
+        names = Card.objects.filter(pk__lte=3).values_list("name", flat=True)
+        self.assertEqual(list(names), ["AAA", "BBB", "CCC"])
