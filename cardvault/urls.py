@@ -1,5 +1,7 @@
 """URL configuration for the CardVault project."""
 from django.contrib import admin
+from django.shortcuts import redirect
+from django.templatetags.static import static
 from django.urls import include, path
 from django.views.generic import TemplateView
 
@@ -8,6 +10,13 @@ from cards.views import HomeView
 
 delete_account = DeleteAccountView.as_view()
 privacy = TemplateView.as_view(template_name="privacy.html")
+
+
+def favicon(request):
+    """Browsers ask for /favicon.ico; point them at the real icon."""
+    return redirect(static("images/favicon.ico"))
+
+
 accessibility = TemplateView.as_view(template_name="accessibility.html")
 
 # The admin's own login form has no limit on password guesses, so
@@ -15,6 +24,7 @@ accessibility = TemplateView.as_view(template_name="accessibility.html")
 admin.site.login = admin_login
 
 urlpatterns = [
+    path("favicon.ico", favicon),
     path("admin/", admin.site.urls),
     # Register, log in and log out are provided by django-allauth.
     # CardVault's own registration (with the age check) and account

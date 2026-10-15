@@ -5,7 +5,7 @@
 
 {% block content %}
 <article class="card-detail">
-    <div class="card-detail-image">
+    <div class="card-detail-image card-art{% if card.is_holo %} is-holo{% endif %}">
         {% if card.image_url %}
         <img src="{{ card.image_url }}" alt="{{ card.name }}" width="240" height="330" data-fallback="{% static 'images/card-placeholder.svg' %}">
         {% else %}
@@ -21,12 +21,12 @@
             <dt>Number</dt>
             <dd>{{ card.number }}</dd>
             <dt>Rarity</dt>
-            <dd>{{ card.get_rarity_display }}</dd>
+            <dd>{% include "includes/rarity_badge.html" %}</dd>
         </dl>
 
         <p class="rating-summary">
             {% if rating.count %}
-            <span class="stars" aria-hidden="true">{{ rating.average|stars }}</span>
+            {% balls rating.average %}
             Average {{ rating.average|floatformat:1 }} out of 5 from {{ rating.count }} review{{ rating.count|pluralize }}
             {% else %}
             No reviews yet. Be the first to review this card.
@@ -69,8 +69,8 @@
         <li class="review">
             <p class="review-meta">
                 <strong>{{ review.user.username }}</strong>
-                <span class="stars" aria-hidden="true">{{ review.rating|stars }}</span>
-                <span class="visually-hidden">{{ review.rating }} out of 5 stars</span>
+                {% balls review.rating %}
+                <span class="visually-hidden">{{ review.rating }} out of 5 Poké Balls</span>
                 <span class="review-date">{{ review.created_at|date:"j M Y" }}{% if review.is_edited %} (edited){% endif %}</span>
             </p>
             <p class="review-body">{{ review.body|linebreaksbr }}</p>

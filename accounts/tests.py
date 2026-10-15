@@ -419,6 +419,18 @@ class PrivacyAndAccessibilityPageTests(TestCase):
         self.assertContains(response, "sessionid")
         self.assertContains(response, "csrftoken")
 
+    def test_privacy_page_lists_what_is_stored_in_the_browser(self):
+        response = self.client.get(reverse("privacy"))
+        self.assertContains(response, "cardvault-theme")
+        self.assertContains(response, "cardvault-intro-seen")
+
+    def test_favicon_ico_redirects_to_the_icon(self):
+        response = self.client.get("/favicon.ico")
+        self.assertRedirects(
+            response, "/static/images/favicon.ico",
+            fetch_redirect_response=False,
+        )
+
     def test_delete_link_only_shown_when_logged_in(self):
         delete_url = reverse("delete_account")
         response = self.client.get(reverse("home"))

@@ -324,16 +324,18 @@ class MyCardsRatingTests(TestCase):
         self.client.force_login(self.ash)
         self.response = self.client.get(reverse("collection:my_cards"))
 
-    def test_my_rating_shows_as_stars(self):
-        self.assertContains(self.response, "★★★★☆")
-        self.assertContains(self.response, "4 out of 5 stars for Raichu")
+    def test_my_rating_shows_as_poke_balls(self):
+        self.assertContains(self.response, "ball ball-full", count=4)
+        self.assertContains(self.response, "4 out of 5 Poké Balls for Raichu")
 
     def test_unrated_card_offers_rate_it(self):
         url = reverse("cards:add_review", args=[self.unrated.pk])
         self.assertContains(self.response, f'href="{url}"')
 
     def test_other_users_ratings_are_not_shown_as_mine(self):
-        self.assertNotContains(self.response, "★☆☆☆☆")
+        # Misty's 1-ball review of Pikachu must not appear: only Raichu
+        # (my 4) has balls; Pikachu shows a Rate it link instead.
+        self.assertContains(self.response, "ball ball-empty", count=1)
 
     def test_notes_show_as_a_preview(self):
         self.assertContains(self.response, "entry-note-preview")

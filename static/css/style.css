@@ -1,22 +1,164 @@
-/* CardVault styles: mobile first, neutral palette. */
+/* CardVault styles: a premium "collector's vault" look, mobile first,
+   in light and dark mode.
 
+   Colours are set once as variables below, then switched for dark
+   mode. Every text colour pair passes WCAG AA in both modes (checked
+   on 15 October 2026; see TESTING.md). Accent jobs:
+   red = actions and ratings, blue = links and focus,
+   yellow = small highlights only (never yellow text on white). */
+
+/* Poppins (SIL Open Font License, static/fonts/OFL.txt), served from
+   this site, so no visitor data goes to Google. */
+@font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("../fonts/poppins-600-latin.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("../fonts/poppins-700-latin.woff2") format("woff2");
+}
+
+/* ---- Colours: light mode ---------------------------------------- */
 :root {
-    --ink: #1f2328;
-    --ink-soft: #4b5563;
-    --paper: #ffffff;
-    --surface: #f3f4f6;
-    --line: #9ca3af;
-    --focus: #1d4ed8;
-    --star: #92400e;
-    --danger: #991b1b;
+    color-scheme: light;
+    --page: #f5f7fb;
+    --surface: #ffffff;
+    --surface-2: #eef2f8;
+    --ink: #162034;
+    --ink-soft: #4a5568;
+    --line: #c7cfdc;
+    --navy: #0f1f3d;
+    --navy-2: #1b2f5c;
+    --header-text: #ffffff;
+    --header-soft: #c9d4ea;
+    --red: #c8102e;
+    --red-hover: #a50d26;
+    --red-bright: #ff5a6e;
+    --blue: #1d4ed8;
+    --yellow: #f5c518;
+    --gold: #f2c230;
+    --danger: #9b1c1c;
     --success-bg: #e6f4ea;
     --success-ink: #14532d;
     --error-bg: #fdecea;
-    --error-ink: #7f1d1d;
+    --error-ink: #8a1c1c;
     --info-bg: #e8f0fe;
     --info-ink: #1e3a8a;
+    --badge-common: #5b6577;
+    --badge-uncommon: #1d4ed8;
+    --badge-rare: #0f1f3d;
+    --ball-line: #162034;
+    --ball-empty: #6b7385;
+    --shadow: rgba(15, 31, 61, 0.14);
 }
 
+/* ---- Colours: dark mode ------------------------------------------
+   Used when the device prefers dark (unless the visitor chose light
+   with the toggle), or when the visitor chose dark. */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --page: #0b1220;
+        --surface: #131c2e;
+        --surface-2: #1a2540;
+        --ink: #e8edf6;
+        --ink-soft: #a7b2c6;
+        --line: #2d3a55;
+        --navy: #060c18;
+        --navy-2: #0f1f3d;
+        --header-soft: #b4c0d8;
+        --red: #e0283d;
+        --red-hover: #c41f33;
+        --blue: #8ab4ff;
+        --yellow: #ffd23f;
+        --gold: #ffd23f;
+        --danger: #d6303f;
+        --success-bg: #10301e;
+        --success-ink: #a7e3b9;
+        --error-bg: #3a1418;
+        --error-ink: #ffb3ba;
+        --info-bg: #14254a;
+        --info-ink: #b9cdff;
+        --badge-uncommon: #3b6fe0;
+        --badge-rare: #2a3f6e;
+        --ball-line: #0b1220;
+        --ball-empty: #8f9bb3;
+        --shadow: rgba(0, 0, 0, 0.45);
+    }
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0b1220;
+    --surface: #131c2e;
+    --surface-2: #1a2540;
+    --ink: #e8edf6;
+    --ink-soft: #a7b2c6;
+    --line: #2d3a55;
+    --navy: #060c18;
+    --navy-2: #0f1f3d;
+    --header-soft: #b4c0d8;
+    --red: #e0283d;
+    --red-hover: #c41f33;
+    --blue: #8ab4ff;
+    --yellow: #ffd23f;
+    --gold: #ffd23f;
+    --danger: #d6303f;
+    --success-bg: #10301e;
+    --success-ink: #a7e3b9;
+    --error-bg: #3a1418;
+    --error-ink: #ffb3ba;
+    --info-bg: #14254a;
+    --info-ink: #b9cdff;
+    --badge-uncommon: #3b6fe0;
+    --badge-rare: #2a3f6e;
+    --ball-line: #0b1220;
+    --ball-empty: #8f9bb3;
+    --shadow: rgba(0, 0, 0, 0.45);
+}
+
+/* ---- High contrast: devices that ask for more contrast ------------ */
+@media (prefers-contrast: more) {
+    :root {
+        --ink: #000000;
+        --ink-soft: #1f2328;
+        --line: #1f2328;
+        --page: #ffffff;
+        --surface-2: #ffffff;
+        --ball-empty: #1f2328;
+    }
+
+    :root[data-theme="dark"] {
+        --ink: #ffffff;
+        --ink-soft: #e8edf6;
+        --line: #e8edf6;
+        --page: #000000;
+        --surface: #000000;
+        --surface-2: #000000;
+        --ball-empty: #e8edf6;
+    }
+}
+
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --ink: #ffffff;
+        --ink-soft: #e8edf6;
+        --line: #e8edf6;
+        --page: #000000;
+        --surface: #000000;
+        --surface-2: #000000;
+        --ball-empty: #e8edf6;
+    }
+}
+
+/* ---- Base --------------------------------------------------------- */
 * {
     box-sizing: border-box;
 }
@@ -32,14 +174,38 @@ body {
     margin: 0;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     font-size: 1rem;
-    line-height: 1.5;
+    line-height: 1.55;
     color: var(--ink);
-    background-color: var(--paper);
+    background-color: var(--page);
 }
 
 body > footer {
     position: sticky;
     top: 100vh;
+}
+
+h1,
+h2,
+h3,
+.brand-word,
+.intro-title {
+    font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+h1 {
+    font-size: 1.85rem;
+    line-height: 1.2;
+}
+
+h2 {
+    font-size: 1.4rem;
+    line-height: 1.25;
+}
+
+h3 {
+    font-size: 1.15rem;
 }
 
 img {
@@ -48,7 +214,7 @@ img {
 }
 
 a {
-    color: var(--ink);
+    color: var(--blue);
 }
 
 a:focus-visible,
@@ -56,7 +222,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-    outline: 3px solid var(--focus);
+    outline: 3px solid var(--blue);
     outline-offset: 2px;
 }
 
@@ -65,7 +231,7 @@ textarea:focus-visible {
    keyboard focus. */
 input[type="date"]:focus,
 input[type="date"]:focus-within {
-    outline: 3px solid var(--focus);
+    outline: 3px solid var(--blue);
     outline-offset: 2px;
 }
 
@@ -88,18 +254,25 @@ input[type="date"]:focus-within {
     top: 0;
     z-index: 10;
     padding: 0.5rem 1rem;
-    color: var(--paper);
-    background-color: var(--ink);
+    color: #ffffff;
+    background-color: var(--navy);
 }
 
 .skip-link:focus {
     left: 0;
 }
 
-/* Header and navigation */
+/* ---- Header --------------------------------------------------------
+   Always navy, in both modes, with a thin yellow line underneath. */
 .site-header {
-    background-color: var(--surface);
-    border-bottom: 1px solid var(--line);
+    color: var(--header-text);
+    background: linear-gradient(90deg, var(--navy), var(--navy-2));
+    border-bottom: 3px solid var(--yellow);
+}
+
+.site-header a:focus-visible,
+.site-header button:focus-visible {
+    outline-color: var(--yellow);
 }
 
 .site-nav {
@@ -108,35 +281,85 @@ input[type="date"]:focus-within {
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem 1rem;
-    max-width: 60rem;
+    max-width: 70rem;
     margin: 0 auto;
-    padding: 0.75rem 1rem;
+    padding: 0.625rem 1rem;
 }
 
 .brand {
-    font-size: 1.25rem;
-    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    color: var(--header-text);
     text-decoration: none;
 }
 
+.brand-emblem {
+    width: 1.875rem;
+    height: auto;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.brand-word {
+    font-size: 1.35rem;
+}
+
+.brand-vault {
+    color: var(--red-bright);
+}
+
+.header-tools {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.theme-toggle,
 .nav-toggle {
     display: none;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.75rem;
     min-height: 2.75rem;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.75rem;
     font: inherit;
     font-weight: 700;
-    color: var(--ink);
-    background-color: var(--paper);
-    border: 2px solid var(--ink);
-    border-radius: 0.375rem;
+    color: var(--header-text);
+    background-color: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 0.5rem;
     cursor: pointer;
+}
+
+.js .theme-toggle {
+    display: inline-flex;
+}
+
+.theme-toggle svg {
+    fill: currentColor;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.theme-toggle .icon-moon {
+    stroke: none;
+}
+
+.theme-toggle .icon-sun,
+.theme-toggle[aria-pressed="true"] .icon-moon {
+    display: none;
+}
+
+.theme-toggle[aria-pressed="true"] .icon-sun {
+    display: block;
 }
 
 .nav-links {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem 1rem;
+    gap: 0.5rem 1.25rem;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -145,6 +368,7 @@ input[type="date"]:focus-within {
 .nav-links a:not(.button) {
     display: inline-block;
     padding: 0.5rem 0;
+    color: var(--header-text);
 }
 
 .nav-links form {
@@ -152,14 +376,32 @@ input[type="date"]:focus-within {
 }
 
 .nav-user {
-    color: var(--ink-soft);
+    color: var(--header-soft);
+}
+
+.site-header .button-quiet {
+    color: var(--header-text);
+    background-color: transparent;
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+/* Wide screens: links first, then the theme toggle, at the right. */
+@media (min-width: 768px) {
+    .nav-links {
+        order: 1;
+        margin-left: auto;
+    }
+
+    .header-tools {
+        order: 2;
+    }
 }
 
 /* Small screens: the links collapse behind the Menu button. Without
    JavaScript the "js" class is never added, so the links stay visible. */
 @media (max-width: 767px) {
     .js .nav-toggle {
-        display: inline-block;
+        display: inline-flex;
     }
 
     .js .nav-links {
@@ -168,7 +410,7 @@ input[type="date"]:focus-within {
         flex-direction: column;
         align-items: flex-start;
         padding-top: 0.5rem;
-        border-top: 1px solid var(--line);
+        border-top: 1px solid rgba(255, 255, 255, 0.25);
     }
 
     .js .nav-links.is-open {
@@ -176,25 +418,11 @@ input[type="date"]:focus-within {
     }
 }
 
-/* Layout */
+/* ---- Layout -------------------------------------------------------- */
 .container {
-    max-width: 60rem;
+    max-width: 70rem;
     margin: 0 auto;
     padding: 1.5rem 1rem 3rem;
-}
-
-h1 {
-    font-size: 1.75rem;
-    line-height: 1.2;
-}
-
-h2 {
-    font-size: 1.375rem;
-    line-height: 1.25;
-}
-
-.hero {
-    max-width: 40rem;
 }
 
 .actions {
@@ -206,10 +434,11 @@ h2 {
 
 .panel {
     margin: 1.5rem 0;
-    padding: 1rem;
+    padding: 1.25rem;
     background-color: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 0.5rem;
+    border-radius: 0.875rem;
+    box-shadow: 0 1px 3px var(--shadow);
 }
 
 .panel h2,
@@ -217,7 +446,7 @@ h2 {
     margin-top: 0;
 }
 
-/* Buttons */
+/* ---- Buttons ------------------------------------------------------- */
 .button {
     display: inline-block;
     min-height: 2.75rem;
@@ -225,17 +454,29 @@ h2 {
     font: inherit;
     font-weight: 700;
     line-height: 1.4;
-    color: var(--paper);
+    color: #ffffff;
     text-decoration: none;
-    background-color: var(--ink);
-    border: 2px solid var(--ink);
-    border-radius: 0.375rem;
+    background-color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 0.5rem;
     cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.button:hover {
+    background-color: var(--red-hover);
+    border-color: transparent;
 }
 
 .button-quiet {
     color: var(--ink);
-    background-color: var(--paper);
+    background-color: var(--surface);
+    border-color: var(--ink-soft);
+}
+
+.button-quiet:hover {
+    background-color: var(--surface-2);
+    border-color: var(--ink);
 }
 
 /* Compact buttons for table rows; still at least 44px tall to tap. */
@@ -248,9 +489,26 @@ h2 {
     border-color: transparent;
 }
 
-/* Forms */
+.button-danger:hover {
+    color: var(--error-bg);
+    background-color: var(--error-ink);
+}
+
+/* On the dark cosmic hero, in both modes. */
+.button-on-dark {
+    color: #ffffff;
+    background-color: transparent;
+    border-color: rgba(255, 255, 255, 0.75);
+}
+
+.button-on-dark:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: #ffffff;
+}
+
+/* ---- Forms --------------------------------------------------------- */
 .form-page {
-    max-width: 32rem;
+    max-width: 34rem;
 }
 
 .field {
@@ -266,15 +524,17 @@ h2 {
 
 .field input:not([type="radio"]),
 .field select,
-.field textarea {
+.field textarea,
+.search-field input,
+.search-field select {
     width: 100%;
     min-height: 2.75rem;
     padding: 0.5rem 0.75rem;
     font: inherit;
     color: var(--ink);
-    background-color: var(--paper);
+    background-color: var(--surface);
     border: 1px solid var(--ink-soft);
-    border-radius: 0.375rem;
+    border-radius: 0.5rem;
 }
 
 .field-choices {
@@ -296,6 +556,7 @@ h2 {
     width: 1.25rem;
     height: 1.25rem;
     margin: 0;
+    accent-color: var(--red);
 }
 
 .field-help {
@@ -322,7 +583,7 @@ h2 {
     margin-bottom: 1.25rem;
 }
 
-/* Messages */
+/* ---- Messages ------------------------------------------------------ */
 .messages {
     margin-bottom: 1.5rem;
 }
@@ -331,6 +592,7 @@ h2 {
     margin: 0 0 0.5rem;
     padding: 0.75rem 1rem;
     border-left: 4px solid;
+    border-radius: 0.25rem;
 }
 
 .message-success {
@@ -348,11 +610,211 @@ h2 {
     background-color: var(--info-bg);
 }
 
-/* Search, filters and pagination */
+/* ---- Poké Ball ratings ---------------------------------------------
+   Full balls have a red top and white bottom; empty balls are only an
+   outline, so they differ in shape as well as colour. */
+.balls {
+    display: inline-flex;
+    gap: 0.125rem;
+    vertical-align: -0.25rem;
+}
+
+.ball .ball-line {
+    fill: none;
+    stroke-width: 2;
+}
+
+.ball-full .ball-top {
+    fill: var(--red);
+}
+
+.ball-full .ball-bottom,
+.ball-full .ball-button {
+    fill: #ffffff;
+}
+
+.ball-full .ball-line,
+.ball-full .ball-button {
+    stroke: var(--ball-line);
+    stroke-width: 2;
+}
+
+.ball-empty .ball-top,
+.ball-empty .ball-bottom,
+.ball-empty .ball-button,
+.ball-pick .ball-top,
+.ball-pick .ball-bottom,
+.ball-pick .ball-button {
+    fill: none;
+}
+
+.ball-empty .ball-line,
+.ball-empty .ball-button,
+.ball-pick .ball-line,
+.ball-pick .ball-button {
+    stroke: var(--ball-empty);
+    stroke-width: 1.5;
+}
+
+/* Rating picker: real radio buttons in order 1 to 5 (keyboard and
+   screen readers work as normal), drawn as five balls. Choosing ball 3
+   fills balls 1 to 3; pointing at a ball previews that choice. */
+.ball-picker-field {
+    padding: 0;
+    border: 0;
+}
+
+.ball-picker {
+    display: inline-flex;
+    gap: 0.25rem;
+}
+
+.ball-option {
+    position: relative;
+    display: inline-flex;
+}
+
+.ball-picker input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+}
+
+.ball-choice {
+    display: inline-flex;
+    padding: 0.25rem;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.ball-choice svg {
+    width: 2.25rem;
+    height: 2.25rem;
+    transition: transform 0.15s ease;
+}
+
+.ball-choice:hover svg {
+    transform: scale(1.12);
+}
+
+.ball-picker input:focus-visible + .ball-choice {
+    outline: 3px solid var(--blue);
+    outline-offset: 1px;
+}
+
+/* The chosen rating, shown while not pointing at the picker. */
+.ball-picker:not(:hover):has(.ball-option:nth-child(1) input:checked) .ball-option:nth-child(-n+1) .ball-top,
+.ball-picker:not(:hover):has(.ball-option:nth-child(2) input:checked) .ball-option:nth-child(-n+2) .ball-top,
+.ball-picker:not(:hover):has(.ball-option:nth-child(3) input:checked) .ball-option:nth-child(-n+3) .ball-top,
+.ball-picker:not(:hover):has(.ball-option:nth-child(4) input:checked) .ball-option:nth-child(-n+4) .ball-top,
+.ball-picker:not(:hover):has(.ball-option:nth-child(5) input:checked) .ball-option:nth-child(-n+5) .ball-top {
+    fill: var(--red);
+}
+
+.ball-picker:not(:hover):has(.ball-option:nth-child(1) input:checked) .ball-option:nth-child(-n+1) .ball-bottom,
+.ball-picker:not(:hover):has(.ball-option:nth-child(1) input:checked) .ball-option:nth-child(-n+1) .ball-button,
+.ball-picker:not(:hover):has(.ball-option:nth-child(2) input:checked) .ball-option:nth-child(-n+2) .ball-bottom,
+.ball-picker:not(:hover):has(.ball-option:nth-child(2) input:checked) .ball-option:nth-child(-n+2) .ball-button,
+.ball-picker:not(:hover):has(.ball-option:nth-child(3) input:checked) .ball-option:nth-child(-n+3) .ball-bottom,
+.ball-picker:not(:hover):has(.ball-option:nth-child(3) input:checked) .ball-option:nth-child(-n+3) .ball-button,
+.ball-picker:not(:hover):has(.ball-option:nth-child(4) input:checked) .ball-option:nth-child(-n+4) .ball-bottom,
+.ball-picker:not(:hover):has(.ball-option:nth-child(4) input:checked) .ball-option:nth-child(-n+4) .ball-button,
+.ball-picker:not(:hover):has(.ball-option:nth-child(5) input:checked) .ball-option:nth-child(-n+5) .ball-bottom,
+.ball-picker:not(:hover):has(.ball-option:nth-child(5) input:checked) .ball-option:nth-child(-n+5) .ball-button {
+    fill: #ffffff;
+}
+
+.ball-picker:not(:hover):has(.ball-option:nth-child(1) input:checked) .ball-option:nth-child(-n+1) .ball-line,
+.ball-picker:not(:hover):has(.ball-option:nth-child(1) input:checked) .ball-option:nth-child(-n+1) .ball-button,
+.ball-picker:not(:hover):has(.ball-option:nth-child(2) input:checked) .ball-option:nth-child(-n+2) .ball-line,
+.ball-picker:not(:hover):has(.ball-option:nth-child(2) input:checked) .ball-option:nth-child(-n+2) .ball-button,
+.ball-picker:not(:hover):has(.ball-option:nth-child(3) input:checked) .ball-option:nth-child(-n+3) .ball-line,
+.ball-picker:not(:hover):has(.ball-option:nth-child(3) input:checked) .ball-option:nth-child(-n+3) .ball-button,
+.ball-picker:not(:hover):has(.ball-option:nth-child(4) input:checked) .ball-option:nth-child(-n+4) .ball-line,
+.ball-picker:not(:hover):has(.ball-option:nth-child(4) input:checked) .ball-option:nth-child(-n+4) .ball-button,
+.ball-picker:not(:hover):has(.ball-option:nth-child(5) input:checked) .ball-option:nth-child(-n+5) .ball-line,
+.ball-picker:not(:hover):has(.ball-option:nth-child(5) input:checked) .ball-option:nth-child(-n+5) .ball-button {
+    stroke: var(--ball-line);
+    stroke-width: 2;
+}
+
+/* Pointing at a ball previews that rating. */
+.ball-picker:has(.ball-option:nth-child(1):hover) .ball-option:nth-child(-n+1) .ball-top,
+.ball-picker:has(.ball-option:nth-child(2):hover) .ball-option:nth-child(-n+2) .ball-top,
+.ball-picker:has(.ball-option:nth-child(3):hover) .ball-option:nth-child(-n+3) .ball-top,
+.ball-picker:has(.ball-option:nth-child(4):hover) .ball-option:nth-child(-n+4) .ball-top,
+.ball-picker:has(.ball-option:nth-child(5):hover) .ball-option:nth-child(-n+5) .ball-top {
+    fill: var(--red);
+}
+
+.ball-picker:has(.ball-option:nth-child(1):hover) .ball-option:nth-child(-n+1) .ball-bottom,
+.ball-picker:has(.ball-option:nth-child(1):hover) .ball-option:nth-child(-n+1) .ball-button,
+.ball-picker:has(.ball-option:nth-child(2):hover) .ball-option:nth-child(-n+2) .ball-bottom,
+.ball-picker:has(.ball-option:nth-child(2):hover) .ball-option:nth-child(-n+2) .ball-button,
+.ball-picker:has(.ball-option:nth-child(3):hover) .ball-option:nth-child(-n+3) .ball-bottom,
+.ball-picker:has(.ball-option:nth-child(3):hover) .ball-option:nth-child(-n+3) .ball-button,
+.ball-picker:has(.ball-option:nth-child(4):hover) .ball-option:nth-child(-n+4) .ball-bottom,
+.ball-picker:has(.ball-option:nth-child(4):hover) .ball-option:nth-child(-n+4) .ball-button,
+.ball-picker:has(.ball-option:nth-child(5):hover) .ball-option:nth-child(-n+5) .ball-bottom,
+.ball-picker:has(.ball-option:nth-child(5):hover) .ball-option:nth-child(-n+5) .ball-button {
+    fill: #ffffff;
+}
+
+.ball-picker:has(.ball-option:nth-child(1):hover) .ball-option:nth-child(-n+1) .ball-line,
+.ball-picker:has(.ball-option:nth-child(1):hover) .ball-option:nth-child(-n+1) .ball-button,
+.ball-picker:has(.ball-option:nth-child(2):hover) .ball-option:nth-child(-n+2) .ball-line,
+.ball-picker:has(.ball-option:nth-child(2):hover) .ball-option:nth-child(-n+2) .ball-button,
+.ball-picker:has(.ball-option:nth-child(3):hover) .ball-option:nth-child(-n+3) .ball-line,
+.ball-picker:has(.ball-option:nth-child(3):hover) .ball-option:nth-child(-n+3) .ball-button,
+.ball-picker:has(.ball-option:nth-child(4):hover) .ball-option:nth-child(-n+4) .ball-line,
+.ball-picker:has(.ball-option:nth-child(4):hover) .ball-option:nth-child(-n+4) .ball-button,
+.ball-picker:has(.ball-option:nth-child(5):hover) .ball-option:nth-child(-n+5) .ball-line,
+.ball-picker:has(.ball-option:nth-child(5):hover) .ball-option:nth-child(-n+5) .ball-button {
+    stroke: var(--ball-line);
+    stroke-width: 2;
+}
+
+/* ---- Rarity badges: the 1999 Base Set symbols ----------------------- */
+.rarity {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #ffffff;
+    border-radius: 999px;
+}
+
+.rarity-common {
+    background-color: var(--badge-common);
+}
+
+.rarity-uncommon {
+    background-color: var(--badge-uncommon);
+}
+
+.rarity-rare {
+    background-color: var(--badge-rare);
+}
+
+.rarity-rare_holo {
+    color: #162034;
+    background-color: var(--gold);
+}
+
+/* ---- Search, filters and pagination ---------------------------------- */
 .search-form {
     display: grid;
     gap: 1rem;
     margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 0.875rem;
 }
 
 @media (min-width: 768px) {
@@ -372,18 +834,6 @@ h2 {
     font-weight: 700;
 }
 
-.search-field input,
-.search-field select {
-    width: 100%;
-    min-height: 2.75rem;
-    padding: 0.5rem 0.75rem;
-    font: inherit;
-    color: var(--ink);
-    background-color: var(--paper);
-    border: 1px solid var(--ink-soft);
-    border-radius: 0.375rem;
-}
-
 .search-field .field-help {
     margin: 0.25rem 0 0;
 }
@@ -401,17 +851,20 @@ h2 {
     min-width: 2.75rem;
     padding: 0.5rem 0.75rem;
     text-align: center;
+    background-color: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 0.375rem;
+    border-radius: 0.5rem;
 }
 
 .pagination [aria-current="page"] {
     font-weight: 700;
-    color: var(--paper);
-    background-color: var(--ink);
+    color: #ffffff;
+    background-color: var(--red);
+    border-color: transparent;
 }
 
-/* Card grid: 1 column on phones, 2 on tablets, 4 on desktops. */
+/* ---- Card grid and tiles -------------------------------------------
+   1 column on phones, 2 on tablets, 4 on desktops. */
 .card-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -431,12 +884,24 @@ h2 {
 }
 
 .card-tile {
-    max-width: 16rem;
+    padding: 0.75rem;
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 0.875rem;
+    box-shadow: 0 1px 3px var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Tiles lift slightly when pointed at or reached with the keyboard. */
+.card-tile:hover,
+.card-tile:focus-within {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px var(--shadow);
 }
 
 .card-tile-link {
     display: block;
-    font-weight: 700;
+    color: var(--ink);
     text-decoration: none;
 }
 
@@ -445,17 +910,70 @@ h2 {
     text-decoration: underline;
 }
 
+.card-art {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: 4.5% / 3.3%;
+}
+
+.card-art img {
+    display: block;
+    width: 100%;
+}
+
+/* Rare Holo shimmer: one soft sweep of light when the card appears,
+   replayed when pointed at or focused. It never loops. */
+.is-holo .card-art::after,
+.card-art.is-holo::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    pointer-events: none;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.5) 45%, rgba(255, 228, 120, 0.4) 52%, transparent 66%);
+    background-size: 250% 100%;
+    background-position: 150% 0;
+    animation: holo-sweep 1.4s ease-out 0.4s 1 both;
+}
+
+.is-holo .card-tile-link:hover .card-art::after,
+.is-holo .card-tile-link:focus-visible .card-art::after,
+.card-art.is-holo:hover::after {
+    animation: holo-sweep-again 1.2s ease-out 1 both;
+}
+
+@keyframes holo-sweep {
+    from {
+        background-position: 150% 0;
+    }
+
+    to {
+        background-position: -60% 0;
+    }
+}
+
+@keyframes holo-sweep-again {
+    from {
+        background-position: 150% 0;
+    }
+
+    to {
+        background-position: -60% 0;
+    }
+}
+
 .card-tile-name {
-    margin: 0.5rem 0 0;
-    font-size: 1.125rem;
+    margin: 0.625rem 0 0;
+    font-size: 1.1rem;
 }
 
 .card-tile-meta {
-    margin: 0.125rem 0 0;
+    margin: 0.25rem 0 0;
+    font-size: 0.95rem;
     color: var(--ink-soft);
 }
 
-/* Card detail */
+/* ---- Card detail ---------------------------------------------------- */
 .card-detail {
     display: grid;
     gap: 1.5rem;
@@ -463,9 +981,14 @@ h2 {
 
 @media (min-width: 768px) {
     .card-detail {
-        grid-template-columns: 16rem 1fr;
+        grid-template-columns: 17rem 1fr;
         align-items: start;
     }
+}
+
+.card-detail-image {
+    max-width: 17rem;
+    box-shadow: 0 14px 34px var(--shadow);
 }
 
 .card-detail-info h1 {
@@ -475,7 +998,8 @@ h2 {
 .card-facts {
     display: grid;
     grid-template-columns: max-content 1fr;
-    gap: 0.25rem 1rem;
+    gap: 0.375rem 1rem;
+    align-items: center;
     margin: 0 0 1rem;
 }
 
@@ -487,20 +1011,20 @@ h2 {
     margin: 0;
 }
 
-.stars {
-    color: var(--star);
-    letter-spacing: 0.1em;
+.rating-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-/* Reviews */
+/* ---- Reviews (compact) ------------------------------------------- */
 .review-list {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-/* Compact reviews: name, stars and date on one line, the comment in
-   slightly smaller text underneath, and tight spacing between them. */
 .review {
     padding: 0.75rem 0;
     border-top: 1px solid var(--line);
@@ -534,7 +1058,7 @@ h2 {
     margin: 0.5rem 0 0;
 }
 
-/* My Cards */
+/* ---- My Cards --------------------------------------------------------- */
 .tabs {
     display: flex;
     flex-wrap: wrap;
@@ -543,22 +1067,25 @@ h2 {
 }
 
 .tabs a {
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1.125rem;
+    color: var(--ink);
     text-decoration: none;
+    background-color: var(--surface);
     border: 1px solid var(--line);
     border-radius: 999px;
 }
 
 .tabs [aria-current="page"] {
     font-weight: 700;
-    color: var(--paper);
-    background-color: var(--ink);
+    color: #ffffff;
+    background-color: var(--red);
     border-color: transparent;
 }
 
 .entry-table {
     width: 100%;
     border-collapse: collapse;
+    background-color: var(--surface);
 }
 
 .entry-table th,
@@ -575,20 +1102,17 @@ h2 {
     gap: 0.75rem;
     min-width: 0;
     font-weight: 700;
+    color: var(--ink);
 }
 
 .entry-card img {
     flex-shrink: 0;
+    border-radius: 0.25rem;
 }
 
 .entry-card-name {
     min-width: 0;
     overflow-wrap: anywhere;
-}
-
-.entry-actions {
-    display: flex;
-    gap: 0.5rem;
 }
 
 /* Notes show as a one-line preview under the card's name; hover
@@ -606,6 +1130,11 @@ h2 {
     text-decoration: none;
 }
 
+.entry-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
 /* Wide screens: fixed column widths, so nothing overlaps or wraps
    awkwardly. The Card column takes whatever space is left. */
 @media (min-width: 900px) {
@@ -614,7 +1143,7 @@ h2 {
     }
 
     .entry-table .col-rating {
-        width: 8rem;
+        width: 9rem;
     }
 
     .entry-table .col-set {
@@ -656,11 +1185,16 @@ h2 {
         width: 100%;
     }
 
+    .entry-table {
+        background-color: transparent;
+    }
+
     .entry-table tr {
         margin-bottom: 1rem;
         padding: 0.5rem 1rem;
+        background-color: var(--surface);
         border: 1px solid var(--line);
-        border-radius: 0.5rem;
+        border-radius: 0.875rem;
     }
 
     .entry-table td {
@@ -685,36 +1219,325 @@ h2 {
     }
 }
 
-/* Footer */
-.site-footer {
-    padding: 1rem;
-    font-size: 0.9rem;
-    color: var(--ink-soft);
+/* ---- Home: cosmic hero and first-visit intro -----------------------
+   Always a dark starfield, in both modes, with white text. */
+.hero-cosmic {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    padding: 2.5rem 1.5rem;
+    color: #ffffff;
+    background-color: #0b1430;
+    background-image:
+        radial-gradient(1px 1px at 20px 30px, #ffffff, transparent),
+        radial-gradient(1px 1px at 120px 80px, rgba(255, 255, 255, 0.8), transparent),
+        radial-gradient(1.5px 1.5px at 60px 150px, #ffffff, transparent),
+        radial-gradient(1px 1px at 170px 170px, rgba(255, 255, 255, 0.7), transparent),
+        radial-gradient(1.5px 1.5px at 190px 40px, rgba(255, 236, 160, 0.9), transparent),
+        radial-gradient(ellipse at 15% 0%, rgba(59, 111, 224, 0.55), transparent 60%),
+        radial-gradient(ellipse at 95% 100%, rgba(224, 40, 61, 0.35), transparent 55%),
+        linear-gradient(160deg, #0b1430, #12205a 55%, #1d1446);
+    background-size: 200px 200px, 200px 200px, 200px 200px, 200px 200px, 200px 200px, auto, auto, auto;
+    border-radius: 1.25rem;
+    box-shadow: 0 18px 40px var(--shadow);
+}
+
+.hero-cosmic a:focus-visible,
+.hero-cosmic button:focus-visible {
+    outline-color: var(--yellow);
+}
+
+.hero-content {
+    position: relative;
+    display: grid;
+    gap: 1.5rem;
+    justify-items: center;
     text-align: center;
-    background-color: var(--surface);
-    border-top: 1px solid var(--line);
 }
 
-.site-footer p {
-    max-width: 60rem;
-    margin: 0 auto;
+@media (min-width: 768px) {
+    .hero-content {
+        grid-template-columns: auto 1fr;
+        justify-items: start;
+        align-items: center;
+        text-align: left;
+    }
 }
 
-.footer-links {
+.hero-emblem {
+    width: 7.5rem;
+    filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.5));
+}
+
+.hero-text h1 {
+    margin: 0 0 0.75rem;
+    font-size: 2.1rem;
+}
+
+.hero-text p {
+    max-width: 36rem;
+    margin: 0 0 1.25rem;
+    color: #dbe3f4;
+}
+
+.hero-text .actions {
+    justify-content: center;
+}
+
+@media (min-width: 768px) {
+    .hero-text .actions {
+        justify-content: flex-start;
+    }
+}
+
+/* The rarity symbols drift into place once, then stay still. */
+.hero-badges span {
+    position: absolute;
+    font-size: 2.5rem;
+    line-height: 1;
+    opacity: 0.18;
+    animation: badge-float-in 3s ease-out 1 both;
+}
+
+.badge-1 {
+    top: 10%;
+    left: 6%;
+    color: #c9d4ea;
+}
+
+.badge-2 {
+    top: 65%;
+    left: 12%;
+    font-size: 2rem;
+    color: #8ab4ff;
+}
+
+.badge-3 {
+    top: 5%;
+    right: 4%;
+    font-size: 3.25rem;
+    color: #ffd23f;
+}
+
+.badge-4 {
+    bottom: 10%;
+    right: 20%;
+    color: #8ab4ff;
+}
+
+.badge-5 {
+    top: 45%;
+    right: 3%;
+    font-size: 1.75rem;
+    color: #ffd23f;
+}
+
+.badge-6 {
+    bottom: 5%;
+    left: 28%;
+    font-size: 1.5rem;
+    color: #c9d4ea;
+}
+
+@keyframes badge-float-in {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 0.18;
+        transform: translateY(0);
+    }
+}
+
+/* Intro: only for a visitor's first visit (js-enabled.js adds the
+   "intro-pending" class). Without JavaScript it never shows. */
+.intro {
+    display: none;
+}
+
+.intro-pending .intro {
+    position: relative;
+    display: grid;
+    grid-template-areas: "stage" "title" "actions";
+    justify-items: center;
+    gap: 0.75rem;
+    min-height: 22rem;
+    text-align: center;
+}
+
+.intro-pending .hero-content {
+    display: none;
+}
+
+.intro-ball,
+.intro-emblem {
+    grid-area: stage;
+    align-self: center;
+}
+
+.intro-ball {
+    width: 7.5rem;
+    height: 7.5rem;
+}
+
+.intro-half {
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+.intro-emblem {
+    width: 9rem;
+    opacity: 0;
+    filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.55));
+}
+
+.intro-title {
+    grid-area: title;
+    margin: 0.5rem 0 0;
+    font-size: 1.6rem;
+    opacity: 0;
+}
+
+.intro-actions {
+    grid-area: actions;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.25rem 1.5rem;
-    margin-bottom: 0.5rem;
+    gap: 0.75rem;
+    margin: 0;
 }
 
-.footer-links a {
-    display: inline-block;
-    padding: 0.375rem 0;
-    color: var(--ink);
+.intro-enter {
+    visibility: hidden;
+    opacity: 0;
 }
 
-/* Long-form pages: privacy and accessibility */
+.intro-skip {
+    color: #ffffff;
+    background-color: transparent;
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.intro-skip:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.intro-playing .intro-ball {
+    animation: ball-drop 1s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+}
+
+.intro-playing .intro-half-top {
+    animation: half-open-top 0.6s ease-in 1.2s both;
+}
+
+.intro-playing .intro-half-bottom {
+    animation: half-open-bottom 0.6s ease-in 1.2s both;
+}
+
+.intro-playing .intro-emblem {
+    animation: emblem-reveal 0.7s ease-out 1.5s both;
+}
+
+.intro-playing .intro-title {
+    animation: fade-up 0.5s ease-out 2s both;
+}
+
+.intro-playing .intro-enter {
+    animation: show-enter 0.5s ease-out 2.2s both;
+}
+
+@keyframes ball-drop {
+    0% {
+        opacity: 0;
+        transform: translateY(-14rem);
+    }
+
+    55% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    72% {
+        transform: translateY(-1.25rem);
+    }
+
+    86% {
+        transform: translateY(0);
+    }
+
+    93% {
+        transform: translateY(-0.375rem);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes half-open-top {
+    to {
+        opacity: 0;
+        transform: translateY(-3.5rem) rotate(-14deg);
+    }
+}
+
+@keyframes half-open-bottom {
+    to {
+        opacity: 0;
+        transform: translateY(3.5rem) rotate(10deg);
+    }
+}
+
+@keyframes emblem-reveal {
+    from {
+        opacity: 0;
+        transform: scale(0.4);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(0.75rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes show-enter {
+    from {
+        visibility: visible;
+        opacity: 0;
+    }
+
+    to {
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+.featured {
+    padding: 1.5rem;
+    background-color: var(--surface-2);
+    border-radius: 1.25rem;
+}
+
+.featured h2 {
+    margin-top: 0;
+}
+
+/* ---- Long-form pages: privacy and accessibility --------------------- */
 .prose {
     max-width: 45rem;
 }
@@ -744,18 +1567,40 @@ h2 {
     border-bottom: 1px solid var(--line);
 }
 
-/* People who ask their device for more contrast get darker text,
-   darker borders and thicker outlines. */
-@media (prefers-contrast: more) {
-    :root {
-        --ink: #000000;
-        --ink-soft: #1f2328;
-        --line: #1f2328;
-        --surface: #ffffff;
-    }
+/* ---- Footer ---------------------------------------------------------- */
+.site-footer {
+    padding: 1.25rem 1rem;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    text-align: center;
+    background-color: var(--surface-2);
+    border-top: 1px solid var(--line);
+}
 
-    .card-tile img,
+.site-footer p {
+    max-width: 60rem;
+    margin: 0 auto;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.footer-links a {
+    display: inline-block;
+    padding: 0.375rem 0;
+    color: var(--ink);
+}
+
+/* High contrast: thicker borders and outlines. */
+@media (prefers-contrast: more) {
+    .card-tile,
     .panel,
+    .search-form,
     .field input:not([type="radio"]),
     .field select,
     .field textarea,
@@ -765,7 +1610,7 @@ h2 {
     .pagination a,
     .pagination span {
         border-width: 2px;
-        border-color: #000000;
+        border-color: var(--ink);
     }
 
     a:focus-visible,
@@ -774,5 +1619,45 @@ h2 {
     select:focus-visible,
     textarea:focus-visible {
         outline-width: 4px;
+    }
+}
+
+/* Reduced motion: no lifting, shimmer, drifting or intro animation.
+   First-time visitors see the intro's finished scene instead. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    .card-tile:hover,
+    .card-tile:focus-within,
+    .ball-choice:hover svg {
+        transform: none;
+    }
+
+    .is-holo .card-art::after,
+    .card-art.is-holo::after {
+        display: none;
+    }
+
+    .intro-ball {
+        display: none;
+    }
+
+    .intro-emblem,
+    .intro-title {
+        opacity: 1;
+    }
+
+    .intro-enter {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .hero-badges span {
+        opacity: 0.18;
     }
 }

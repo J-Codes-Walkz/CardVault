@@ -7,9 +7,9 @@ CardVault is tested in four ways:
 
 | Method | What it covers | Result (15 October 2026) |
 |---|---|---|
-| [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 48 of 48 checks passed |
+| [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | LIVE_COUNT |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
-| [Automated testing](#automated-testing) | 144 Django tests, including two-user ownership and security tests | 144 passed |
+| [Automated testing](#automated-testing) | 150 Django tests, including two-user ownership and security tests | 150 passed |
 | [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only | No violations (one keyboard bug found and fixed) |
 | [Security testing](#security-testing) | Headers, log in limits, admin access, secrets, dependencies, code scanning | No issues found |
 | [Validators](#validators) | HTML (W3C), CSS (Jigsaw), JavaScript, Python (PEP8) | 0 errors |
@@ -132,12 +132,12 @@ Run with:
 python manage.py test
 ```
 
-144 tests, all passing on 15 October 2026:
+150 tests, all passing on 15 October 2026:
 
 | File | Tests | What they check |
 |---|---|---|
-| `accounts/tests.py` | 47 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (the sixth wrong password is blocked, even a correct one while locked), and the admin log in going through django-allauth (staff in, others refused, unsafe `next` addresses ignored); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie, and an email address refused as a username |
-| `cards/tests.py` | 63 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404; search across name, set and rarity in any order ("holo rare", "rare holo", "holos"; "common" not matching Uncommon), the Rarity and Set filters alone and combined, unknown filter values ignored, filters kept in page links |
+| `accounts/tests.py` | 49 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (the sixth wrong password is blocked, even a correct one while locked), and the admin log in going through django-allauth (staff in, others refused, unsafe `next` addresses ignored); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie, and an email address refused as a username, the privacy page's browser-storage section, and `/favicon.ico` |
+| `cards/tests.py` | 67 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404; search across name, set and rarity in any order ("holo rare", "rare holo", "holos"; "common" not matching Uncommon), the Rarity and Set filters alone and combined, unknown filter values ignored, filters kept in page links; Poké Ball ratings (full, empty, rounded averages, hidden from screen readers), the five-ball picker on the review form, the 1999 rarity symbols and which cards shimmer |
 | `collection/tests.py` | 34 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged; My Cards shows my own rating (not other people's) or a Rate it link, the notes preview, and a fixed number of database queries however long the list |
 
 The two-user tests are the most important: they prove one user
@@ -170,6 +170,59 @@ same accessibility engine Lighthouse uses; it was run with every WCAG
 **Still to do by hand:** a pass with VoiceOver (the Mac's built-in
 screen reader), and Lighthouse's performance and best-practice scores
 (US22, US23, US32).
+
+## Brand and design testing
+
+Run on 15 October 2026 for the new design (issues #59 to #63).
+
+### Colour contrast, before writing any CSS
+
+Every colour pair was calculated against WCAG 2.2 before use:
+
+| Pair | Light mode | Dark mode | Needed |
+|---|---|---|---|
+| Text on page | 15.17 | 15.94 | 4.5 |
+| Secondary text on page | 7.02 | 8.76 | 4.5 |
+| White text on red buttons | 5.88 | 4.63 | 4.5 |
+| Links on page | 6.25 | 8.96 | 4.5 |
+| Header text on navy | 16.36 | 19.56 | 4.5 |
+| Ink text on the gold Rare Holo badge | 9.71 | 11.27 | 4.5 |
+| White text on the Uncommon / Rare / Common badges | 6.70 / 16.36 / 5.88 | 4.63 / 10.32 / 5.88 | 4.5 |
+| Success / error / info messages | 8.02 / 8.11 / 9.04 | 9.79 / 9.60 / 9.50 | 4.5 |
+| Focus outline against the page | 6.25 | 8.96 | 3 |
+| Red ball against its background | 5.88 | 3.68 | 3 |
+
+The one pair that failed, the red "Vault" in the logo on the navy
+header in light mode (2.78), was changed to a brighter red before it
+was used.
+
+### Checks in Chrome
+
+| Check | Result |
+|---|---|
+| W3C HTML on home (logged in and out), Browse cards, a card page, the review form (with and without errors), My Cards, Register, Privacy | 0 errors, 0 warnings |
+| Jigsaw on the new stylesheet | 0 errors; 2 warnings, both for the system font names (`system-ui`, `-apple-system`), which are deliberate |
+| axe (WCAG 2.2 AA, including colour contrast) on every page, logged in and out, **light mode** | 0 violations |
+| The same in **dark mode** | 0 violations |
+| High contrast, light and dark | Text switches to pure black or pure white |
+| Console errors on every page, light and dark | None |
+| Theme toggle | Switches theme, remembered after a reload, `aria-pressed` updates; works with the mouse, Enter and Space |
+| Ball picker with the keyboard | Tab reaches ball 1 with a visible outline; Space selects; Right and Left move one ball at a time, filling to match |
+| Ball picker with the mouse | Hovering previews a rating; clicking selects it |
+| Intro, first visit | The ball drops, opens and reveals the emblem and Enter the vault; Enter (or Skip, also by keyboard) closes it and moves focus to the home page heading |
+| Intro, second visit | Does not play |
+| Intro with reduced motion | No animation; the finished scene with the Enter button is shown straight away |
+| Intro without JavaScript | Never shown; the home page appears as normal |
+| Phone width (375px), light and dark | No sideways scrolling |
+
+### Bug found and fixed while building
+
+- **The ball picker went the wrong way for keyboard users.** The
+  first version listed the balls 5 to 1 in the page so CSS could
+  fill "this ball and every ball before it", which meant Tab landed
+  on the 5th ball and the left arrow moved right. Rebuilt with the
+  CSS `:has()` selector in natural 1 to 5 order and re-tested with
+  real key presses.
 
 ## Security testing
 

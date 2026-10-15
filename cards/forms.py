@@ -4,11 +4,11 @@ from django import forms
 from .models import Review
 
 RATING_CHOICES = [
-    (1, "1 star"),
-    (2, "2 stars"),
-    (3, "3 stars"),
-    (4, "4 stars"),
-    (5, "5 stars"),
+    (1, "1 Poké Ball"),
+    (2, "2 Poké Balls"),
+    (3, "3 Poké Balls"),
+    (4, "4 Poké Balls"),
+    (5, "5 Poké Balls"),
 ]
 
 

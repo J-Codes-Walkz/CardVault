@@ -6,7 +6,9 @@
 </div>
 {% endif %}
 {% for field in form.visible_fields %}
-{% if field.widget_type == "radioselect" %}
+{% if field.name == "rating" %}
+{% include "includes/ball_picker.html" %}
+{% elif field.widget_type == "radioselect" %}
 <fieldset class="field field-choices">
     <legend>{{ field.label }}</legend>
     {% for choice in field %}

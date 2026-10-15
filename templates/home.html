@@ -1,20 +1,54 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block head_title %}CardVault: track your Pokémon card collection{% endblock head_title %}
+{% block head_title %}CardVault: your Pokémon card collection, safe in the vault{% endblock head_title %}
 
 {% block content %}
-<section class="hero">
-    <h1>Track your Pokémon card collection</h1>
-    <p>CardVault keeps one list of the cards you own and the cards you still want, so you always know what is in your collection.</p>
-    <p class="actions">
-        {% if user.is_authenticated %}
-        <a class="button" href="{% url 'collection:my_cards' %}">Go to My Cards</a>
-        <a class="button button-quiet" href="{% url 'cards:card_list' %}">Browse cards</a>
-        {% else %}
-        <a class="button" href="{% url 'account_signup' %}">Create account</a>
-        <a class="button button-quiet" href="{% url 'cards:card_list' %}">Browse cards</a>
-        {% endif %}
-    </p>
+<section class="hero-cosmic" aria-labelledby="hero-heading">
+    <div class="hero-badges" aria-hidden="true">
+        <span class="hero-badge badge-1">●</span>
+        <span class="hero-badge badge-2">◆</span>
+        <span class="hero-badge badge-3">★</span>
+        <span class="hero-badge badge-4">◆</span>
+        <span class="hero-badge badge-5">★</span>
+        <span class="hero-badge badge-6">●</span>
+    </div>
+
+    <div class="intro" id="intro">
+        <svg class="intro-ball" viewBox="0 0 120 120" width="120" height="120" aria-hidden="true" focusable="false">
+            <g class="intro-half intro-half-top">
+                <path d="M6 60 A54 54 0 0 1 114 60 Z" fill="#e0283d" stroke="#0b1220" stroke-width="6"/>
+                <path d="M51 60 A9 9 0 0 1 69 60 Z" fill="#ffffff" stroke="#0b1220" stroke-width="5"/>
+            </g>
+            <g class="intro-half intro-half-bottom">
+                <path d="M6 60 A54 54 0 0 0 114 60 Z" fill="#ffffff" stroke="#0b1220" stroke-width="6"/>
+                <path d="M51 60 A9 9 0 0 0 69 60 Z" fill="#ffffff" stroke="#0b1220" stroke-width="5"/>
+            </g>
+        </svg>
+        <img class="intro-emblem" src="{% static 'images/emblem.svg' %}" alt="" width="150" height="210">
+        <p class="intro-title">Welcome to Card<span class="brand-vault">Vault</span></p>
+        <p class="intro-actions">
+            <button type="button" class="button intro-enter" data-close-intro>Enter the vault</button>
+            <button type="button" class="button button-quiet intro-skip" data-close-intro>Skip intro</button>
+        </p>
+    </div>
+
+    <div class="hero-content">
+        <img class="hero-emblem" src="{% static 'images/emblem.svg' %}" alt="" width="120" height="168">
+        <div class="hero-text">
+            <h1 id="hero-heading" tabindex="-1">Your Pokémon card collection, safe in the vault</h1>
+            <p>CardVault keeps one list of the cards you own and the cards you still want, with ratings and reviews from other collectors.</p>
+            <p class="actions">
+                {% if user.is_authenticated %}
+                <a class="button" href="{% url 'collection:my_cards' %}">Go to My Cards</a>
+                <a class="button button-on-dark" href="{% url 'cards:card_list' %}">Browse cards</a>
+                {% else %}
+                <a class="button" href="{% url 'account_signup' %}">Create account</a>
+                <a class="button button-on-dark" href="{% url 'cards:card_list' %}">Browse cards</a>
+                {% endif %}
+            </p>
+        </div>
+    </div>
 </section>
 
 {% if featured_cards %}
@@ -28,3 +62,7 @@
 </section>
 {% endif %}
 {% endblock content %}
+
+{% block extra_body %}
+<script src="{% static 'js/intro.js' %}" defer></script>
+{% endblock extra_body %}

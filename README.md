@@ -82,18 +82,57 @@ screen is built, and keep the wireframes in `docs/wireframes/` for
 the record of how the design evolved &mdash; the checklist's Features
 section asks for screenshots of the finished site, not the plan.*
 
-### Design notes
+### Brand and design
 
-- **Palette:** neutral greys and a near-black primary action colour,
-  so uploaded card images (which are already colourful) stay the
-  visual focus rather than competing with a bright UI.
-- **Typography:** one system sans-serif font stack, two weights
-  (regular body text, bold for headings and card names) &mdash; kept
-  deliberately simple so it is easy to re-skin later without a
-  rewrite.
+Agreed with Jamie in a design session on 15 October 2026 (issues
+#59 to #63). The aim: a premium **collector's vault**, calm enough
+that the card artwork is always the star, with small Game Boy-style
+red, yellow and blue accents.
+
+<p>
+  <img src="./static/images/emblem.svg" alt="The CardVault emblem: a navy card back with a gold oval and a ship-wheel vault lock" width="90">
+  &nbsp;
+  <img src="./static/images/favicon.svg" alt="The CardVault favicon: an original Poké Ball-style icon" width="64">
+</p>
+
+- **Emblem and logo:** an original card back (navy, a soft swirl and a
+  gold oval) with an old-school ship-wheel vault lock in the centre,
+  beside the wordmark Card**Vault**. Inspired by the back of a
+  Pokémon card, not a copy of it.
+- **Favicon:** an original Poké Ball-style icon (SVG, 32px PNG, an
+  Apple touch icon and `favicon.ico`).
+- **Colours, each with one job:**
+
+  | Colour | Light mode | Dark mode | Used for |
+  |---|---|---|---|
+  | Navy | `#0f1f3d` | `#060c18` | Header, emblem, cosmic hero |
+  | Red | `#c8102e` | `#e0283d` | Buttons, active tab, Poké Ball ratings, "Vault" |
+  | Blue | `#1d4ed8` | `#8ab4ff` | Links and the keyboard focus outline |
+  | Yellow | `#f5c518` | `#ffd23f` | Small highlights only: the line under the header, Rare Holo badges |
+  | Ink | `#162034` | `#e8edf6` | Text |
+  | Page | `#f5f7fb` | `#0b1220` | Background |
+
+  Every text colour pair passes WCAG AA in both modes (see
+  [TESTING.md](./TESTING.md#brand-and-design-testing)). Yellow is
+  never used for text on white.
+- **Light and dark mode:** follows the device setting, with a
+  sun/moon toggle in the header that the browser remembers. A
+  high-contrast style switches on when the device asks for more
+  contrast, in both modes.
+- **Typography:** Poppins (bold, rounded and geometric) for headings
+  and the logo, served from this site; the device's own system font
+  for body text, so pages stay fast.
+- **Ratings:** Poké Balls instead of stars, full or empty, and five
+  clickable balls on the review form.
+- **Rarity badges:** the 1999 Base Set symbols with the word: ●
+  Common, ◆ Uncommon, ★ Rare, ★ Rare Holo (gold).
+- **Movement, kept small:** card tiles lift on hover or keyboard
+  focus, Rare Holo cards shimmer once, and the home page plays a
+  short Poké Ball intro on a visitor's first visit (skippable). All of
+  it switches off when the device asks for reduced motion.
 - **Layout:** a responsive grid for card tiles (4 columns desktop, 2
-  tablet, 1 mobile), a conventional table for My Cards on
-  desktop that becomes stacked cards on mobile (see wireframe 7).
+  tablet, 1 mobile), and a table for My Cards on wide screens that
+  becomes stacked cards below 900px.
 
 ## Database design
 
@@ -517,8 +556,15 @@ cd <your-repo>
   placeholder instead. Pok&eacute;mon card names
   and artwork belong to their owners (see the disclaimer at the top of
   this README).
-- Placeholder/UI imagery: *(credit here if you use any stock icons or
-  illustrations)*.
+- Emblem, favicon, Poké Ball rating icons and the placeholder card
+  image: original drawings made for this project as SVG. The Poké
+  Ball design itself belongs to Nintendo, Creatures and Game Freak;
+  it is used here in a simple fan-made style for a non-commercial,
+  educational project (see the disclaimer at the top of this README).
+- Rarity symbols (● ◆ ★): the shapes used on 1999 Base Set cards.
+- Font: [Poppins](https://github.com/itfoundry/Poppins) by the
+  Indian Type Foundry, under the SIL Open Font License
+  (`static/fonts/OFL.txt`), served from this site.
 
 ### Acknowledgements
 
@@ -555,6 +601,8 @@ section credible to an assessor.
 | 2026-10-15 | Developing features | Decided with Claude to drop card prices (currencies and exchange rates were out of proportion to the project) and to build the Base Set once from the Pokémon TCG API. Claude Code wrote `scripts/build_base_set_fixture.py`; when the API kept returning server errors it switched to pages of 25 with retries, and when the API gave the six Energy cards no rarity it marked them Common, as printed, rather than guessing silently. |
 | 2026-10-15 | Debugging | The browser test reported only 4 of 12 card pictures loading. Rather than accept or hide it, Claude checked each image: all 12 load in a fresh tab, and the headless browser was treating the long-running test tab as in the background, so lazy images never started. Fixed in the test harness (focus emulation), not the site. |
 | 2026-10-15 | Security | Asked Claude to review security end to end. It added a Content Security Policy and Permissions Policy, routed the Django admin log in through allauth's rate limiting, moved rate limits to a shared database cache, scanned the git history for secrets, ran `pip-audit`, and turned on Dependabot, CodeQL and a branch rule on GitHub. 12 security tests added. |
+| 2026-10-15 | Design | Used the grilling skill in Claude Code to agree the brand in four short rounds of questions (look, colours, dark mode, logo, ratings, badges, motion, intro). Jamie chose dark mode against my first recommendation, asked for a card-back emblem with a ship-wheel vault lock instead of a Poké Ball logo, and the 1999 rarity symbols. Claude checked every colour pair for contrast before writing any CSS, drew the emblem and icons as SVG, and kept the intro from becoming a gate page. |
+| 2026-10-15 | Debugging | A keyboard-only test of the new Poké Ball picker found that Tab landed on the 5th ball and the left arrow moved right, a side effect of the CSS trick first used to fill the balls. Rebuilt with the CSS `:has()` selector in natural 1 to 5 order (after checking the CSS validator accepts it), then re-tested with real key presses and mouse clicks. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |

@@ -7,6 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="CardVault: track the Pokémon cards you own and the ones you want.">
     <title>{% block head_title %}CardVault{% endblock head_title %}</title>
+    <link rel="icon" href="{% static 'images/favicon.svg' %}" type="image/svg+xml">
+    <link rel="icon" href="{% static 'images/favicon-32.png' %}" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="preload" href="{% static 'fonts/poppins-700-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script src="{% static 'js/js-enabled.js' %}"></script>
     <script src="{% static 'js/image-fallback.js' %}"></script>
@@ -19,8 +23,18 @@
 
     <header class="site-header">
         <nav class="site-nav" aria-label="Main">
-            <a class="brand" href="{% url 'home' %}">CardVault</a>
-            <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">Menu</button>
+            <a class="brand" href="{% url 'home' %}">
+                <img class="brand-emblem" src="{% static 'images/emblem.svg' %}" alt="" width="30" height="42">
+                <span class="brand-word">Card<span class="brand-vault">Vault</span></span>
+            </a>
+            <div class="header-tools">
+                <button type="button" class="theme-toggle" aria-pressed="false">
+                    <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+                    <span class="visually-hidden">Dark mode</span>
+                </button>
+                <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">Menu</button>
+            </div>
             <ul class="nav-links" id="nav-menu">
                 <li><a href="{% url 'cards:card_list' %}">Browse cards</a></li>
                 {% if user.is_authenticated %}

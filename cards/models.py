@@ -22,6 +22,14 @@ class CardSet(models.Model):
         return self.name
 
 
+RARITY_SYMBOLS = {
+    "COMMON": "●",
+    "UNCOMMON": "◆",
+    "RARE": "★",
+    "RARE_HOLO": "★",
+}
+
+
 class Card(models.Model):
     """One card in the shared catalogue. The same rows for every user."""
 
@@ -55,6 +63,15 @@ class Card(models.Model):
 
     def get_absolute_url(self):
         return reverse("cards:card_detail", args=[self.pk])
+
+    @property
+    def rarity_symbol(self):
+        """The symbol printed on 1999 Base Set cards for this rarity."""
+        return RARITY_SYMBOLS[self.rarity]
+
+    @property
+    def is_holo(self):
+        return self.rarity == self.Rarity.RARE_HOLO
 
 
 class Review(models.Model):

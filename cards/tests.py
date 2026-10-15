@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .models import Card, CardSet, Review
-from .templatetags.card_extras import stars
+from .templatetags.card_extras import balls
 
 User = get_user_model()
 PASSWORD = "Vault-Pass-2026"
@@ -139,16 +139,65 @@ class BaseSetFixtureTests(TestCase):
         self.assertEqual(CardSet.objects.count(), 1)
 
 
-class StarsFilterTests(TestCase):
+class PokeBallRatingTests(TestCase):
+    """Ratings are drawn as five Poké Balls, full or empty."""
+
+    def count(self, rating):
+        html = str(balls(rating))
+        return html.count("ball-full"), html.count("ball-empty")
 
     def test_whole_rating(self):
-        self.assertEqual(stars(4), "★★★★☆")
+        self.assertEqual(self.count(4), (4, 1))
 
     def test_average_is_rounded(self):
-        self.assertEqual(stars(4.6), "★★★★★")
+        self.assertEqual(self.count(4.6), (5, 0))
 
-    def test_no_rating_shows_empty_stars(self):
-        self.assertEqual(stars(None), "☆☆☆☆☆")
+    def test_no_rating_shows_empty_balls(self):
+        self.assertEqual(self.count(None), (0, 5))
+
+    def test_balls_are_hidden_from_screen_readers(self):
+        self.assertIn('aria-hidden="true"', str(balls(3)))
+
+    def test_review_form_shows_five_clickable_balls(self):
+        user = User.objects.create_user("ash", password=PASSWORD)
+        card = make_card(CardSet.objects.create(name="Set", quantity=1))
+        self.client.force_login(user)
+        url = reverse("cards:add_review", args=[card.pk])
+        response = self.client.get(url)
+        self.assertContains(response, 'type="radio"', count=5)
+        self.assertContains(response, "ball-choice", count=5)
+        self.assertContains(response, "5 Poké Balls")
+
+
+class RarityBadgeTests(TestCase):
+    """Rarity badges use the 1999 Base Set symbols."""
+
+    def test_symbols(self):
+        card_set = CardSet.objects.create(name="Set", quantity=4)
+        expected = {
+            Card.Rarity.COMMON: "●",
+            Card.Rarity.UNCOMMON: "◆",
+            Card.Rarity.RARE: "★",
+            Card.Rarity.RARE_HOLO: "★",
+        }
+        for number, (rarity, symbol) in enumerate(expected.items(), 1):
+            card = Card.objects.create(
+                name="Test", card_set=card_set, number=number, rarity=rarity
+            )
+            self.assertEqual(card.rarity_symbol, symbol)
+
+    def test_only_rare_holo_cards_shimmer(self):
+        card_set = CardSet.objects.create(name="Set", quantity=2)
+        holo = make_card(card_set, number=1)
+        plain = Card.objects.create(
+            name="Plain", card_set=card_set, number=2,
+            rarity=Card.Rarity.COMMON,
+        )
+        self.assertTrue(holo.is_holo)
+        self.assertFalse(plain.is_holo)
+        response = self.client.get(reverse("cards:card_list"))
+        self.assertContains(response, "card-tile is-holo", count=1)
+        self.assertContains(response, "rarity rarity-rare_holo")
 
 
 class TesterFixtureTests(TestCase):

@@ -46,7 +46,7 @@
             <td data-label="Quantity" class="col-qty">{{ entry.quantity }}</td>
             <td data-label="My rating" class="col-rating">
                 {% if entry.my_rating %}
-                <a class="entry-rating" href="{% url 'cards:card_detail' entry.card.pk %}#reviews-heading"><span class="stars" aria-hidden="true">{{ entry.my_rating|stars }}</span><span class="visually-hidden">{{ entry.my_rating }} out of 5 stars for {{ entry.card.name }}</span></a>
+                <a class="entry-rating" href="{% url 'cards:card_detail' entry.card.pk %}#reviews-heading">{% balls entry.my_rating %}<span class="visually-hidden">{{ entry.my_rating }} out of 5 Poké Balls for {{ entry.card.name }}</span></a>
                 {% else %}
                 <a href="{% url 'cards:add_review' entry.card.pk %}">Rate it<span class="visually-hidden"> {{ entry.card.name }}</span></a>
                 {% endif %}
