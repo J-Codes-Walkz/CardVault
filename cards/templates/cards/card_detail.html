@@ -73,11 +73,11 @@
                 <span class="visually-hidden">{{ review.rating }} out of 5 stars</span>
                 <span class="review-date">{{ review.created_at|date:"j M Y" }}{% if review.is_edited %} (edited){% endif %}</span>
             </p>
-            <p>{{ review.body|linebreaksbr }}</p>
+            <p class="review-body">{{ review.body|linebreaksbr }}</p>
             {% if review.user == user %}
-            <p class="actions">
-                <a class="button" href="{% url 'cards:edit_review' review.pk %}">Edit review</a>
-                <a class="button button-quiet" href="{% url 'cards:delete_review' review.pk %}">Delete review</a>
+            <p class="review-actions">
+                <a class="button button-small" href="{% url 'cards:edit_review' review.pk %}">Edit review</a>
+                <a class="button button-quiet button-small" href="{% url 'cards:delete_review' review.pk %}">Delete review</a>
             </p>
             {% endif %}
         </li>
