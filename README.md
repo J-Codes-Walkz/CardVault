@@ -159,7 +159,7 @@ Code. Only the three files above are committed; the cache stays local
 Everything below is live on
 [the Heroku site](https://cardvault-0a18b8d773ca.herokuapp.com/) and
 was tested there on 14 October 2026 (see [TESTING.md](./TESTING.md)).
-Screenshots are from that test run, using the AAA, BBB and CCC tester
+Screenshots are from that test run, using the Base Set and the AAA, BBB and CCC tester
 cards.
 
 ### Accounts
@@ -195,7 +195,7 @@ cards.
 - **Card page** (US10): set, number, rarity, average star rating and
   every review.
 
-![Browse cards showing the AAA, BBB and CCC tester cards](./docs/images/screenshots/catalogue.png)
+![Browse cards showing the first 12 Base Set cards with their pictures](./docs/images/screenshots/catalogue.png)
 
 ### My Cards: full front-end CRUD
 
@@ -211,7 +211,7 @@ From any card's page a logged-in user can:
 - **Delete** (US14): remove the entry after a confirmation page that
   names the card. The card itself stays in the catalogue.
 
-![My Cards after adding AAA, with Edit and Remove buttons](./docs/images/screenshots/add-card-success.png)
+![My Cards after adding Alakazam, with Edit and Remove buttons](./docs/images/screenshots/add-card-success.png)
 
 ### Reviews: comments and star ratings
 
@@ -513,6 +513,9 @@ section credible to an assessor.
 | 2026-10-14 | Debugging | Acted on an assessor's masterclass feedback: logged each point as a bug issue (#43 to #46), then fixed them (trimmed `.gitignore`, single-line Python, no table of contents, capitalised Markdown names). Claude also spotted that the mentor's sticky-footer CSS selector `.html, body` should be `html, body`. |
 | 2026-10-14 | Developing features | Claude Code built the front-end CRUD (browse and search cards, card pages, add/edit/remove My Cards entries, 1 to 5 star reviews with comments) and the responsive header and footer. I chose the scope (frontend CRUD with tester cards AAA, BBB, CCC) and the sticky footer. |
 | 2026-10-14 | Automated tests | Claude Code wrote 51 more tests (96 in total), including two-user tests proving one user cannot edit or delete another's records. It then drove a real Chrome browser through every user action on the live site (39 checks, all passing) and took the screenshots used in this README and TESTING.md. It found and fixed a table layout bug on My Cards that the unit tests could not see. |
+| 2026-10-15 | Developing features | Decided with Claude to drop card prices (currencies and exchange rates were out of proportion to the project) and to build the Base Set once from the Pokémon TCG API. Claude Code wrote `scripts/build_base_set_fixture.py`; when the API kept returning server errors it switched to pages of 25 with retries, and when the API gave the six Energy cards no rarity it marked them Common, as printed, rather than guessing silently. |
+| 2026-10-15 | Debugging | The browser test reported only 4 of 12 card pictures loading. Rather than accept or hide it, Claude checked each image: all 12 load in a fresh tab, and the headless browser was treating the long-running test tab as in the background, so lazy images never started. Fixed in the test harness (focus emulation), not the site. |
+| 2026-10-15 | Security | Asked Claude to review security end to end. It added a Content Security Policy and Permissions Policy, routed the Django admin log in through allauth's rate limiting, moved rate limits to a shared database cache, scanned the git history for secrets, ran `pip-audit`, and turned on Dependabot, CodeQL and a branch rule on GitHub. 12 security tests added. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |

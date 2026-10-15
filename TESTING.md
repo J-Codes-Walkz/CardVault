@@ -5,11 +5,12 @@ Testing for [CardVault](./README.md). Live site:
 
 CardVault is tested in four ways:
 
-| Method | What it covers | Result (14 October 2026) |
+| Method | What it covers | Result (15 October 2026) |
 |---|---|---|
-| [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 39 of 39 checks passed |
+| [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 41 of 41 checks passed |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
-| [Automated testing](#automated-testing) | 96 Django tests, including two-user ownership tests | 96 passed |
+| [Automated testing](#automated-testing) | 111 Django tests, including two-user ownership and security tests | 111 passed |
+| [Security testing](#security-testing) | Headers, log in limits, admin access, secrets, dependencies, code scanning | No issues found |
 | [Validators](#validators) | HTML (W3C), CSS (Jigsaw), JavaScript, Python (PEP8) | 0 errors |
 
 Every bug found is logged as a GitHub issue labelled `bug`; see
@@ -22,15 +23,17 @@ Every bug found is logged as a GitHub issue labelled `bug`; see
 Each test below follows a user story's "Manual test" in
 [docs/USER_STORIES.md](./docs/USER_STORIES.md), using only the front
 end (no Django admin). The tests were run on the live Heroku site on
-14 October 2026 by driving a real Chrome browser with a script: it
+15 October 2026 (first run 14 October) by driving a real Chrome browser with a script: it
 typed into the same fields and pressed the same buttons a person
 would, checked what the page showed afterwards, and took the
 screenshots linked below. A throwaway account, `cardvault_tester`,
 was registered for the run and deleted afterwards.
 
-Catalogue cards used: the three tester cards **AAA**, **BBB** and
-**CCC** from `cards/fixtures/tester_cards.json` (see
+Catalogue: the 102 Base Set cards from `cards/fixtures/base_set_cards.json`
+and the three tester cards **AAA**, **BBB** and **CCC** from
+`cards/fixtures/tester_cards.json` (see
 [Populating the catalogue](./docs/DATABASE_SCHEMA.md#populating-the-catalogue)).
+The run added the first card in the catalogue, Alakazam.
 
 Jamie also registered, logged out and logged in by hand on the live
 site on 12 October 2026, with the expected message at each step
@@ -54,7 +57,8 @@ site on 12 October 2026, with the expected message at each step
 | Story | Test | Expected | Result | Screenshot |
 |---|---|---|---|---|
 | US06 | Open the home page logged out | Headline says what the site is for; Create account and Browse cards buttons; featured cards | Pass | [home-logged-out](./docs/images/screenshots/home-logged-out.png) |
-| US07 | Open Browse cards | AAA, BBB and CCC tiles with set, number, rarity and a placeholder image | Pass | [catalogue](./docs/images/screenshots/catalogue.png) |
+| US07 | Open Browse cards | 12 Base Set cards on page 1 (Alakazam first), each with its picture, set, number and rarity; all 12 pictures load | Pass |
+| US08 | Search for `aaa` | Only the tester card AAA, which shows the placeholder image | Pass | | [catalogue](./docs/images/screenshots/catalogue.png) |
 | US08 | Search for `bb` | Only BBB, with "1 card found" | Pass | [search-result](./docs/images/screenshots/search-result.png) |
 | US08 | Search for `zzz` | 'No cards match "zzz". Try a different name.' | Pass | |
 | US10 | Open a card | Image, set, number, rarity, rating summary, add and review forms | Pass | [card-detail](./docs/images/screenshots/card-detail.png) |
@@ -64,13 +68,13 @@ site on 12 October 2026, with the expected message at each step
 | Story | Test | Expected | Result | Screenshot |
 |---|---|---|---|---|
 | US11 | Add a card with quantity 0 | Not saved; "Please correct the errors below and try again." | Pass | [add-card-invalid-quantity](./docs/images/screenshots/add-card-invalid-quantity.png) |
-| US11 | Add a card as Owned, quantity 2, with a note | "AAA was added to your cards." and it is listed in My Cards | Pass | [add-card-success](./docs/images/screenshots/add-card-success.png) |
+| US11 | Add a card as Owned, quantity 2, with a note | "Alakazam was added to your cards." and it is listed in My Cards | Pass | [add-card-success](./docs/images/screenshots/add-card-success.png) |
 | US12 | View My Cards on a phone (320 and 375px) | Each entry stacks as a labelled card, no sideways scrolling | Pass | [my-cards-mobile](./docs/images/screenshots/my-cards-mobile.png) |
 | US11 | Open the same card again | Card page says "On your list" instead of showing the add form | Pass | |
-| US11 | Try to add the same card again | Sent to that entry's edit page with "You already have AAA on your list. Edit that entry to change it." | Pass | |
-| US13 | Edit the entry to Wanted, quantity 3 | "Your entry for AAA was updated." and the list shows Wanted, 3 | Pass | [edit-card-form](./docs/images/screenshots/edit-card-form.png), [edit-card-success](./docs/images/screenshots/edit-card-success.png) |
+| US11 | Try to add the same card again | Sent to that entry's edit page with "You already have Alakazam on your list. Edit that entry to change it." | Pass | |
+| US13 | Edit the entry to Wanted, quantity 3 | "Your entry for Alakazam was updated." and the list shows Wanted, 3 | Pass | [edit-card-form](./docs/images/screenshots/edit-card-form.png), [edit-card-success](./docs/images/screenshots/edit-card-success.png) |
 | US12 | Open the Owned tab | "You have no owned cards yet." | Pass | |
-| US14 | Remove the entry | Confirmation page names the card; then "AAA was removed from your cards." and the list is empty | Pass | [remove-card-confirm](./docs/images/screenshots/remove-card-confirm.png), [remove-card-success](./docs/images/screenshots/remove-card-success.png) |
+| US14 | Remove the entry | Confirmation page names the card; then "Alakazam was removed from your cards." and the list is empty | Pass | [remove-card-confirm](./docs/images/screenshots/remove-card-confirm.png), [remove-card-success](./docs/images/screenshots/remove-card-success.png) |
 
 ### Reviews: comment and star rating (US18 to US21)
 
@@ -108,12 +112,12 @@ Run with:
 python manage.py test
 ```
 
-96 tests, all passing on 14 October 2026:
+111 tests, all passing on 15 October 2026:
 
 | File | Tests | What they check |
 |---|---|---|
-| `accounts/tests.py` | 19 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states |
-| `cards/tests.py` | 48 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404 |
+| `accounts/tests.py` | 31 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (the sixth wrong password is blocked, even a correct one while locked), and the admin log in going through django-allauth (staff in, others refused, unsafe `next` addresses ignored) |
+| `cards/tests.py` | 51 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404 |
 | `collection/tests.py` | 29 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged |
 
 The two-user tests are the most important: they prove one user
@@ -127,6 +131,25 @@ pip install coverage
 coverage run --source='.' manage.py test
 coverage report -m
 ```
+
+## Security testing
+
+Reviewed on 15 October 2026
+([issue #50](https://github.com/J-Codes-Walkz/CardVault/issues/50));
+what each protection does is explained in [SECURITY.md](./SECURITY.md).
+
+| Check | How | Result |
+|---|---|---|
+| Secrets in the repository | Every commit in the git history searched for the real `SECRET_KEY`, GitHub and AWS tokens, private keys and database URLs with passwords | None found (only the placeholder URL in `.env.example`) |
+| Secret scanning | GitHub secret scanning with push protection | On; 0 alerts |
+| Dependencies | `pip-audit -r requirements.txt` and Dependabot alerts | No known vulnerabilities; 0 alerts |
+| Code scanning | GitHub CodeQL on the Python and JavaScript | 0 results |
+| Deployment settings | `python manage.py check --deploy` with production settings | No issues |
+| Security headers on the live site | `curl -I` on the home page | `Content-Security-Policy`, `Permissions-Policy`, `Strict-Transport-Security` and `X-Frame-Options: DENY` all present |
+| Content Security Policy breaks nothing | Every public, logged-in and admin page loaded in Chrome, watching the console | No violations; the only console error was the missing favicon (#35) |
+| Admin log in | Open `/admin/login/` on the live site while logged out | Redirected to the rate-limited Log in page |
+| Password guessing | Automated test: 5 wrong passwords, then a 6th | "Too many failed login attempts." |
+| Other users' data | Two-user automated tests on every edit and delete page | 404 and nothing changed |
 
 ## Validators
 
