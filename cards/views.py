@@ -117,7 +117,6 @@ class CardDetailView(DetailView):
             context["my_entry"] = entries.first()
             context["my_review"] = reviews.filter(user=user).first()
             context["entry_form"] = CollectionEntryForm()
-            context["review_form"] = ReviewForm()
         return context
 
 

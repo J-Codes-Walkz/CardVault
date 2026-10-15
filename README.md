@@ -211,7 +211,8 @@ From any card's page a logged-in user can:
   list goes to that entry's edit page instead of creating a second
   one.
 - **Read** (US12): My Cards lists every entry with All, Owned and
-  Wanted tabs. On phones each row stacks into a labelled card.
+  Wanted tabs, with each card's notes in a neat contained box. On
+  phones and small tablets each row stacks into a labelled card.
 - **Update** (US13): change the status, quantity or notes.
 - **Delete** (US14): remove the entry after a confirmation page that
   names the card. The card itself stays in the catalogue.
@@ -220,9 +221,11 @@ From any card's page a logged-in user can:
 
 ### Reviews: comments and star ratings
 
-- **Create** (US18): rate a card from 1 to 5 stars and write a
-  comment. Each user reviews a card once; after that the form is
-  replaced by their review with Edit and Delete buttons.
+- **Create** (US18): press Write a review on a card's page, then rate
+  it from 1 to 5 stars and write a comment on the review page. Each
+  page has only one form, so nothing you type can be lost. Each user
+  reviews a card once; after that the button is replaced by their
+  review with Edit and Delete buttons.
 - **Read** (US21): reviews are listed newest first with the
   username, stars, date and comment, under the card's average rating.
 - **Update** (US19): edit your own review; it is then marked

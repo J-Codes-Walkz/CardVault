@@ -72,7 +72,7 @@ site on 12 October 2026, with the expected message at each step
 |---|---|---|---|---|
 | US11 | Add a card with quantity 0 | Not saved; "Please correct the errors below and try again." | Pass | [add-card-invalid-quantity](./docs/images/screenshots/add-card-invalid-quantity.png) |
 | US11 | Add a card as Owned, quantity 2, with a note | "Alakazam was added to your cards." and it is listed in My Cards | Pass | [add-card-success](./docs/images/screenshots/add-card-success.png) |
-| US12 | View My Cards on a phone (320 and 375px) | Each entry stacks as a labelled card, no sideways scrolling | Pass | [my-cards-mobile](./docs/images/screenshots/my-cards-mobile.png) |
+| US12 | View My Cards with a long note at 320, 375, 768, 900, 1024 and 1440px | No sideways scrolling; below 900px each entry stacks as a labelled card; from 900px the card name never overlaps the Set column, Edit and Remove sit side by side inside the table, and notes sit in a contained box | Pass after fix (bug #57) | [my-cards-mobile](./docs/images/screenshots/my-cards-mobile.png) |
 | US11 | Open the same card again | Card page says "On your list" instead of showing the add form | Pass | |
 | US11 | Try to add the same card again | Sent to that entry's edit page with "You already have Alakazam on your list. Edit that entry to change it." | Pass | |
 | US13 | Edit the entry to Wanted, quantity 3 | "Your entry for Alakazam was updated." and the list shows Wanted, 3 | Pass | [edit-card-form](./docs/images/screenshots/edit-card-form.png), [edit-card-success](./docs/images/screenshots/edit-card-success.png) |
@@ -83,7 +83,8 @@ site on 12 October 2026, with the expected message at each step
 
 | Story | Test | Expected | Result | Screenshot |
 |---|---|---|---|---|
-| US18 | Submit an empty review | The browser blocks it: rating and comment are required | Pass | |
+| US18 | Open a card's page | At most one form on the page (Add to My Cards), plus a Write a review button, so nothing typed can be lost by submitting another form | Pass after fix (bug #58) | |
+| US18 | Press Write a review, then submit it empty | The review page opens; the browser blocks the empty form (rating and comment are required) | Pass | [review-form](./docs/images/screenshots/review-form.png) |
 | US18 | Give 4 stars with a comment | "Thank you for submitting your review!"; the review shows ★★★★☆ and the comment; the average updates | Pass | [review-success](./docs/images/screenshots/review-success.png) |
 | US19 | Edit the review to 5 stars | "Your review was updated successfully." and ★★★★★ | Pass | [review-edit-form](./docs/images/screenshots/review-edit-form.png) |
 | US20 | Delete the review | Confirmation page; then "Your review was deleted." and "No reviews yet" | Pass | [review-delete-confirm](./docs/images/screenshots/review-delete-confirm.png) |
@@ -259,6 +260,8 @@ privately, as described in [SECURITY.md](./SECURITY.md).
 | [#46](https://github.com/J-Codes-Walkz/CardVault/issues/46) | Markdown file names were not in capitals | Renamed with `git mv`; testing moved into this file | Fixed |
 | [#47](https://github.com/J-Codes-Walkz/CardVault/issues/47) | Footer floated mid-page on short pages; navigation did not collapse on phones | Sticky-footer CSS and a Menu button | Fixed |
 | [#56](https://github.com/J-Codes-Walkz/CardVault/issues/56) | Date of birth field lost its focus outline when keyboard focus reached its calendar button | Outline kept on the whole field with `:focus-within`; re-tested with real Tab key presses | Fixed |
+| [#57](https://github.com/J-Codes-Walkz/CardVault/issues/57) | My Cards table: card name overlapped the Set column, "Base Set #3" wrapped, Edit and Remove stacked, notes were loose text (Jamie's manual test) | Fixed column widths, one-line Set/Status/Quantity, compact buttons that still meet the 44px tap size, notes in a contained box, stacked layout below 900px; checked at six widths by the browser test, including that the buttons stay inside the table | Fixed |
+| [#58](https://github.com/J-Codes-Walkz/CardVault/issues/58) | Card page lost typed text: submitting the review form threw away unsaved My Cards notes, and the other way round (Jamie's manual test) | One form per page: reviews are written on their own page via a Write a review button | Fixed |
 
 Found and fixed while building, before they reached the live site:
 

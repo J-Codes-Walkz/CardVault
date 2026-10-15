@@ -250,11 +250,15 @@ class CardDetailTests(TestCase):
         self.assertContains(response, "Log in to write a review")
         self.assertNotIn("entry_form", response.context)
 
-    def test_logged_in_user_sees_both_forms(self):
+    def test_logged_in_user_sees_one_form_and_a_review_button(self):
         self.client.force_login(self.ash)
         response = self.client.get(self.url)
         self.assertContains(response, "Add to My Cards")
-        self.assertContains(response, "Submit review")
+        review_url = reverse("cards:add_review", args=[self.card.pk])
+        self.assertContains(response, f'href="{review_url}"')
+        # One form only, so typing in it can never be lost by
+        # submitting another form on the same page.
+        self.assertEqual(response.content.decode().count("<form"), 2)
 
     def test_unknown_card_is_404(self):
         response = self.client.get(reverse("cards:card_detail", args=[999]))
@@ -287,7 +291,7 @@ class CardDetailTests(TestCase):
         theirs_url = reverse("cards:edit_review", args=[theirs.pk])
         self.assertContains(response, mine_url)
         self.assertNotContains(response, theirs_url)
-        self.assertNotContains(response, "Submit review")
+        self.assertNotContains(response, "Write a review")
 
 
 class ReviewCrudTests(TestCase):

@@ -17,35 +17,41 @@
     <caption class="visually-hidden">Your cards</caption>
     <thead>
         <tr>
-            <th scope="col">Card</th>
-            <th scope="col">Set</th>
-            <th scope="col">Status</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Notes</th>
-            <th scope="col"><span class="visually-hidden">Actions</span></th>
+            <th scope="col" class="col-card">Card</th>
+            <th scope="col" class="col-set">Set</th>
+            <th scope="col" class="col-status">Status</th>
+            <th scope="col" class="col-qty">Quantity</th>
+            <th scope="col" class="col-notes">Notes</th>
+            <th scope="col" class="col-actions"><span class="visually-hidden">Actions</span></th>
         </tr>
     </thead>
     <tbody>
         {% for entry in entries %}
         <tr>
-            <td data-label="Card">
+            <td data-label="Card" class="col-card">
                 <a class="entry-card" href="{% url 'cards:card_detail' entry.card.pk %}">
                     {% if entry.card.image_url %}
                     <img src="{{ entry.card.image_url }}" alt="" width="48" height="66" data-fallback="{% static 'images/card-placeholder.svg' %}">
                     {% else %}
                     <img src="{% static 'images/card-placeholder.svg' %}" alt="" width="48" height="66">
                     {% endif %}
-                    {{ entry.card.name }}
+                    <span class="entry-card-name">{{ entry.card.name }}</span>
                 </a>
             </td>
-            <td data-label="Set">{{ entry.card.card_set.name }} #{{ entry.card.number }}</td>
-            <td data-label="Status">{{ entry.get_status_display }}</td>
-            <td data-label="Quantity">{{ entry.quantity }}</td>
-            <td data-label="Notes">{{ entry.notes|default:"-" }}</td>
-            <td>
+            <td data-label="Set" class="col-set">{{ entry.card.card_set.name }} #{{ entry.card.number }}</td>
+            <td data-label="Status" class="col-status">{{ entry.get_status_display }}</td>
+            <td data-label="Quantity" class="col-qty">{{ entry.quantity }}</td>
+            <td data-label="Notes" class="col-notes">
+                {% if entry.notes %}
+                <div class="entry-notes">{{ entry.notes|linebreaksbr }}</div>
+                {% else %}
+                <span class="no-notes">None</span>
+                {% endif %}
+            </td>
+            <td class="col-actions">
                 <div class="entry-actions">
-                    <a class="button" href="{% url 'collection:edit_entry' entry.pk %}">Edit<span class="visually-hidden"> {{ entry.card.name }}</span></a>
-                    <a class="button button-quiet" href="{% url 'collection:delete_entry' entry.pk %}">Remove<span class="visually-hidden"> {{ entry.card.name }}</span></a>
+                    <a class="button button-small" href="{% url 'collection:edit_entry' entry.pk %}">Edit<span class="visually-hidden"> {{ entry.card.name }}</span></a>
+                    <a class="button button-quiet button-small" href="{% url 'collection:delete_entry' entry.pk %}">Remove<span class="visually-hidden"> {{ entry.card.name }}</span></a>
                 </div>
             </td>
         </tr>

@@ -238,6 +238,11 @@ h2 {
     background-color: var(--paper);
 }
 
+/* Compact buttons for table rows; still at least 44px tall to tap. */
+.button-small {
+    padding: 0.5rem 0.875rem;
+}
+
 .button-danger {
     background-color: var(--danger);
     border-color: transparent;
@@ -540,27 +545,85 @@ h2 {
 
 .entry-table th,
 .entry-table td {
-    padding: 0.75rem 0.5rem;
+    padding: 0.75rem;
     text-align: left;
     vertical-align: middle;
     border-bottom: 1px solid var(--line);
 }
 
 .entry-card {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 0.75rem;
+    min-width: 0;
     font-weight: 700;
+}
+
+.entry-card img {
+    flex-shrink: 0;
+}
+
+.entry-card-name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+/* Notes sit in their own contained box. */
+.entry-notes {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+    overflow-wrap: anywhere;
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 0.375rem;
+}
+
+.no-notes {
+    color: var(--ink-soft);
 }
 
 .entry-actions {
     display: flex;
-    flex-wrap: wrap;
     gap: 0.5rem;
 }
 
-/* Phones: each table row becomes a stacked card with labels. */
-@media (max-width: 767px) {
+/* Wide screens: fixed column widths, so nothing overlaps or wraps
+   awkwardly. The Notes column takes whatever space is left. */
+@media (min-width: 900px) {
+    .entry-table {
+        table-layout: fixed;
+    }
+
+    .entry-table .col-card {
+        width: 12.5rem;
+    }
+
+    .entry-table .col-set {
+        width: 8.5rem;
+    }
+
+    .entry-table .col-status {
+        width: 6rem;
+    }
+
+    .entry-table .col-qty {
+        width: 6.5rem;
+    }
+
+    .entry-table .col-actions {
+        width: 12.5rem;
+    }
+
+    .col-set,
+    .col-status,
+    .col-qty {
+        white-space: nowrap;
+    }
+}
+
+/* Phones and tablets: each table row becomes a stacked card with
+   labels, because six columns do not fit below 900px. */
+@media (max-width: 899px) {
     .entry-table thead {
         display: none;
     }
@@ -588,6 +651,15 @@ h2 {
     .entry-table td[data-label]::before {
         content: attr(data-label) ": ";
         font-weight: 700;
+    }
+
+    .entry-table .col-notes .entry-notes {
+        margin-top: 0.25rem;
+    }
+
+    .entry-actions {
+        flex-wrap: wrap;
+        padding-top: 0.25rem;
     }
 }
 
