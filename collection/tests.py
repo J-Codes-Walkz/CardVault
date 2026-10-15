@@ -6,7 +6,7 @@ from django.db import IntegrityError, transaction
 from django.test import TestCase
 from django.urls import reverse
 
-from cards.models import Card, CardSet
+from cards.models import Card, CardSet, Review
 
 from .models import CollectionEntry
 
@@ -298,3 +298,50 @@ class EntryDeleteTests(TestCase):
         url = reverse("collection:delete_entry", args=[theirs.pk])
         self.assertEqual(self.client.post(url).status_code, 404)
         self.assertTrue(CollectionEntry.objects.filter(pk=theirs.pk).exists())
+
+
+class MyCardsRatingTests(TestCase):
+    """My Cards shows my own star rating, or a Rate it link."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.ash = User.objects.create_user("ash", password=PASSWORD)
+        cls.misty = User.objects.create_user("misty", password=PASSWORD)
+        cls.rated = make_card("Raichu", 14)
+        cls.unrated = make_card("Pikachu", 58)
+        for card in (cls.rated, cls.unrated):
+            CollectionEntry.objects.create(
+                user=cls.ash, card=card, notes="Bought at a car boot sale"
+            )
+        Review.objects.create(
+            user=cls.ash, card=cls.rated, rating=4, body="Great"
+        )
+        Review.objects.create(
+            user=cls.misty, card=cls.unrated, rating=1, body="Meh"
+        )
+
+    def setUp(self):
+        self.client.force_login(self.ash)
+        self.response = self.client.get(reverse("collection:my_cards"))
+
+    def test_my_rating_shows_as_stars(self):
+        self.assertContains(self.response, "★★★★☆")
+        self.assertContains(self.response, "4 out of 5 stars for Raichu")
+
+    def test_unrated_card_offers_rate_it(self):
+        url = reverse("cards:add_review", args=[self.unrated.pk])
+        self.assertContains(self.response, f'href="{url}"')
+
+    def test_other_users_ratings_are_not_shown_as_mine(self):
+        self.assertNotContains(self.response, "★☆☆☆☆")
+
+    def test_notes_show_as_a_preview(self):
+        self.assertContains(self.response, "entry-note-preview")
+        self.assertContains(self.response, "Bought at a car boot sale")
+
+    def test_ratings_are_read_in_one_query(self):
+        url = reverse("collection:my_cards")
+        # Session, user, entries with ratings, and "has any entries":
+        # the same 4 queries however many cards are on the list.
+        with self.assertNumQueries(4):
+            self.client.get(url)

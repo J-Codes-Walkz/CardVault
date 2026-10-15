@@ -1,12 +1,13 @@
 """Views for a user's own cards: list, add, edit and remove."""
 from django.contrib import messages
+from django.db.models import OuterRef, Subquery
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from accounts.mixins import FormErrorMixin, LoginMessageMixin
-from cards.models import Card
+from cards.models import Card, Review
 
 from .forms import CollectionEntryForm
 from .models import CollectionEntry
@@ -32,6 +33,13 @@ class MyCardsView(LoginMessageMixin, ListView):
     def get_queryset(self):
         entries = self.request.user.collection_entries
         entries = entries.select_related("card", "card__card_set")
+        # The user's own star rating for each card, if they have
+        # reviewed it, read alongside the entries in the same query.
+        my_reviews = Review.objects.filter(
+            user=OuterRef("user"), card=OuterRef("card")
+        )
+        my_rating = Subquery(my_reviews.values("rating")[:1])
+        entries = entries.annotate(my_rating=my_rating)
         self.tab = self.request.GET.get("status", "all")
         if self.tab in STATUS_TABS:
             entries = entries.filter(status=STATUS_TABS[self.tab])

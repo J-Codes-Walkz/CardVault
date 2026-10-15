@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static card_extras %}
 
 {% block head_title %}My Cards | CardVault{% endblock head_title %}
 
@@ -21,7 +21,7 @@
             <th scope="col" class="col-set">Set</th>
             <th scope="col" class="col-status">Status</th>
             <th scope="col" class="col-qty">Quantity</th>
-            <th scope="col" class="col-notes">Notes</th>
+            <th scope="col" class="col-rating">My rating</th>
             <th scope="col" class="col-actions"><span class="visually-hidden">Actions</span></th>
         </tr>
     </thead>
@@ -37,15 +37,18 @@
                     {% endif %}
                     <span class="entry-card-name">{{ entry.card.name }}</span>
                 </a>
+                {% if entry.notes %}
+                <p class="entry-note-preview" title="{{ entry.notes }}"><span class="visually-hidden">Notes: </span>{{ entry.notes }}</p>
+                {% endif %}
             </td>
             <td data-label="Set" class="col-set">{{ entry.card.card_set.name }} #{{ entry.card.number }}</td>
             <td data-label="Status" class="col-status">{{ entry.get_status_display }}</td>
             <td data-label="Quantity" class="col-qty">{{ entry.quantity }}</td>
-            <td data-label="Notes" class="col-notes">
-                {% if entry.notes %}
-                <div class="entry-notes">{{ entry.notes|linebreaksbr }}</div>
+            <td data-label="My rating" class="col-rating">
+                {% if entry.my_rating %}
+                <a class="entry-rating" href="{% url 'cards:card_detail' entry.card.pk %}#reviews-heading"><span class="stars" aria-hidden="true">{{ entry.my_rating|stars }}</span><span class="visually-hidden">{{ entry.my_rating }} out of 5 stars for {{ entry.card.name }}</span></a>
                 {% else %}
-                <span class="no-notes">None</span>
+                <a href="{% url 'cards:add_review' entry.card.pk %}">Rate it<span class="visually-hidden"> {{ entry.card.name }}</span></a>
                 {% endif %}
             </td>
             <td class="col-actions">

@@ -339,7 +339,7 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Each entry shows image, name, set, status and quantity, newest first.
+- [ ] Each entry shows image, name, set, status, quantity, my own star rating (or a Rate it link) and a one-line preview of my notes, newest first.
 - [ ] A tab or filter switches between Owned, Wanted and All.
 - [ ] Only my own entries are listed.
 - [ ] An empty list shows "Your cards list is empty. Browse cards to add your first one." with a link to the catalogue.

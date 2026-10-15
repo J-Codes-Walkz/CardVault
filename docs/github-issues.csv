@@ -145,7 +145,7 @@ Tasks:
 US12,US12: View my cards,My cards (owned and wanted),Must have,"As a logged-in user, I want to see every card on my list, owned and wanted, so that I know what I have and what I'm still looking for.
 
 Acceptance criteria:
-- [ ] Each entry shows image, name, set, status and quantity, newest first.
+- [ ] Each entry shows image, name, set, status, quantity, my own star rating (or a Rate it link) and a one-line preview of my notes, newest first.
 - [ ] A tab or filter switches between Owned, Wanted and All.
 - [ ] Only my own entries are listed.
 - [ ] An empty list shows ""Your cards list is empty. Browse cards to add your first one."" with a link to the catalogue.

@@ -211,8 +211,10 @@ From any card's page a logged-in user can:
   list goes to that entry's edit page instead of creating a second
   one.
 - **Read** (US12): My Cards lists every entry with All, Owned and
-  Wanted tabs, with each card's notes in a neat contained box. On
-  phones and small tablets each row stacks into a labelled card.
+  Wanted tabs. Each row shows your own star rating for the card (or a
+  Rate it link) and a one-line preview of your notes; hover for the
+  whole note, or open Edit. On phones and small tablets each row
+  stacks into a labelled card showing the full note.
 - **Update** (US13): change the status, quantity or notes.
 - **Delete** (US14): remove the entry after a confirmation page that
   names the card. The card itself stays in the catalogue.

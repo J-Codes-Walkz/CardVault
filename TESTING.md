@@ -9,7 +9,7 @@ CardVault is tested in four ways:
 |---|---|---|
 | [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 48 of 48 checks passed |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
-| [Automated testing](#automated-testing) | 139 Django tests, including two-user ownership and security tests | 139 passed |
+| [Automated testing](#automated-testing) | 144 Django tests, including two-user ownership and security tests | 144 passed |
 | [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only | No violations (one keyboard bug found and fixed) |
 | [Security testing](#security-testing) | Headers, log in limits, admin access, secrets, dependencies, code scanning | No issues found |
 | [Validators](#validators) | HTML (W3C), CSS (Jigsaw), JavaScript, Python (PEP8) | 0 errors |
@@ -72,7 +72,8 @@ site on 12 October 2026, with the expected message at each step
 |---|---|---|---|---|
 | US11 | Add a card with quantity 0 | Not saved; "Please correct the errors below and try again." | Pass | [add-card-invalid-quantity](./docs/images/screenshots/add-card-invalid-quantity.png) |
 | US11 | Add a card as Owned, quantity 2, with a note | "Alakazam was added to your cards." and it is listed in My Cards | Pass | [add-card-success](./docs/images/screenshots/add-card-success.png) |
-| US12 | View My Cards with a long note at 320, 375, 768, 900, 1024 and 1440px | No sideways scrolling; below 900px each entry stacks as a labelled card; from 900px the card name never overlaps the Set column, Edit and Remove sit side by side inside the table, and notes sit in a contained box | Pass after fix (bug #57) | [my-cards-mobile](./docs/images/screenshots/my-cards-mobile.png) |
+| US12 | View My Cards with a long note at 320, 375, 768, 900, 1024 and 1440px | No sideways scrolling; below 900px each entry stacks as a labelled card; from 900px the card name never overlaps the Set column, Edit and Remove sit side by side inside the table (notes were later moved to a one-line preview; see the next row) | Pass after fix (bug #57) | [my-cards-mobile](./docs/images/screenshots/my-cards-mobile.png) |
+| US12 | View My Cards after reviewing one card but not another (Jamie asked to replace the large notes box with stars, 15 October) | A My rating column with my stars, or a Rate it link; notes as a one-line preview under the card name (full note on hover, on the Edit page and on phones); rows about 100px tall instead of about 260px | Pass | |
 | US11 | Open the same card again | Card page says "On your list" instead of showing the add form | Pass | |
 | US11 | Try to add the same card again | Sent to that entry's edit page with "You already have Alakazam on your list. Edit that entry to change it." | Pass | |
 | US13 | Edit the entry to Wanted, quantity 3 | "Your entry for Alakazam was updated." and the list shows Wanted, 3 | Pass | [edit-card-form](./docs/images/screenshots/edit-card-form.png), [edit-card-success](./docs/images/screenshots/edit-card-success.png) |
@@ -131,13 +132,13 @@ Run with:
 python manage.py test
 ```
 
-139 tests, all passing on 15 October 2026:
+144 tests, all passing on 15 October 2026:
 
 | File | Tests | What they check |
 |---|---|---|
 | `accounts/tests.py` | 47 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (the sixth wrong password is blocked, even a correct one while locked), and the admin log in going through django-allauth (staff in, others refused, unsafe `next` addresses ignored); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie, and an email address refused as a username |
 | `cards/tests.py` | 63 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404; search across name, set and rarity in any order ("holo rare", "rare holo", "holos"; "common" not matching Uncommon), the Rarity and Set filters alone and combined, unknown filter values ignored, filters kept in page links |
-| `collection/tests.py` | 29 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged |
+| `collection/tests.py` | 34 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged; My Cards shows my own rating (not other people's) or a Rate it link, the notes preview, and a fixed number of database queries however long the list |
 
 The two-user tests are the most important: they prove one user
 cannot view, change or delete another user's records by guessing an
