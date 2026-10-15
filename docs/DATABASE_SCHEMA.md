@@ -113,6 +113,13 @@ reasoning at each step:
   or `WANTED` at any one time, never both, which is what makes
   "Got it!" (US17) a one-field status change instead of a move between
   tables.
+- **Many collectors, one card: no duplicates.** There is exactly one
+  `Card` row for each printed card, shared by everyone. When a user
+  adds Charizard to My Cards, the database stores one small
+  `CollectionEntry` row (user, card, status, quantity), not a copy of
+  the card or its picture. So 10,000 users owning Charizard means one
+  Charizard row, one picture link and 10,000 rows of a few numbers
+  each. This is why `Card` and `CollectionEntry` are separate tables.
 - **Quantity can't go to zero.** A check constraint keeps `quantity`
   at 1 or more. "I no longer have this card" means deleting the row
   (US14), not setting quantity to 0, which keeps "do I own this

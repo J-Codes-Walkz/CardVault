@@ -474,8 +474,11 @@ cd <your-repo>
   community-run, unofficial API. It was called **once**, by
   `scripts/build_base_set_fixture.py`, to build
   `cards/fixtures/base_set_cards.json` (the 102 Base Set cards). The
-  live site never calls the API; card pictures are shown from the
-  API's image host, `images.pokemontcg.io`. Pok&eacute;mon card names
+  live site never calls the API, so it keeps working if the API goes
+  down. Card pictures are linked from the API's image host,
+  `images.pokemontcg.io`; if that server cannot be reached, a small
+  script (`static/js/image-fallback.js`) shows CardVault's own
+  placeholder instead. Pok&eacute;mon card names
   and artwork belong to their owners (see the disclaimer at the top of
   this README).
 - Placeholder/UI imagery: *(credit here if you use any stock icons or

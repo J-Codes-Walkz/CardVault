@@ -9,7 +9,7 @@ CardVault is tested in four ways:
 |---|---|---|
 | [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 41 of 41 checks passed |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
-| [Automated testing](#automated-testing) | 111 Django tests, including two-user ownership and security tests | 111 passed |
+| [Automated testing](#automated-testing) | 113 Django tests, including two-user ownership and security tests | 113 passed |
 | [Security testing](#security-testing) | Headers, log in limits, admin access, secrets, dependencies, code scanning | No issues found |
 | [Validators](#validators) | HTML (W3C), CSS (Jigsaw), JavaScript, Python (PEP8) | 0 errors |
 
@@ -112,12 +112,12 @@ Run with:
 python manage.py test
 ```
 
-111 tests, all passing on 15 October 2026:
+113 tests, all passing on 15 October 2026:
 
 | File | Tests | What they check |
 |---|---|---|
 | `accounts/tests.py` | 31 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (the sixth wrong password is blocked, even a correct one while locked), and the admin log in going through django-allauth (staff in, others refused, unsafe `next` addresses ignored) |
-| `cards/tests.py` | 51 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404 |
+| `cards/tests.py` | 53 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404 |
 | `collection/tests.py` | 29 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged |
 
 The two-user tests are the most important: they prove one user
@@ -147,6 +147,7 @@ what each protection does is explained in [SECURITY.md](./SECURITY.md).
 | Deployment settings | `python manage.py check --deploy` with production settings | No issues |
 | Security headers on the live site | `curl -I` on the home page | `Content-Security-Policy`, `Permissions-Policy`, `Strict-Transport-Security` and `X-Frame-Options: DENY` all present |
 | Content Security Policy breaks nothing | Every public, logged-in and admin page loaded in Chrome, watching the console | No violations; the only console error was the missing favicon (#35) |
+| Card picture server unreachable | Locally pointed one card at an unreachable host and another at a missing file, then loaded the catalogue and card pages in Chrome | Unreachable host: CardVault's placeholder shown. Missing file: the image server sends its own "not found" picture, which the browser shows. Other pictures unaffected |
 | Admin log in | Open `/admin/login/` on the live site while logged out | Redirected to the rate-limited Log in page |
 | Password guessing | Automated test: 5 wrong passwords, then a 6th | "Too many failed login attempts." |
 | Other users' data | Two-user automated tests on every edit and delete page | 404 and nothing changed |

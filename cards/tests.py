@@ -438,3 +438,22 @@ class BaseSetCardsFixtureTests(TestCase):
         self.assertEqual(Card.objects.count(), 105)
         names = Card.objects.filter(pk__lte=3).values_list("name", flat=True)
         self.assertEqual(list(names), ["AAA", "BBB", "CCC"])
+
+
+class ImageFallbackTests(TestCase):
+    """Linked card pictures fall back to the placeholder if they fail."""
+
+    def test_linked_pictures_name_the_placeholder_fallback(self):
+        card_set = CardSet.objects.create(name="Set", quantity=1)
+        card = make_card(card_set)
+        card.image_url = "https://images.pokemontcg.io/base1/4.png"
+        card.save()
+        fallback = 'data-fallback="/static/images/card-placeholder.svg"'
+        for url in (reverse("cards:card_list"), card.get_absolute_url()):
+            with self.subTest(url=url):
+                self.assertContains(self.client.get(url), fallback)
+
+    def test_fallback_script_loads_in_the_head(self):
+        response = self.client.get(reverse("home"))
+        head = response.content.decode().split("</head>")[0]
+        self.assertIn("js/image-fallback.js", head)
