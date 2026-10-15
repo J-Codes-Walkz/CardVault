@@ -134,6 +134,10 @@ red, yellow and blue accents.
   tablet, 1 mobile), and a table for My Cards on wide screens that
   becomes stacked cards below 900px.
 
+![The first-visit intro: the vault emblem and an Enter the vault button on the cosmic starfield](./docs/images/screenshots/intro.png)
+
+![A card page in dark mode, with the Rare Holo badge and Poké Ball ratings](./docs/images/screenshots/card-detail-dark.png)
+
 ## Database design
 
 PostgreSQL in every environment, reached entirely through Django's

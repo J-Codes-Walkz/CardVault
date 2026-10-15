@@ -7,7 +7,7 @@ CardVault is tested in four ways:
 
 | Method | What it covers | Result (15 October 2026) |
 |---|---|---|
-| [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | LIVE_COUNT |
+| [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 57 of 57 checks passed |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
 | [Automated testing](#automated-testing) | 150 Django tests, including two-user ownership and security tests | 150 passed |
 | [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only | No violations (one keyboard bug found and fixed) |
