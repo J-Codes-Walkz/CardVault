@@ -184,3 +184,91 @@ class NavigationTests(TestCase):
         self.assertContains(response, reverse("collection:my_cards"))
         self.assertContains(response, "Log out")
         self.assertNotContains(response, reverse("account_signup"))
+
+
+class SecurityHeaderTests(TestCase):
+    """Every page carries the Content Security Policy headers."""
+
+    def test_content_security_policy(self):
+        response = self.client.get(reverse("home"))
+        csp = response.headers["Content-Security-Policy"]
+        self.assertIn("default-src 'self'", csp)
+        self.assertIn("script-src 'self'", csp)
+        self.assertIn("frame-ancestors 'none'", csp)
+        self.assertNotIn("unsafe-inline", csp)
+
+    def test_permissions_policy(self):
+        response = self.client.get(reverse("home"))
+        self.assertIn("camera=()", response.headers["Permissions-Policy"])
+
+    def test_pages_cannot_be_framed(self):
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.headers["X-Frame-Options"], "DENY")
+
+    def test_no_inline_scripts_in_the_page(self):
+        response = self.client.get(reverse("home"))
+        self.assertNotContains(response, "<script>")
+
+
+class LoginRateLimitTests(TestCase):
+    """django-allauth stops repeated password guessing."""
+
+    def test_sixth_wrong_password_is_blocked(self):
+        User.objects.create_user("misty", password=STRONG_PASSWORD)
+        url = reverse("account_login")
+        data = {"login": "misty", "password": "Wrong-Pass-2026"}
+        for _ in range(5):
+            self.client.post(url, data)
+        response = self.client.post(url, data)
+        self.assertContains(response, "Too many failed login attempts.")
+
+    def test_correct_password_is_also_blocked_while_locked(self):
+        User.objects.create_user("misty", password=STRONG_PASSWORD)
+        url = reverse("account_login")
+        wrong = {"login": "misty", "password": "Wrong-Pass-2026"}
+        for _ in range(5):
+            self.client.post(url, wrong)
+        right = {"login": "misty", "password": STRONG_PASSWORD}
+        response = self.client.post(url, right)
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+
+class AdminLoginTests(TestCase):
+    """The Django admin's log in goes through django-allauth."""
+
+    def test_logged_out_visitor_is_sent_to_the_normal_log_in(self):
+        response = self.client.get(reverse("admin:login"))
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith(reverse("account_login")))
+
+    def test_admin_password_form_cannot_be_used(self):
+        User.objects.create_superuser("boss", password=STRONG_PASSWORD)
+        data = {"username": "boss", "password": STRONG_PASSWORD}
+        response = self.client.post(reverse("admin:login"), data)
+        self.assertEqual(response.status_code, 302)
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+    def test_staff_go_on_to_the_admin(self):
+        boss = User.objects.create_superuser("boss", password=STRONG_PASSWORD)
+        self.client.force_login(boss)
+        response = self.client.get(reverse("admin:login"))
+        self.assertRedirects(response, reverse("admin:index"))
+
+    def test_staff_can_open_the_admin(self):
+        boss = User.objects.create_superuser("boss", password=STRONG_PASSWORD)
+        self.client.force_login(boss)
+        response = self.client.get(reverse("admin:index"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_users_who_are_not_staff_are_refused(self):
+        user = User.objects.create_user("ash", password=STRONG_PASSWORD)
+        self.client.force_login(user)
+        response = self.client.get(reverse("admin:login"))
+        self.assertEqual(response.status_code, 403)
+
+    def test_unsafe_next_address_is_ignored(self):
+        boss = User.objects.create_superuser("boss", password=STRONG_PASSWORD)
+        self.client.force_login(boss)
+        url = reverse("admin:login") + "?next=https://evil.example/"
+        response = self.client.get(url)
+        self.assertRedirects(response, reverse("admin:index"))

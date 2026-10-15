@@ -2,7 +2,12 @@
 from django.contrib import admin
 from django.urls import include, path
 
+from accounts.views import admin_login
 from cards.views import HomeView
+
+# The admin's own login form has no limit on password guesses, so
+# admin log ins go through django-allauth instead.
+admin.site.login = admin_login
 
 urlpatterns = [
     path("admin/", admin.site.urls),

@@ -55,6 +55,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "cardvault.middleware.SecurityHeadersMiddleware",
 ]
 
 ROOT_URLCONF = "cardvault.urls"
@@ -88,6 +89,16 @@ DATABASES = {
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Cache in the database, so the log in rate limits below are shared by
+# every web process and survive restarts. The table is created by
+# `createcachetable` in the Procfile's release step.
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "cardvault_cache",
+    }
+}
+
 # --- Authentication (django-allauth) --------------------------------------
 # Django's built-in User model is used as-is, so there is no
 # AUTH_USER_MODEL setting.
@@ -103,6 +114,9 @@ ACCOUNT_SIGNUP_FIELDS = ["username*", "password1*", "password2*"]
 # No email address is collected, so there is nothing to verify.
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_SESSION_REMEMBER = True
+# django-allauth's default rate limits stay on: at most 30 log ins a
+# minute per IP address, and after 5 wrong passwords for one username
+# that username is locked for 5 minutes (10 a minute per IP address).
 
 LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "collection:my_cards"
@@ -149,6 +163,7 @@ if not DEBUG and not TESTING:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_HTTPONLY = True
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
