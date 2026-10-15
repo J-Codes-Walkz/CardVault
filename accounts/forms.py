@@ -12,6 +12,8 @@ TOO_YOUNG = "Sorry, you need to be 13 or older to create a CardVault account."
 NOT_A_REAL_DATE = "Please enter your real date of birth."
 WRONG_PASSWORD = "That password is not correct."
 DATE_OF_BIRTH_HELP = "Used only to check your age. It is not stored."
+NO_EMAIL_USERNAME = "Please don't use an email address as your username: "
+NO_EMAIL_USERNAME += "usernames are shown publicly next to your reviews."
 
 
 def age_on(born, today):
@@ -51,6 +53,12 @@ class SignupForm(AllauthSignupForm):
         self.too_young = False
         order = ["username", "date_of_birth", "password1", "password2"]
         self.order_fields(order)
+
+    def clean_username(self):
+        username = super().clean_username()
+        if "@" in username:
+            raise forms.ValidationError(NO_EMAIL_USERNAME)
+        return username
 
     def clean_date_of_birth(self):
         born = self.cleaned_data["date_of_birth"]

@@ -225,7 +225,7 @@ class CatalogueTests(TestCase):
     def test_search_with_no_match(self):
         response = self.client.get(reverse("cards:card_list") + "?q=zzz")
         self.assertContains(response, 'No cards match "zzz".')
-        self.assertContains(response, "Try a different name.")
+        self.assertContains(response, "Try a different name, set or rarity.")
 
     def test_search_term_is_kept_in_pagination_links(self):
         response = self.client.get(reverse("cards:card_list") + "?q=card")
@@ -457,3 +457,81 @@ class ImageFallbackTests(TestCase):
         response = self.client.get(reverse("home"))
         head = response.content.decode().split("</head>")[0]
         self.assertIn("js/image-fallback.js", head)
+
+
+class SearchAndFilterTests(TestCase):
+    """US08 and US09: search by name, set or rarity, and filter."""
+
+    @classmethod
+    def setUpTestData(cls):
+        base = CardSet.objects.create(name="Base Set", quantity=102)
+        jungle = CardSet.objects.create(name="Jungle", quantity=64)
+        cls.jungle = jungle
+        rarity = Card.Rarity
+        cards = [
+            ("Charizard", base, 4, rarity.RARE_HOLO),
+            ("Raichu", base, 14, rarity.RARE_HOLO),
+            ("Electabuzz", base, 20, rarity.RARE),
+            ("Charmeleon", base, 24, rarity.UNCOMMON),
+            ("Charmander", base, 46, rarity.COMMON),
+            ("Jolteon", jungle, 4, rarity.RARE_HOLO),
+        ]
+        for name, card_set, number, card_rarity in cards:
+            Card.objects.create(
+                name=name, card_set=card_set, number=number,
+                rarity=card_rarity,
+            )
+
+    def names(self, query_string):
+        url = reverse("cards:card_list") + query_string
+        response = self.client.get(url)
+        return sorted(card.name for card in response.context["cards"])
+
+    def test_rarity_words_in_either_order(self):
+        holos = ["Charizard", "Jolteon", "Raichu"]
+        for query in ("holo", "holo rare", "Rare Holo", "holos"):
+            with self.subTest(query=query):
+                self.assertEqual(self.names(f"?q={query}"), holos)
+
+    def test_common_does_not_match_uncommon(self):
+        self.assertEqual(self.names("?q=common"), ["Charmander"])
+
+    def test_words_combine_name_set_and_rarity(self):
+        self.assertEqual(self.names("?q=char+holo"), ["Charizard"])
+        self.assertEqual(self.names("?q=jungle"), ["Jolteon"])
+
+    def test_rarity_filter(self):
+        self.assertEqual(self.names("?rarity=RARE"), ["Electabuzz"])
+
+    def test_set_filter(self):
+        query = f"?set={self.jungle.pk}"
+        self.assertEqual(self.names(query), ["Jolteon"])
+
+    def test_search_and_filters_combine(self):
+        query = f"?q=holo&set={self.jungle.pk}&rarity=RARE_HOLO"
+        self.assertEqual(self.names(query), ["Jolteon"])
+
+    def test_unknown_filter_values_are_ignored(self):
+        self.assertEqual(len(self.names("?rarity=SHINY&set=abc")), 6)
+
+    def test_dropdowns_keep_the_chosen_values(self):
+        url = reverse("cards:card_list") + "?rarity=RARE"
+        response = self.client.get(url)
+        self.assertContains(response, '<option value="RARE" selected>')
+
+    def test_filters_are_kept_in_pagination_links(self):
+        base = CardSet.objects.get(name="Base Set")
+        for number in range(50, 63):
+            Card.objects.create(
+                name=f"Filler {number}", card_set=base, number=number,
+                rarity=Card.Rarity.COMMON,
+            )
+        url = reverse("cards:card_list") + "?rarity=COMMON"
+        response = self.client.get(url)
+        self.assertContains(response, "?rarity=COMMON&amp;page=2")
+
+    def test_clear_link_shown_only_when_filtering(self):
+        clear = "Clear search and filters"
+        url = reverse("cards:card_list")
+        self.assertNotContains(self.client.get(url), clear)
+        self.assertContains(self.client.get(url + "?rarity=RARE"), clear)

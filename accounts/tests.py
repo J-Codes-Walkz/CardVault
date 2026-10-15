@@ -433,3 +433,18 @@ class PrivacyAndAccessibilityPageTests(TestCase):
         data = {"login": "misty", "password": STRONG_PASSWORD}
         response = self.client.post(reverse("account_login"), data)
         self.assertNotIn("messages", response.cookies)
+
+
+class UsernameRuleTests(TestCase):
+    """Usernames are public, so an email address cannot be one."""
+
+    def test_email_address_username_is_refused(self):
+        data = {
+            "username": "someone@example.com",
+            "date_of_birth": ADULT_BIRTHDAY,
+            "password1": STRONG_PASSWORD,
+            "password2": STRONG_PASSWORD,
+        }
+        response = self.client.post(reverse("account_signup"), data)
+        self.assertContains(response, "shown publicly next to your reviews")
+        self.assertFalse(User.objects.exists())

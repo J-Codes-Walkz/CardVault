@@ -6,15 +6,36 @@
 <h1>Browse cards</h1>
 
 <form class="search-form" method="get" action="{% url 'cards:card_list' %}" role="search">
-    <label for="id_q">Search by card name</label>
-    <div class="search-row">
-        <input type="search" name="q" id="id_q" value="{{ query }}">
+    <div class="search-field search-text">
+        <label for="id_q">Search by name, set or rarity</label>
+        <input type="search" name="q" id="id_q" value="{{ query }}" aria-describedby="search-help">
+        <p class="field-help" id="search-help">For example: Charizard, holo rare, common</p>
+    </div>
+    <div class="search-field">
+        <label for="id_rarity">Rarity</label>
+        <select name="rarity" id="id_rarity">
+            <option value="">All rarities</option>
+            {% for value, label in rarities %}
+            <option value="{{ value }}"{% if value == rarity %} selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="search-field">
+        <label for="id_set">Set</label>
+        <select name="set" id="id_set">
+            <option value="">All sets</option>
+            {% for card_set in card_sets %}
+            <option value="{{ card_set.pk }}"{% if card_set.pk|stringformat:"s" == set_id %} selected{% endif %}>{{ card_set.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="search-field search-submit">
         <button type="submit" class="button">Search</button>
     </div>
 </form>
 
-{% if query %}
-<p class="result-count">{{ paginator.count }} card{{ paginator.count|pluralize }} found for "{{ query }}". <a href="{% url 'cards:card_list' %}">Clear search</a></p>
+{% if filtering %}
+<p class="result-count">{{ paginator.count }} card{{ paginator.count|pluralize }} found{% if query %} for "{{ query }}"{% endif %}. <a href="{% url 'cards:card_list' %}">Clear search and filters</a></p>
 {% endif %}
 
 {% if cards %}
@@ -24,7 +45,9 @@
     {% endfor %}
 </div>
 {% elif query %}
-<p>No cards match "{{ query }}". Try a different name.</p>
+<p>No cards match "{{ query }}". Try a different name, set or rarity.</p>
+{% elif filtering %}
+<p>No cards match these filters.</p>
 {% else %}
 <p>There are no cards in the catalogue yet.</p>
 {% endif %}
@@ -32,17 +55,17 @@
 {% if is_paginated %}
 <nav class="pagination" aria-label="Pages">
     {% if page_obj.has_previous %}
-    <a href="?{% if query %}q={{ query|urlencode }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+    <a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
     {% endif %}
     {% for number in paginator.page_range %}
     {% if number == page_obj.number %}
     <span aria-current="page">{{ number }}</span>
     {% else %}
-    <a href="?{% if query %}q={{ query|urlencode }}&amp;{% endif %}page={{ number }}">{{ number }}</a>
+    <a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ number }}">{{ number }}</a>
     {% endif %}
     {% endfor %}
     {% if page_obj.has_next %}
-    <a href="?{% if query %}q={{ query|urlencode }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+    <a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Next</a>
     {% endif %}
 </nav>
 {% endif %}

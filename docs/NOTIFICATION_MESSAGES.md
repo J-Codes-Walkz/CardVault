@@ -14,6 +14,7 @@ are placeholders filled in per request.
 | Register: success (the new user is logged in straight away) | Success | Your account has been created. Welcome to CardVault, {username}! | US01 |
 | Register: username already used | Error | That username is already taken. Please choose another. | US01 |
 | Register: password too weak | Error | Django's own validator message naming the rule that was broken, for example "This password is too short. It must contain at least 8 characters.", "This password is too common.", "This password is entirely numeric." or "The password is too similar to the username." | US01 |
+| Register: email address as username | Error | Please don't use an email address as your username: usernames are shown publicly next to your reviews. | US01 |
 | Register: under 13 | Error | Sorry, you need to be 13 or older to create a CardVault account. (registration then stays closed for that session) | US29 |
 | Register: date of birth in the future or over 120 years ago | Error | Please enter your real date of birth. | US29 |
 | Delete account: wrong password | Error | That password is not correct. | US30 |

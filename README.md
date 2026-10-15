@@ -190,8 +190,13 @@ cards.
   and a row of featured cards.
 - **Catalogue** (US07): a responsive grid, 12 cards a page with
   page links; a placeholder image when a card has no picture.
-- **Search** (US08): partial, case-insensitive name search with a
-  result count and a clear-search link.
+- **Search** (US08): type any part of a card's name, set or rarity,
+  in any order: "char" finds Charizard, Charmeleon and Charmander;
+  "holo", "holo rare" and "rare holo" all find the holo cards;
+  "common" finds Commons but not Uncommons. Shows a result count and
+  a clear link.
+- **Filters** (US09): Rarity and Set dropdowns that combine with the
+  search and stay selected when moving between pages.
 - **Card page** (US10): set, number, rarity, average star rating and
   every review.
 
@@ -268,7 +273,6 @@ From any card's page a logged-in user can:
 
 ### Still to build
 
-- Filter the catalogue by set and rarity (US09)
 - My Cards totals, sorting and a one-click "Got it!" (US15 to US17)
 - Custom 404, 403 and 500 pages (US25)
 - The favicon and brand (#35)

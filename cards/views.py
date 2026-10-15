@@ -1,8 +1,9 @@
 """Views for the home page, the card catalogue and card reviews."""
 from django.contrib import messages
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.utils.http import urlencode
 from django.utils.functional import cached_property
 from django.views.generic import CreateView, DeleteView, DetailView
 from django.views.generic import ListView, TemplateView, UpdateView
@@ -11,7 +12,7 @@ from accounts.mixins import FormErrorMixin, LoginMessageMixin
 from collection.forms import CollectionEntryForm
 
 from .forms import ReviewForm
-from .models import Card
+from .models import Card, CardSet
 
 REVIEW_ADDED = "Thank you for submitting your review!"
 REVIEW_UPDATED = "Your review was updated successfully."
@@ -31,8 +32,34 @@ class HomeView(TemplateView):
         return context
 
 
+# The words in each rarity's name, e.g. RARE_HOLO -> {"rare", "holo"}.
+RARITY_WORDS = {
+    code: set(label.lower().split()) for code, label in Card.Rarity.choices
+}
+
+
+def search_cards(cards, query):
+    """Keep cards matching every word in the query, in any order.
+
+    Each word may match part of the card's name, part of its set's
+    name, or a whole word of its rarity: "holo rare" and "rare holo"
+    both find Rare Holo cards, and "common" finds Common cards but not
+    Uncommon ones. A plural such as "holos" also counts.
+    """
+    for word in query.lower().split():
+        forms = {word, word.removesuffix("s")}
+        match = Q(name__icontains=word) | Q(card_set__name__icontains=word)
+        rarities = [
+            code for code, words in RARITY_WORDS.items() if forms & words
+        ]
+        if rarities:
+            match |= Q(rarity__in=rarities)
+        cards = cards.filter(match)
+    return cards
+
+
 class CardListView(ListView):
-    """The catalogue: 12 cards a page, with an optional name search."""
+    """The catalogue: 12 cards a page, with search and filters."""
 
     template_name = "cards/card_list.html"
     context_object_name = "cards"
@@ -41,13 +68,31 @@ class CardListView(ListView):
     def get_queryset(self):
         cards = Card.objects.select_related("card_set")
         self.query = self.request.GET.get("q", "").strip()
+        self.rarity = self.request.GET.get("rarity", "")
+        self.set_id = self.request.GET.get("set", "")
         if self.query:
-            cards = cards.filter(name__icontains=self.query)
+            cards = search_cards(cards, self.query)
+        if self.rarity in Card.Rarity.values:
+            cards = cards.filter(rarity=self.rarity)
+        else:
+            self.rarity = ""
+        if self.set_id.isdigit():
+            cards = cards.filter(card_set_id=int(self.set_id))
+        else:
+            self.set_id = ""
         return cards
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        chosen = {"q": self.query, "rarity": self.rarity, "set": self.set_id}
+        chosen = {key: value for key, value in chosen.items() if value}
         context["query"] = self.query
+        context["rarity"] = self.rarity
+        context["set_id"] = self.set_id
+        context["filtering"] = bool(chosen)
+        context["querystring"] = urlencode(chosen)
+        context["rarities"] = Card.Rarity.choices
+        context["card_sets"] = CardSet.objects.all()
         return context
 
 

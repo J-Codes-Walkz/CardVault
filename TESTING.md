@@ -9,7 +9,7 @@ CardVault is tested in four ways:
 |---|---|---|
 | [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 48 of 48 checks passed |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
-| [Automated testing](#automated-testing) | 128 Django tests, including two-user ownership and security tests | 128 passed |
+| [Automated testing](#automated-testing) | 139 Django tests, including two-user ownership and security tests | 139 passed |
 | [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only | No violations (one keyboard bug found and fixed) |
 | [Security testing](#security-testing) | Headers, log in limits, admin access, secrets, dependencies, code scanning | No issues found |
 | [Validators](#validators) | HTML (W3C), CSS (Jigsaw), JavaScript, Python (PEP8) | 0 errors |
@@ -61,7 +61,9 @@ site on 12 October 2026, with the expected message at each step
 | US07 | Open Browse cards | 12 Base Set cards on page 1 (Alakazam first), each with its picture, set, number and rarity; all 12 pictures load | Pass |
 | US08 | Search for `aaa` | Only the tester card AAA, which shows the placeholder image | Pass | | [catalogue](./docs/images/screenshots/catalogue.png) |
 | US08 | Search for `bb` | Only BBB, with "1 card found" | Pass | [search-result](./docs/images/screenshots/search-result.png) |
-| US08 | Search for `zzz` | 'No cards match "zzz". Try a different name.' | Pass | |
+| US08 | Search for `zzz` | 'No cards match "zzz". Try a different name, set or rarity.' | Pass | |
+| US08 | Search for `Holo`, then `Holo Rare` (Jamie's manual test, 15 October) | Before the fix: 0 results, because only names were searched. After: the 16 Base Set holos plus tester card CCC | Pass after fix | [search-1440](./docs/images/screenshots/search-1440.png) |
+| US09 | Search `holo rare` with Set: Base Set | "16 cards found", Rarity and Set dropdowns keep their choices, no sideways scrolling at 375px | Pass | |
 | US10 | Open a card | Image, set, number, rarity, rating summary, add and review forms | Pass | [card-detail](./docs/images/screenshots/card-detail.png) |
 
 ### My Cards: create, read, update, delete (US11 to US14)
@@ -128,12 +130,12 @@ Run with:
 python manage.py test
 ```
 
-128 tests, all passing on 15 October 2026:
+139 tests, all passing on 15 October 2026:
 
 | File | Tests | What they check |
 |---|---|---|
-| `accounts/tests.py` | 46 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (the sixth wrong password is blocked, even a correct one while locked), and the admin log in going through django-allauth (staff in, others refused, unsafe `next` addresses ignored); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie |
-| `cards/tests.py` | 53 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404 |
+| `accounts/tests.py` | 47 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (the sixth wrong password is blocked, even a correct one while locked), and the admin log in going through django-allauth (staff in, others refused, unsafe `next` addresses ignored); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie, and an email address refused as a username |
+| `cards/tests.py` | 63 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404; search across name, set and rarity in any order ("holo rare", "rare holo", "holos"; "common" not matching Uncommon), the Rarity and Set filters alone and combined, unknown filter values ignored, filters kept in page links |
 | `collection/tests.py` | 29 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged |
 
 The two-user tests are the most important: they prove one user

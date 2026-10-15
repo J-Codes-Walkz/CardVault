@@ -2,9 +2,9 @@
 <article class="card-tile">
     <a class="card-tile-link" href="{% url 'cards:card_detail' card.pk %}">
         {% if card.image_url %}
-        <img src="{{ card.image_url }}" alt="{{ card.name }}" width="245" height="342" loading="lazy" data-fallback="{% static 'images/card-placeholder.svg' %}">
+        <img src="{{ card.image_url }}" alt="{{ card.name }}" width="240" height="330" loading="lazy" data-fallback="{% static 'images/card-placeholder.svg' %}">
         {% else %}
-        <img src="{% static 'images/card-placeholder.svg' %}" alt="{{ card.name }}: no image yet" width="245" height="342" loading="lazy">
+        <img src="{% static 'images/card-placeholder.svg' %}" alt="{{ card.name }}: no image yet" width="240" height="330" loading="lazy">
         {% endif %}
         {% if heading == "h3" %}<h3 class="card-tile-name">{{ card.name }}</h3>{% else %}<h2 class="card-tile-name">{{ card.name }}</h2>{% endif %}
     </a>

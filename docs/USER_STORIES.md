@@ -65,6 +65,7 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 - [ ] If the username already exists I see "That username is already taken. Please choose another."
 - [ ] If the password is too weak I am asked for a more complex one and told which rule it broke (minimum length, too common, numbers only, too similar to the username).
 - [ ] If the two passwords differ I see an error and no account is created.
+- [ ] An email address cannot be used as a username, because usernames are shown publicly next to reviews.
 
 **Development tasks**
 
@@ -234,7 +235,7 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] A search box on the catalogue finds partial, case-insensitive matches (for example "char" finds Charizard).
+- [ ] A search box on the catalogue finds partial, case-insensitive matches on a card's name, set or rarity, with the words in any order (for example "char" finds Charizard, and "holo rare" or "rare holo" finds every Rare Holo card).
 - [ ] The number of results is shown.
 - [ ] No match shows "No cards match '<term>'. Try a different name." with a link to clear the search.
 - [ ] The search term stays in the box and in the pagination links.
