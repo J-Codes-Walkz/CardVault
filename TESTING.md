@@ -7,9 +7,10 @@ CardVault is tested in four ways:
 
 | Method | What it covers | Result (15 October 2026) |
 |---|---|---|
-| [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 41 of 41 checks passed |
+| [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 48 of 48 checks passed |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
-| [Automated testing](#automated-testing) | 113 Django tests, including two-user ownership and security tests | 113 passed |
+| [Automated testing](#automated-testing) | 128 Django tests, including two-user ownership and security tests | 128 passed |
+| [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only | No violations (one keyboard bug found and fixed) |
 | [Security testing](#security-testing) | Headers, log in limits, admin access, secrets, dependencies, code scanning | No issues found |
 | [Validators](#validators) | HTML (W3C), CSS (Jigsaw), JavaScript, Python (PEP8) | 0 errors |
 
@@ -85,6 +86,21 @@ site on 12 October 2026, with the expected message at each step
 | US19 | Edit the review to 5 stars | "Your review was updated successfully." and ★★★★★ | Pass | [review-edit-form](./docs/images/screenshots/review-edit-form.png) |
 | US20 | Delete the review | Confirmation page; then "Your review was deleted." and "No reviews yet" | Pass | [review-delete-confirm](./docs/images/screenshots/review-delete-confirm.png) |
 
+### Privacy, safety and accessibility (US29 to US32)
+
+| Story | Test | Expected | Result | Screenshot |
+|---|---|---|---|---|
+| US29 | Register with a date of birth in 2020 | "Sorry, you need to be 13 or older to create a CardVault account." and no account | Pass | |
+| US29 | Open Register again in the same browser | The registration-closed page, with no form | Pass | [signup-under-13](./docs/images/screenshots/signup-under-13.png) |
+| US30 | Delete my account with a wrong password | "That password is not correct." and nothing deleted | Pass | [delete-account](./docs/images/screenshots/delete-account.png) |
+| US30 | Delete my account with the right password | "Your account, cards and reviews have been deleted.", logged out | Pass | [delete-account-success](./docs/images/screenshots/delete-account-success.png) |
+| US30 | Log in again with the deleted account | "Invalid username or password." | Pass | |
+| US31 | Open Privacy and cookies from the footer | Lists what is stored and the two cookies, `sessionid` and `csrftoken` | Pass | [privacy](./docs/images/screenshots/privacy.png) |
+| US32 | Open Accessibility from the footer | The accessibility statement (WCAG 2.2 AA) | Pass | [accessibility](./docs/images/screenshots/accessibility.png) |
+
+The account used for the live run was deleted by the run itself,
+through Delete my account.
+
 ### Security checks (US05)
 
 Changing the ID in the address bar to another user's entry or review
@@ -112,11 +128,11 @@ Run with:
 python manage.py test
 ```
 
-113 tests, all passing on 15 October 2026:
+128 tests, all passing on 15 October 2026:
 
 | File | Tests | What they check |
 |---|---|---|
-| `accounts/tests.py` | 31 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (the sixth wrong password is blocked, even a correct one while locked), and the admin log in going through django-allauth (staff in, others refused, unsafe `next` addresses ignored) |
+| `accounts/tests.py` | 46 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (the sixth wrong password is blocked, even a correct one while locked), and the admin log in going through django-allauth (staff in, others refused, unsafe `next` addresses ignored); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie |
 | `cards/tests.py` | 53 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404 |
 | `collection/tests.py` | 29 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged |
 
@@ -131,6 +147,25 @@ pip install coverage
 coverage run --source='.' manage.py test
 coverage report -m
 ```
+
+## Accessibility testing
+
+Run on 15 October 2026 for US32, in Chrome. axe-core 4.10.2 is the
+same accessibility engine Lighthouse uses; it was run with every WCAG
+2.0, 2.1 and 2.2 A and AA rule.
+
+| Check | Pages | Result |
+|---|---|---|
+| axe (WCAG 2.2 AA), logged out | Home, Browse cards, a search with no results, a card page, Log in, Register, Privacy, Accessibility (locally and on the live site) | 0 violations |
+| axe (WCAG 2.2 AA), logged in | Home, a card page with my entry and review, My Cards, Add card, Delete my account (with and without an error), Log out | 0 violations |
+| 200% zoom (a 1280px window at 200%, so 640 CSS pixels) | Home, Browse cards, a card page, My Cards, Privacy | No sideways scrolling |
+| High contrast (`prefers-contrast: more` emulated) | A card page | Text switches to black, borders darken and thicken |
+| Keyboard only: real Tab key presses, checking each stop's focus outline | Home, a card page, Register, Log in, Privacy (live site) | Every link, field and button reachable in a logical order; one stop without an outline (bug #56, fixed) |
+| Sound | Whole site | No audio or video; every message is on-screen text |
+
+**Still to do by hand:** a pass with VoiceOver (the Mac's built-in
+screen reader), and Lighthouse's performance and best-practice scores
+(US22, US23, US32).
 
 ## Security testing
 
@@ -221,6 +256,7 @@ privately, as described in [SECURITY.md](./SECURITY.md).
 | [#45](https://github.com/J-Codes-Walkz/CardVault/issues/45) | README used a hand-written table of contents | Removed; GitHub builds the outline from the headings | Fixed |
 | [#46](https://github.com/J-Codes-Walkz/CardVault/issues/46) | Markdown file names were not in capitals | Renamed with `git mv`; testing moved into this file | Fixed |
 | [#47](https://github.com/J-Codes-Walkz/CardVault/issues/47) | Footer floated mid-page on short pages; navigation did not collapse on phones | Sticky-footer CSS and a Menu button | Fixed |
+| [#56](https://github.com/J-Codes-Walkz/CardVault/issues/56) | Date of birth field lost its focus outline when keyboard focus reached its calendar button | Outline kept on the whole field with `:focus-within`; re-tested with real Tab key presses | Fixed |
 
 Found and fixed while building, before they reached the live site:
 

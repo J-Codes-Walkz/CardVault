@@ -60,6 +60,15 @@ textarea:focus-visible {
     outline-offset: 2px;
 }
 
+/* A date field has several parts (day, month, year and the calendar
+   button); keep the outline on the whole field whichever part has
+   keyboard focus. */
+input[type="date"]:focus,
+input[type="date"]:focus-within {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+}
+
 .visually-hidden {
     position: absolute;
     width: 1px;
