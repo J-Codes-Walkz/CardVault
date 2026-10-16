@@ -316,8 +316,9 @@ From any card's page a logged-in user can:
   nothing arrives in your inbox, please check your junk or spam
   folder." Messages are saved in a `ContactMessage` table and read in
   the Django admin, where they can be marked as handled but not
-  changed. Replies are sent by hand from a dedicated CardVault mailbox,
-  so the site itself sends no email and holds no mail password.
+  changed. Replies are sent by hand, so the site itself sends no email
+  and holds no mail password. A dedicated CardVault mailbox to reply
+  from is planned; see [POTENTIAL_UPSCALE.md](./docs/POTENTIAL_UPSCALE.md).
 - **Spam protection:** a hidden trap field that bots fill in and
   people never see (bots get the same thank you, but nothing is
   saved), and a limit of 5 messages an hour per visitor, counted

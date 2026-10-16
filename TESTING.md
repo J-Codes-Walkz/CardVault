@@ -119,6 +119,7 @@ logged out and logged in.
 | US34 | Correct the email and send | Back on the home page with "Success: Thank you for your enquiry. We aim to reply within 2 to 3 days. If nothing arrives in your inbox, please check your junk or spam folder." | Pass |
 | US34 | Look for the bot trap field | Not visible and not reachable with Tab | Pass |
 | US34 | Contact page in dark mode at 375px | Readable, no sideways scrolling | Pass |
+| US34 | On the live site, send a message from "Claude deploy check" (`test@example.com`, a reserved address that belongs to nobody) | Back on the home page with the thank you message, and the message saved in the admin | Pass. The message is deliberately kept in the live admin as visible evidence of this test |
 
 ### Security checks (US05)
 
