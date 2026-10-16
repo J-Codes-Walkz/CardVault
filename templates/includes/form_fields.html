@@ -8,6 +8,12 @@
 {% for field in form.visible_fields %}
 {% if field.name == "rating" %}
 {% include "includes/ball_picker.html" %}
+{% elif field.name == "website" %}
+{# The Contact form's trap for bots: hidden from people by CSS. #}
+<div class="field trap">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {{ field }}
+</div>
 {% elif field.widget_type == "radioselect" %}
 <fieldset class="field field-choices">
     <legend>{{ field.label }}</legend>

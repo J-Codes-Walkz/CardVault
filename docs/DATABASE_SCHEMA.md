@@ -3,11 +3,14 @@
 CardVault uses PostgreSQL in every environment, both locally and on
 Heroku, reached entirely through Django's models and the ORM, with no
 hand-written SQL. This file describes the models as they are actually
-built in `cards/models.py` and `collection/models.py`. If the code
+built in `cards/models.py`, `collection/models.py` and
+`contact/models.py`. If the code
 changes, this file and the diagram below change with it.
 
-The schema is Django's own `User` model plus four tables the project
-builds: `CardSet`, `Card`, `CollectionEntry` and `Review`.
+The schema is Django's own `User` model plus five tables the project
+builds: `CardSet`, `Card`, `CollectionEntry`, `Review` and
+`ContactMessage`. `ContactMessage` stands alone, with no link to
+`User`, as anyone can send a message.
 
 ## Entity-relationship diagram
 
@@ -58,6 +61,14 @@ erDiagram
         datetime created_at
         datetime updated_at
     }
+    CONTACT_MESSAGE {
+        int id PK
+        string name
+        string email
+        text message
+        bool handled
+        datetime created_at
+    }
 ```
 
 ## Tables
@@ -69,6 +80,7 @@ erDiagram
 | `Card` | `cards` | One card: name, set, number, rarity and an optional image | Seeded via fixture/admin, read-only in the UI |
 | `CollectionEntry` | `collection` | A card on a user's list, as `OWNED` or `WANTED`, with a quantity and notes | Full CRUD (US11&ndash;US14, US17) |
 | `Review` | `cards` | A user's rating (1 to 5) and text review of a card | Full CRUD (US18&ndash;US20) |
+| `ContactMessage` | `contact` | A message sent from the Contact page: name, email address, message, and whether it has been handled | Created by anyone on the Contact page (US34); read and marked handled in the Django admin |
 
 `CardSet` and `Card` are shared reference data: the same rows for
 every user, loaded from a fixture or Django admin (see

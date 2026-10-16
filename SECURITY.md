@@ -24,7 +24,9 @@ place, reviewed on 15 October 2026
 
 Only a username, a password (stored as a salted PBKDF2 hash, never as
 the password itself), and the cards and reviews you add. No email
-address, real name or payment details are collected, and the date of
+address, real name or payment details are collected for an account
+(the Contact page asks for a name and email address only so a reply
+can be sent, and they are deleted once the enquiry is dealt with), and the date of
 birth asked for at registration (to refuse under-13s) is checked and
 thrown away, never stored. There is very little personal data to
 lose, and you can delete all of it yourself (Delete my account, in
@@ -55,6 +57,11 @@ explains this for users.
   in the address bar to someone else's record gives a 404 page. Two-user
   automated tests check this for viewing, editing and deleting.
 - Every form is protected against cross-site request forgery (CSRF).
+- The Contact page has a hidden trap field that bots fill in and
+  people never see, and each visitor can send 5 messages an hour. The
+  limit is kept against a one-way hash of the visitor's IP address,
+  never the address itself. CardVault sends no email, so the form
+  cannot be used to send mail to other people.
 - The database is only reached through Django's ORM (no hand-written
   SQL), which prevents SQL injection.
 - Django escapes everything users type before showing it, and a

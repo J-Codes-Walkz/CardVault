@@ -34,6 +34,8 @@ are placeholders filled in per request.
 | Review: edit | Success | Your review was updated successfully. | US19 |
 | Review: delete | Success | Your review was deleted. | US20 |
 | Any form with errors | Error | Please correct the errors below and try again. | US24 |
+| Contact: message sent | Success | Thank you for your enquiry. We aim to reply within 2 to 3 days. If nothing arrives in your inbox, please check your junk or spam folder. | US34 |
+| Contact: more than 5 messages in an hour | Error | You have sent several messages recently. Please try again later. | US34 |
 
 ## Display rules (US24)
 

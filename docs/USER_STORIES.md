@@ -40,11 +40,13 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 | US30 | Delete my account | Privacy, safety and accessibility | Must have |
 | US31 | Know how my data and cookies are used | Privacy, safety and accessibility | Must have |
 | US32 | Use CardVault with low vision, hearing loss or a keyboard | Privacy, safety and accessibility | Should have |
+| US33 | Get back to the home page from anywhere | Navigation and contact | Should have |
+| US34 | Contact CardVault | Navigation and contact | Should have |
 
 ## MoSCoW breakdown
 
 - **Must have** (24): US01, US02, US03, US04, US05, US06, US07, US08, US10, US11, US12, US13, US14, US18, US19, US21, US22, US23, US24, US26, US27, US29, US30, US31
-- **Should have** (6): US09, US15, US20, US25, US28, US32
+- **Should have** (8): US09, US15, US20, US25, US28, US32, US33, US34
 - **Could have** (2): US16, US17
 - **Won't have (this submission)**: nothing is scoped out yet within this story set — see [Potential upscale](./POTENTIAL_UPSCALE.md) for features deliberately parked for after submission.
 
@@ -856,3 +858,55 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 - Action: Zoom the browser to 200%, switch on Increase contrast in the system settings, and move through the site with the keyboard only.
 - Expected result: Everything stays readable and usable, with no sideways scrolling and a visible focus outline.
+
+## 7. Navigation and contact
+
+### US33 — Get back to the home page from anywhere
+
+**Priority:** `Should have`
+
+> As a **visitor**, I want **a Home link in the header on every page**, so that **I can get back to the start without guessing that the logo is a link**.
+
+**Acceptance criteria**
+
+- [ ] Every page has a "Home" link in the header, logged in or out, that opens the home page.
+- [ ] The link for the page you are on is marked with `aria-current="page"` and a yellow underline, not colour alone.
+- [ ] The header fits on one line on wide screens; below 1024px the links collapse behind the Menu button.
+
+**Development tasks**
+
+- [ ] Add Home to the header links in `base.html` and mark the current page.
+- [ ] Move the Menu breakpoint from 768px to 1024px so the extra links never wrap.
+- [ ] Write tests for the links and the current-page marker.
+
+**Manual test**
+
+- Action: From a card page, click Home; then open the Menu at tablet width.
+- Expected result: The home page opens with Home underlined in yellow; at tablet width the links sit behind the Menu button.
+
+### US34 — Contact CardVault
+
+**Priority:** `Should have`
+
+> As a **visitor**, I want **to send CardVault a message with my name and email address**, so that **I can ask a question or report a problem and get a reply**.
+
+**Acceptance criteria**
+
+- [ ] A Contact page, linked in the header and footer, asks for a name, an email address and a message (up to 2,000 characters); all three are required.
+- [ ] Sending it shows: "Thank you for your enquiry. We aim to reply within 2 to 3 days. If nothing arrives in your inbox, please check your junk or spam folder."
+- [ ] Messages are saved for the site owner to read and mark as handled in the Django admin, and cannot be changed there.
+- [ ] Logged-in users find their username already filled in as their name.
+- [ ] Spam is limited: a hidden trap field catches bots, and each visitor can send 5 messages an hour.
+- [ ] The Privacy page explains why the email address is asked for and how long it is kept.
+
+**Development tasks**
+
+- [ ] Add a `contact` app with a `ContactMessage` model, form, view, template and admin.
+- [ ] Add the trap field and the rate limit, storing a one-way hash of the visitor's IP address, never the address itself.
+- [ ] Update the Privacy page, the schema and the notification messages.
+- [ ] Write tests for sending, errors, the trap, the rate limit and the admin.
+
+**Manual test**
+
+- Action: Open Contact from the header, send a message with a bad email address, correct it and send again.
+- Expected result: The first attempt shows an error and keeps the text; the second returns to the home page with the thank you message, and the message appears in the admin.

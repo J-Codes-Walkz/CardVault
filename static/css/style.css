@@ -371,6 +371,13 @@ input[type="date"]:focus-within {
     color: var(--header-text);
 }
 
+/* The page you are on: a yellow underline, not colour alone. */
+.nav-links a[aria-current="page"] {
+    text-decoration-color: var(--yellow);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 0.35em;
+}
+
 .nav-links form {
     margin: 0;
 }
@@ -385,8 +392,10 @@ input[type="date"]:focus-within {
     border-color: rgba(255, 255, 255, 0.7);
 }
 
-/* Wide screens: links first, then the theme toggle, at the right. */
-@media (min-width: 768px) {
+/* Wide screens: links first, then the theme toggle, at the right.
+   Below 1024px there is not room for every link on one line once
+   logged in, so the links collapse behind the Menu button. */
+@media (min-width: 1024px) {
     .nav-links {
         order: 1;
         margin-left: auto;
@@ -399,7 +408,7 @@ input[type="date"]:focus-within {
 
 /* Small screens: the links collapse behind the Menu button. Without
    JavaScript the "js" class is never added, so the links stay visible. */
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
     .js .nav-toggle {
         display: inline-flex;
     }
@@ -513,6 +522,12 @@ input[type="date"]:focus-within {
 
 .field {
     margin: 0 0 1.25rem;
+}
+
+/* The Contact form's trap for bots: never shown to people, and hidden
+   from screen readers too, so nobody fills it in by mistake. */
+.trap {
+    display: none;
 }
 
 .field label,

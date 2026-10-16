@@ -5,7 +5,7 @@
 {% block content %}
 <article class="prose">
     <h1>Privacy and cookies</h1>
-    <p>Last updated 15 October 2026.</p>
+    <p>Last updated 16 October 2026.</p>
 
     <p>CardVault is an educational project built for a Code Institute course. It keeps as little personal information as it can, never sells or shares it, and shows no adverts.</p>
 
@@ -15,7 +15,10 @@
         <li><strong>Your password,</strong> stored only as a scrambled, one-way hash. Nobody, including us, can read it.</li>
         <li><strong>The cards on your My Cards list</strong> (owned or wanted, quantity and notes) and <strong>the reviews you write</strong>.</li>
     </ul>
-    <p>We do not ask for your email address, real name, address or payment details.</p>
+    <p>Your account needs no email address, real name, home address or payment details.</p>
+
+    <h2>If you contact us</h2>
+    <p>The <a href="{% url 'contact:contact' %}">Contact page</a> asks for your name, your email address and your message. We use them only to reply to you, never for marketing, and delete them once your enquiry has been dealt with. To stop the form being flooded by bots, the site counts how many messages each visitor sends in an hour; it keeps a scrambled, one-way version of your IP address for that hour, never the address itself.</p>
 
     <h2>Your age</h2>
     <p>You must be 13 or older to create an account. When you register we ask for your date of birth, check it, and then throw it away. It is never stored.</p>

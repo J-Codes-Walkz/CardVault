@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block head_title %}Contact | CardVault{% endblock head_title %}
+
+{% block content %}
+<section class="form-page">
+    <h1>Contact us</h1>
+    <p>Questions, ideas or a problem with the site? Send us a message and we will reply by email, usually within 2 to 3 days.</p>
+    <form method="post">
+        {% csrf_token %}
+        {% include "includes/form_fields.html" %}
+        <p class="actions">
+            <button type="submit" class="button">Send message</button>
+        </p>
+    </form>
+    <p class="field-help">We use your email address only to reply to you. See <a href="{% url 'privacy' %}">Privacy and cookies</a>. To report a security problem, please follow the <a href="https://github.com/J-Codes-Walkz/CardVault/blob/main/SECURITY.md">security policy</a> instead.</p>
+</section>
+{% endblock content %}

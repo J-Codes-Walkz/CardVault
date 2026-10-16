@@ -32,7 +32,7 @@ to be.
 
 ### User stories
 
-The full set of 32 user stories, written as `As a / I want / so that`
+The full set of 34 user stories, written as `As a / I want / so that`
 with acceptance criteria, development tasks and a manual test for
 each, lives in **[docs/USER_STORIES.md](./docs/USER_STORIES.md)**.
 They're prioritised with MoSCoW:
@@ -40,7 +40,7 @@ They're prioritised with MoSCoW:
 | Priority | Count |
 |---|---|
 | Must have | 24 |
-| Should have | 6 |
+| Should have | 8 |
 | Could have | 2 |
 
 Ideas that came up but were deliberately left out of this submission
@@ -304,10 +304,31 @@ From any card's page a logged-in user can:
 
 ![Registration refused for an under-13 date of birth](./docs/images/screenshots/signup-under-13.png)
 
+### Navigation and contact
+
+- **Home link** (US33): "Home" is the first link in the header on
+  every page, as well as the logo. The link for the page you are on
+  has a yellow underline and `aria-current="page"` for screen readers.
+- **Contact page** (US34): linked in the header and footer. It asks
+  for a name, email address and message (logged-in users find their
+  username already filled in), then returns to the home page with:
+  "Thank you for your enquiry. We aim to reply within 2 to 3 days. If
+  nothing arrives in your inbox, please check your junk or spam
+  folder." Messages are saved in a `ContactMessage` table and read in
+  the Django admin, where they can be marked as handled but not
+  changed. Replies are sent by hand from a dedicated CardVault mailbox,
+  so the site itself sends no email and holds no mail password.
+- **Spam protection:** a hidden trap field that bots fill in and
+  people never see (bots get the same thank you, but nothing is
+  saved), and a limit of 5 messages an hour per visitor, counted
+  against a one-way hash of the IP address. An automatic email reply
+  was considered and left out on purpose; see
+  [POTENTIAL_UPSCALE.md](./docs/POTENTIAL_UPSCALE.md).
+
 ### Quality and security
 
 - **Responsive** (US22): mobile first, no sideways scrolling from
-  320px up. On phones the navigation collapses behind a Menu button,
+  320px up. Below 1024px the navigation collapses behind a Menu button,
   and the footer sits at the bottom of the window on short pages.
 - **Feedback on every action** (US24): a success, error or info
   message with a word ("Success:", "Error:") as well as colour, and
@@ -392,6 +413,10 @@ MoSCoW priority and epic, and grouped into three sprint
    in a sixth epic, "Privacy, safety and accessibility". They are
    issues #52 to #55, so from here on the issue number and the story
    number differ; each issue title still starts with its story ID.
+
+   **Added on 16 October 2026:** US33 (a Home link) and US34 (a
+   Contact page), in a seventh epic, "Navigation and contact", as
+   issues #64 and #65.
 4. **Move cards as you work**: `Backlog` &rarr; `To do` when you
    start a sprint/session, `In progress` while coding, `Done` once
    its manual test passes. The `priority:*` and `epic:*` labels from
@@ -611,6 +636,7 @@ section credible to an assessor.
 | 2026-10-15 | Design | Used the grilling skill in Claude Code to agree the brand in four short rounds of questions (look, colours, dark mode, logo, ratings, badges, motion, intro). Jamie chose dark mode against my first recommendation, asked for a card-back emblem with a ship-wheel vault lock instead of a Poké Ball logo, and the 1999 rarity symbols. Claude checked every colour pair for contrast before writing any CSS, drew the emblem and icons as SVG, and kept the intro from becoming a gate page. |
 | 2026-10-15 | Debugging | A keyboard-only test of the new Poké Ball picker found that Tab landed on the 5th ball and the left arrow moved right, a side effect of the CSS trick first used to fill the balls. Rebuilt with the CSS `:has()` selector in natural 1 to 5 order (after checking the CSS validator accepts it), then re-tested with real key presses and mouse clicks. |
 | 2026-10-16 | Design | Asked Claude to make the rarity symbols in the home page banner float rather than sit still. Claude pointed out that endless movement needs a way to pause it (WCAG 2.2.2) and that the Accessibility page promised movement "never loops", so it added a "Pause animation" button, updated that page, and checked that the button never covers the banner's text from 320px up, that pausing really stops the symbols, and that reduced motion still switches everything off. |
+| 2026-10-16 | Developing features | Asked Claude for a Home link and a Contact page (name, email, message, and a thank-you banner telling people to check their junk folder), and whether an automatic no-reply email was worth it. Claude advised against the email for now: anyone can type any address, so the form could be used to send mail to strangers, new senders often land in junk, and it would mean keeping a mail password on Heroku. I agreed to save messages for the admin instead and reply by hand from a dedicated mailbox. Claude built a `contact` app with a hidden bot trap and a 5-an-hour limit (storing a hash of the IP address, not the address), 19 tests, and updated the Privacy page, which had said we never ask for an email address. A browser check found the extra links pushed the logged-in header onto two rows at tablet widths, so the Menu button now appears below 1024px. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |

@@ -34,6 +34,7 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("cards/mine/", include("collection.urls")),
     path("cards/", include("cards.urls")),
+    path("contact/", include("contact.urls")),
     path("privacy/", privacy, name="privacy"),
     path("accessibility/", accessibility, name="accessibility"),
     path("", HomeView.as_view(), name="home"),
