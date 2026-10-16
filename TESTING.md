@@ -213,6 +213,11 @@ was used.
 | Intro, second visit | Does not play |
 | Intro with reduced motion | No animation; the finished scene with the Enter button is shown straight away |
 | Intro without JavaScript | Never shown; the home page appears as normal |
+| Floating rarity symbols in the home banner | Each drifts slowly on its own path and speed after floating in |
+| Pause animation button | Stops the symbols where they are and changes to Play animation; pressing again restarts them; reached by keyboard after the banner's buttons |
+| Pause animation button at 320, 375, 768, 1024 and 1440px | Never covers the banner's text, emblem or buttons; no sideways scrolling |
+| Floating symbols with reduced motion | Still; the Pause animation button is hidden as there is nothing to pause |
+| Floating symbols without JavaScript | Float in once and then stay still, as there would be no way to pause them; the Pause animation button is hidden |
 | Phone width (375px), light and dark | No sideways scrolling |
 
 ### Bug found and fixed while building

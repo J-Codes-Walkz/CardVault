@@ -1290,7 +1290,10 @@ input[type="date"]:focus-within {
     }
 }
 
-/* The rarity symbols drift into place once, then stay still. */
+/* The rarity symbols drift into place, then keep floating slowly, each
+   on its own path and speed (--dx, --dy, --spin and --time), so they
+   never move in step. The "Pause animation" button stops them, so
+   without JavaScript they only float in once. */
 .hero-badges span {
     position: absolute;
     font-size: 2.5rem;
@@ -1299,13 +1302,31 @@ input[type="date"]:focus-within {
     animation: badge-float-in 3s ease-out 1 both;
 }
 
+.js .hero-badges span {
+    animation:
+        badge-float-in 3s ease-out 1 both,
+        badge-drift var(--time) ease-in-out 3s infinite;
+}
+
+.motion-paused .hero-badges span {
+    animation-play-state: paused;
+}
+
 .badge-1 {
+    --dx: 18px;
+    --dy: 14px;
+    --spin: 10deg;
+    --time: 19s;
     top: 10%;
     left: 6%;
     color: #c9d4ea;
 }
 
 .badge-2 {
+    --dx: -14px;
+    --dy: 20px;
+    --spin: -14deg;
+    --time: 23s;
     top: 65%;
     left: 12%;
     font-size: 2rem;
@@ -1313,6 +1334,10 @@ input[type="date"]:focus-within {
 }
 
 .badge-3 {
+    --dx: -22px;
+    --dy: 16px;
+    --spin: 8deg;
+    --time: 27s;
     top: 5%;
     right: 4%;
     font-size: 3.25rem;
@@ -1320,12 +1345,20 @@ input[type="date"]:focus-within {
 }
 
 .badge-4 {
+    --dx: 16px;
+    --dy: -18px;
+    --spin: 16deg;
+    --time: 21s;
     bottom: 10%;
     right: 20%;
     color: #8ab4ff;
 }
 
 .badge-5 {
+    --dx: -12px;
+    --dy: -22px;
+    --spin: -12deg;
+    --time: 25s;
     top: 45%;
     right: 3%;
     font-size: 1.75rem;
@@ -1333,6 +1366,10 @@ input[type="date"]:focus-within {
 }
 
 .badge-6 {
+    --dx: 20px;
+    --dy: -12px;
+    --spin: -9deg;
+    --time: 17s;
     bottom: 5%;
     left: 28%;
     font-size: 1.5rem;
@@ -1349,6 +1386,57 @@ input[type="date"]:focus-within {
         opacity: 0.18;
         transform: translateY(0);
     }
+}
+
+/* A slow loop that starts and ends where the float-in finished. */
+@keyframes badge-drift {
+    0%,
+    100% {
+        opacity: 0.18;
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    30% {
+        opacity: 0.26;
+        transform: translate(var(--dx), var(--dy)) rotate(var(--spin));
+    }
+
+    65% {
+        opacity: 0.14;
+        transform: translate(calc(var(--dx) * -0.6), calc(var(--dy) * 0.5)) rotate(calc(var(--spin) * -0.5));
+    }
+}
+
+/* Pause or play the floating symbols (WCAG 2.2.2). Needs JavaScript,
+   so it only appears when the page has it (intro.js). */
+.motion-toggle {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    display: none;
+    min-height: 2rem;
+    padding: 0.25rem 0.75rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #dbe3f4;
+    background-color: rgba(11, 20, 48, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.motion-toggle:hover {
+    color: #ffffff;
+    border-color: #ffffff;
+}
+
+.js .motion-toggle {
+    display: inline-block;
+}
+
+.js.intro-pending .motion-toggle {
+    display: none;
 }
 
 /* Intro: only for a visitor's first visit (js-enabled.js adds the
@@ -1659,5 +1747,9 @@ input[type="date"]:focus-within {
 
     .hero-badges span {
         opacity: 0.18;
+    }
+
+    .js .motion-toggle {
+        display: none;
     }
 }

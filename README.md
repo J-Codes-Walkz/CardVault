@@ -128,8 +128,11 @@ red, yellow and blue accents.
   Common, ◆ Uncommon, ★ Rare, ★ Rare Holo (gold).
 - **Movement, kept small:** card tiles lift on hover or keyboard
   focus, Rare Holo cards shimmer once, and the home page plays a
-  short Poké Ball intro on a visitor's first visit (skippable). All of
-  it switches off when the device asks for reduced motion.
+  short Poké Ball intro on a visitor's first visit (skippable). The
+  faint rarity symbols behind the home page banner float slowly, each
+  on its own path, with a "Pause animation" button in the corner
+  (WCAG 2.2.2). All of it switches off when the device asks for
+  reduced motion.
 - **Layout:** a responsive grid for card tiles (4 columns desktop, 2
   tablet, 1 mobile), and a table for My Cards on wide screens that
   becomes stacked cards below 900px.
@@ -607,6 +610,7 @@ section credible to an assessor.
 | 2026-10-15 | Security | Asked Claude to review security end to end. It added a Content Security Policy and Permissions Policy, routed the Django admin log in through allauth's rate limiting, moved rate limits to a shared database cache, scanned the git history for secrets, ran `pip-audit`, and turned on Dependabot, CodeQL and a branch rule on GitHub. 12 security tests added. |
 | 2026-10-15 | Design | Used the grilling skill in Claude Code to agree the brand in four short rounds of questions (look, colours, dark mode, logo, ratings, badges, motion, intro). Jamie chose dark mode against my first recommendation, asked for a card-back emblem with a ship-wheel vault lock instead of a Poké Ball logo, and the 1999 rarity symbols. Claude checked every colour pair for contrast before writing any CSS, drew the emblem and icons as SVG, and kept the intro from becoming a gate page. |
 | 2026-10-15 | Debugging | A keyboard-only test of the new Poké Ball picker found that Tab landed on the 5th ball and the left arrow moved right, a side effect of the CSS trick first used to fill the balls. Rebuilt with the CSS `:has()` selector in natural 1 to 5 order (after checking the CSS validator accepts it), then re-tested with real key presses and mouse clicks. |
+| 2026-10-16 | Design | Asked Claude to make the rarity symbols in the home page banner float rather than sit still. Claude pointed out that endless movement needs a way to pause it (WCAG 2.2.2) and that the Accessibility page promised movement "never loops", so it added a "Pause animation" button, updated that page, and checked that the button never covers the banner's text from 320px up, that pausing really stops the symbols, and that reduced motion still switches everything off. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |
