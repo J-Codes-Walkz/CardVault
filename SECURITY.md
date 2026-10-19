@@ -18,7 +18,12 @@ made on `main`, which deploys to the live site automatically.
 
 No website can promise to be unhackable. These are the layers in
 place, reviewed on 15 October 2026
-([issue #50](https://github.com/J-Codes-Walkz/CardVault/issues/50)).
+([issue #50](https://github.com/J-Codes-Walkz/CardVault/issues/50))
+and hardened on 19 October 2026
+([issue #68](https://github.com/J-Codes-Walkz/CardVault/issues/68)).
+The README's
+[Security architecture](./README.md#security-architecture) section
+shows how the layers fit together.
 
 ### What CardVault stores
 
@@ -38,10 +43,15 @@ explains this for users.
 
 - Passwords must pass Django's four checks: at least 8 characters,
   not too common, not all numbers, not too like the username.
-- Password guessing is rate limited by django-allauth: after 5 wrong
-  passwords a username is locked for 5 minutes, and an IP address is
-  limited to 10 failed attempts a minute. The limits are stored in
+- Password guessing is rate limited by django-allauth: 3 wrong
+  passwords lock that username for 15 minutes, whichever addresses
+  they come from. One IP address may get 5 passwords wrong a minute
+  and 20 an hour across any usernames, try to log in 10 times a
+  minute, and register 10 accounts an hour. The limits are stored in
   the database, so they apply across every web process.
+- Each limit counts the visitor's real IP address: the last entry of
+  `X-Forwarded-For`, which Heroku's router adds and a visitor cannot
+  fake (`ALLAUTH_TRUSTED_PROXY_COUNT = 1`).
 - A failed log in never says whether the username or the password was
   wrong.
 - The Django admin's own log in form is switched off: admin log ins go
@@ -68,6 +78,25 @@ explains this for users.
   Content Security Policy stops the browser running any script that is
   not one of the site's own files, as a second line of defence against
   cross-site scripting.
+
+### Heavy traffic
+
+- gunicorn runs 2 workers with 4 threads each, and restarts each
+  worker after about 1,000 requests.
+- Postgres stops any query still running after 10 seconds, and
+  searches are cut to 100 characters and 5 words.
+- A load test of 2,000 visits to the live site, 25 at a time, had no
+  errors (see TESTING.md).
+
+### The database
+
+- Reached only with the `DATABASE_URL` in Heroku's config vars, over
+  TLS; Heroku encrypts the data on disk.
+- Backed up daily at 03:00 UK time (`heroku pg:backups:schedule`).
+- If the database password ever leaked, `heroku pg:credentials:rotate`
+  replaces it.
+- Expired rate limit notes, which hold IP addresses, are deleted on
+  every release by `python manage.py clear_expired_cache`.
 
 ### The connection and the browser
 

@@ -5,7 +5,7 @@
 {% block content %}
 <article class="prose">
     <h1>Privacy and cookies</h1>
-    <p>Last updated 16 October 2026.</p>
+    <p>Last updated 19 October 2026.</p>
 
     <p>CardVault is an educational project built for a Code Institute course. It keeps as little personal information as it can, never sells or shares it, and shows no adverts.</p>
 
@@ -30,6 +30,9 @@
     {% else %}
     <p>Log in, then use the "Delete my account" link at the bottom of any page.</p>
     {% endif %}
+
+    <h2>Stopping password guessing</h2>
+    <p>When you log in or register, CardVault notes your IP address and the time, so it can pause logging in after too many wrong passwords. Each note stops counting after an hour at most and is used for nothing else. Old notes are deleted from the database whenever the site is updated, and whenever enough new notes build up.</p>
 
     <h2>Cookies</h2>
     <p>CardVault uses only the two cookies it needs to work. Because they are strictly necessary, the law does not require us to ask before setting them, so there is no cookie banner. There are no analytics, advertising or tracking cookies.</p>

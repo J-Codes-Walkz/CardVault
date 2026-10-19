@@ -9,7 +9,8 @@ CardVault is tested in four ways:
 |---|---|---|
 | [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 57 of 57 checks passed |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
-| [Automated testing](#automated-testing) | 169 Django tests, including two-user ownership and security tests | 169 passed |
+| [Automated testing](#automated-testing) | 179 Django tests, including two-user ownership and security tests | 179 passed |
+| [Load testing](#load-testing) | 2,000 visits to the live site, 25 at a time | All succeeded; median 0.21 seconds |
 | [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only | No violations (one keyboard bug found and fixed) |
 | [Security testing](#security-testing) | Headers, log in limits, admin access, secrets, dependencies, code scanning | No issues found |
 | [Validators](#validators) | HTML (W3C), CSS (Jigsaw), JavaScript, Python (PEP8) | 0 errors |
@@ -150,12 +151,12 @@ Run with:
 python manage.py test
 ```
 
-169 tests, all passing on 16 October 2026:
+179 tests, all passing on 19 October 2026:
 
 | File | Tests | What they check |
 |---|---|---|
-| `accounts/tests.py` | 49 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (the sixth wrong password is blocked, even a correct one while locked), and the admin log in going through django-allauth (staff in, others refused, unsafe `next` addresses ignored); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie, and an email address refused as a username, the privacy page's browser-storage section, and `/favicon.ico` |
-| `cards/tests.py` | 67 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404; search across name, set and rarity in any order ("holo rare", "rare holo", "holos"; "common" not matching Uncommon), the Rarity and Set filters alone and combined, unknown filter values ignored, filters kept in page links; Poké Ball ratings (full, empty, rounded averages, hidden from screen readers), the five-ball picker on the review form, the 1999 rarity symbols and which cards shimmer |
+| `accounts/tests.py` | 57 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (a third wrong password is an ordinary error, the fourth is blocked, even a correct one while locked; the lock follows the username across addresses; one address cannot guess across many usernames; other visitors can still log in; a faked first `X-Forwarded-For` entry does not help), the eleventh registration in an hour gets the 429 page, expired cache rows are deleted, the 10-second query limit, and the admin log in going through django-allauth (staff in, others refused, unsafe `next` addresses ignored); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie, and an email address refused as a username, the privacy page's browser-storage section, and `/favicon.ico` |
+| `cards/tests.py` | 69 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404; search across name, set and rarity in any order ("holo rare", "rare holo", "holos"; "common" not matching Uncommon), the Rarity and Set filters alone and combined, unknown filter values ignored, filters kept in page links; Poké Ball ratings (full, empty, rounded averages, hidden from screen readers), the five-ball picker on the review form, the 1999 rarity symbols and which cards shimmer, and searches cut to 100 characters and 5 words |
 | `collection/tests.py` | 34 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged; My Cards shows my own rating (not other people's) or a Rate it link, the notes preview, and a fixed number of database queries however long the list |
 | `contact/tests.py` | 19 | The Contact page for anyone, every field required, a bad email address and a message over 2,000 characters refused, a valid message saved with the thank you message, the username filled in when logged in, the bot trap (thanked but not saved), the 5-an-hour limit and that it is per visitor, the IP address hashed and taken from the address Heroku adds, the admin (message read-only, only "handled" editable), Home and Contact links on every page with `aria-current="page"` on the current one, and the Privacy page's Contact section |
 
@@ -266,10 +267,37 @@ what each protection does is explained in [SECURITY.md](./SECURITY.md).
 | Content Security Policy breaks nothing | Every public, logged-in and admin page loaded in Chrome, watching the console | No violations; the only console error was the missing favicon (#35) |
 | Card picture server unreachable | Locally pointed one card at an unreachable host and another at a missing file, then loaded the catalogue and card pages in Chrome | Unreachable host: CardVault's placeholder shown. Missing file: the image server sends its own "not found" picture, which the browser shows. Other pictures unaffected |
 | Admin log in | Open `/admin/login/` on the live site while logged out | Redirected to the rate-limited Log in page |
-| Password guessing | Automated test: 5 wrong passwords, then a 6th | "Too many failed login attempts." |
+| Password guessing | Automated tests (see above), and on the live site on 19 October 2026: 4 wrong passwords for a made-up username | Attempts 1 to 3: "Invalid username or password." Attempt 4: "Too many failed log in attempts. For your safety, logging in is paused for up to 15 minutes." [login-locked](./docs/images/screenshots/login-locked.png) |
+| Registration limit | Locally, 11 registrations from one address in a minute | The 11th gets the branded "Too many attempts" page, HTTP 429. [too-many-attempts](./docs/images/screenshots/too-many-attempts.png) |
+| Real IP address behind Heroku | Automated tests sending `X-Forwarded-For` as Heroku's router does | Each visitor is counted separately; changing the first entry does not escape a limit (bug #66, fixed) |
+| Database backups | `heroku pg:backups:capture`, then `heroku pg:backups:info b001` | Completed; the backup log lists all 18 tables. Daily schedule at 03:00 UK time confirmed with `heroku pg:backups:schedules` |
+| Query time limit | `SHOW statement_timeout` through Django, locally and in an automated test | `10s` |
 | Other users' data | Two-user automated tests on every edit and delete page | 404 and nothing changed |
 
-## Validators
+## Load testing
+
+Run on 19 October 2026 against the live site (one Basic dyno, gunicorn
+with 2 workers x 4 threads), from a script that loads the home page,
+Browse cards, a search and a card page in turn. Read-only: nothing
+was created or changed.
+
+| Run | Visits | At a time | Result | Pages a second | Median | 95% within | Slowest |
+|---|---|---|---|---|---|---|---|
+| 1 | 2,000 | 25 | All 2,000 succeeded | 112 | 0.21s | 0.33s | 0.56s |
+| 2 | 3,000 | 50 | 2,950 succeeded; 50 timed out on the test computer | 53 | 0.45s | 0.91s | 30s (the timeouts) |
+| 3 | 1,000 | 25 | All 1,000 succeeded | 119 | 0.17s | 0.42s | 0.59s |
+
+**What the 50 timeouts were:** Heroku's router logs every request it
+receives. For run 2 they showed only successful responses (status
+200), the slowest taking 0.66 seconds, with no errors. The 50 stalled
+requests, exactly one per simultaneous connection, never reached
+Heroku: they were stuck on the test computer opening 50 secure
+connections at once. A repeat of run 2 stalled on the test computer
+before sending anything (Heroku's logs showed no requests and the live
+site kept answering in 0.16 seconds), so it was stopped, and run 3
+confirmed the earlier result. The site's limit was not reached; 50 at
+a time is the test computer's limit.
+
 
 ### HTML: W3C Nu validator
 
@@ -342,6 +370,8 @@ privately, as described in [SECURITY.md](./SECURITY.md).
 | [#56](https://github.com/J-Codes-Walkz/CardVault/issues/56) | Date of birth field lost its focus outline when keyboard focus reached its calendar button | Outline kept on the whole field with `:focus-within`; re-tested with real Tab key presses | Fixed |
 | [#57](https://github.com/J-Codes-Walkz/CardVault/issues/57) | My Cards table: card name overlapped the Set column, "Base Set #3" wrapped, Edit and Remove stacked, notes were loose text (Jamie's manual test) | Fixed column widths, one-line Set/Status/Quantity, compact buttons that still meet the 44px tap size, notes in a contained box, stacked layout below 900px; checked at six widths by the browser test, including that the buttons stay inside the table | Fixed |
 | [#58](https://github.com/J-Codes-Walkz/CardVault/issues/58) | Card page lost typed text: submitting the review form threw away unsaved My Cards notes, and the other way round (Jamie's manual test) | One form per page: reviews are written on their own page via a Write a review button | Fixed |
+| [#66](https://github.com/J-Codes-Walkz/CardVault/issues/66) | Log in limits were shared by every visitor on Heroku: django-allauth saw only the router's address, so 10 wrong passwords a minute from anyone could pause logging in for everyone | `ALLAUTH_TRUSTED_PROXY_COUNT = 1`, so the visitor's real address (added last by Heroku's router) is used; tests prove a faked header does not help | Fixed |
+| [#67](https://github.com/J-Codes-Walkz/CardVault/issues/67) | A search with thousands of words built one huge, slow database query | Searches cut to 100 characters and 5 words; Postgres stops any query after 10 seconds | Fixed |
 
 Found and fixed while building, before they reached the live site:
 

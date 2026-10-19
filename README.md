@@ -168,6 +168,109 @@ user model, and owned/wanted as two tables instead of one), and why
 `CardSet` was cut and then brought back, is explained in
 [Why simplify](./docs/DATABASE_SCHEMA.md#why-simplify).
 
+## Security architecture
+
+CardVault is built in layers, so that if one protection fails another
+still stands. Every request passes through each layer in turn:
+
+```mermaid
+flowchart TD
+    A[Visitor's browser] -->|HTTPS only, HSTS| B[Heroku router]
+    B -->|adds the visitor's real IP address to X-Forwarded-For| C[gunicorn: 2 workers x 4 threads]
+    C --> D[Django security middleware<br>HTTPS redirect, CSP, Permissions Policy,<br>no framing, CSRF check, secure cookies]
+    D --> E[Rate limits<br>log in, registration, Contact,<br>kept in the shared database cache]
+    E --> F[Views<br>log in required, every query filtered<br>to the logged-in user, 404 otherwise]
+    F --> G[Django ORM<br>no hand-written SQL]
+    G -->|TLS, 10-second query limit| H[(Heroku Postgres<br>encrypted at rest, daily backups)]
+```
+
+The full list of protections, and how to report a problem privately,
+is in [SECURITY.md](./SECURITY.md). This section explains the main
+decisions.
+
+### Stopping password guessing
+
+| Attack | Protection |
+|---|---|
+| Guessing one person's password | **3 wrong passwords lock that username for 15 minutes**, whichever computers the guesses come from. At most 12 guesses an hour, against a password that must pass Django's checks (8+ characters, not one of the 20,000 most common, not all numbers, not like the username). |
+| One computer trying thousands of log ins | One IP address may get **5 passwords wrong a minute and 20 an hour**, across any usernames, and try to log in **10 times a minute**. After that it sees "Too many failed log in attempts" until the time is up. |
+| Mass account creation | **10 registrations an hour** per IP address; anything more gets a "Too many attempts" page (HTTP 429). |
+| Bots flooding the Contact form | A hidden trap field and **5 messages an hour** per visitor. |
+| Finding out which usernames exist | A failed log in always says "Invalid username or password", never which part was wrong. |
+| Guessing the admin password | The Django admin's own log in page is switched off; admins log in through the same rate-limited page. |
+
+The limits are counted in a cache table in the database, shared by
+every web process and kept across restarts. Each limit is counted per
+visitor because `ALLAUTH_TRUSTED_PROXY_COUNT = 1` tells django-allauth
+to use the address Heroku's router adds to `X-Forwarded-For`. That
+address cannot be faked: a visitor can send their own
+`X-Forwarded-For`, but the router always adds the real address last.
+Before this setting, every visitor shared one count
+([bug #66](https://github.com/J-Codes-Walkz/CardVault/issues/66)).
+
+**The trade-off:** locking a username after 3 wrong passwords means
+someone who knows your username can keep your account locked by
+getting your password wrong on purpose. They still cannot get in, and
+each wrong password stops counting after 15 minutes, so they would
+have to keep trying every few minutes; attempts made while locked do
+not count. For a hobby site
+this is the right balance; a bank would add a second factor instead
+(see [POTENTIAL_UPSCALE.md](./docs/POTENTIAL_UPSCALE.md)).
+
+![The fourth wrong password: logging in is paused](./docs/images/screenshots/login-locked.png)
+
+### Handling heavy traffic
+
+- **More requests at once:** gunicorn runs 2 worker processes with 4
+  threads each, so one web dyno serves 8 requests at the same time
+  instead of 2. Each worker restarts after about 1,000 requests, so a
+  slow memory leak can never build up.
+- **Database connections are reused** for up to 10 minutes and
+  checked before reuse, rather than opened fresh for every page. At
+  most 8 connections per dyno, well inside the plan's limit of 20.
+- **No query can run away:** Postgres stops any query still running
+  after 10 seconds, and searches are cut to 100 characters and 5
+  words, as each word adds a filter
+  ([bug #67](https://github.com/J-Codes-Walkz/CardVault/issues/67)).
+- **Efficient pages:** lists use `select_related` and a fixed number
+  of queries however many cards there are (tested), and are split
+  into pages of 12.
+- **Static files** (CSS, JavaScript, fonts, icons) are compressed and
+  served by Whitenoise with long cache times, so returning visitors
+  load them from their own browser.
+- **Card pictures** come from the Pokémon TCG image server, not from
+  CardVault, so the heaviest files never touch our dyno.
+
+**Load test, 19 October 2026:** 2,000 page visits to the live site,
+25 at a time, spread across the home page, Browse cards, a search and
+a card page: **all 2,000 succeeded, about 112 pages a second, median
+0.21 seconds, 95% within 0.33 seconds**. Details in
+[TESTING.md](./TESTING.md#load-testing).
+
+**To grow further**, Heroku can run more dynos (`heroku ps:scale
+web=2`) or bigger ones, and the database plan can be upgraded, without
+changing any code.
+
+### Database security management
+
+| Area | How CardVault handles it |
+|---|---|
+| Access | The database address and password exist only in Heroku's config vars (`DATABASE_URL`) and, for the local database, in a `.env` file that git ignores. Neither is ever in the code or its history. |
+| Connection | Encrypted with TLS (`sslmode=require`) on the live site. |
+| Storage | Heroku Postgres encrypts the data on disk. |
+| Queries | Only through Django's ORM, which sends every value separately from the SQL, so SQL injection is not possible. The one hand-written statement is a fixed clean-up in `clear_expired_cache`, which takes no user input. |
+| Rate limit notes | The log in limits keep IP addresses in the cache table. Django only clears expired rows once there are more than 300, so `clear_expired_cache` deletes them on every release (see the `Procfile`). |
+| Integrity | Rules are enforced by the database itself, not only by forms: one entry per user per card, quantities of at least 1, ratings from 1 to 5, unique card numbers per set. |
+| Least data | No email address or real name for an account; the date of birth is checked and thrown away; passwords are stored only as salted PBKDF2 hashes. |
+| Deletion | Deleting an account deletes its My Cards entries and reviews with it (`on_delete=CASCADE`). Contact messages are deleted once handled. |
+| Backups | A full backup every day at 03:00 (UK time), set up with `heroku pg:backups:schedule`, plus Heroku's own continuous protection. The first backup (19 October 2026) was checked: it contains all 18 tables. Restore with `heroku pg:backups:restore`. |
+| If the password leaked | `heroku pg:credentials:rotate` issues a new database password and Heroku updates `DATABASE_URL` and restarts the app. |
+| Admin | Only staff accounts can open the Django admin, through the rate-limited log in page. Contact messages are read-only there. |
+
+**Known limits:** the Essential database plan has a single database
+user, so the app cannot have a separate read-only login, and it has
+no point-in-time rollback. Both come with Heroku's Standard plans.
+
 ## Project mind map
 
 A knowledge graph of the whole project (code, templates, docs and
@@ -638,6 +741,7 @@ section credible to an assessor.
 | 2026-10-15 | Debugging | A keyboard-only test of the new Poké Ball picker found that Tab landed on the 5th ball and the left arrow moved right, a side effect of the CSS trick first used to fill the balls. Rebuilt with the CSS `:has()` selector in natural 1 to 5 order (after checking the CSS validator accepts it), then re-tested with real key presses and mouse clicks. |
 | 2026-10-16 | Design | Asked Claude to make the rarity symbols in the home page banner float rather than sit still. Claude pointed out that endless movement needs a way to pause it (WCAG 2.2.2) and that the Accessibility page promised movement "never loops", so it added a "Pause animation" button, updated that page, and checked that the button never covers the banner's text from 320px up, that pausing really stops the symbols, and that reduced motion still switches everything off. |
 | 2026-10-16 | Developing features | Asked Claude for a Home link and a Contact page (name, email, message, and a thank-you banner telling people to check their junk folder), and whether an automatic no-reply email was worth it. Claude advised against the email for now: anyone can type any address, so the form could be used to send mail to strangers, new senders often land in junk, and it would mean keeping a mail password on Heroku. I agreed to save messages for the admin instead and reply by hand from a dedicated mailbox. Claude built a `contact` app with a hidden bot trap and a 5-an-hour limit (storing a hash of the IP address, not the address), 19 tests, and updated the Privacy page, which had said we never ask for an email address. A browser check found the extra links pushed the logged-in header onto two rows at tablet widths, so the Menu button now appears below 1024px. |
+| 2026-10-19 | Security | Asked Claude to harden the site against password guessing and heavy traffic, cut log in tries to 3, and manage the database properly. Claude found that the existing per-IP limits never saw real visitors on Heroku: every request arrives from Heroku's router, so all visitors shared one count and 10 wrong passwords could pause logging in for everyone (bug #66). It set `ALLAUTH_TRUSTED_PROXY_COUNT`, wrote tests proving a faked `X-Forwarded-For` does not help, capped searches that could build huge queries (bug #67), added a 10-second query limit, threaded gunicorn workers and a branded 429 page, and found the live database had no backups, so scheduled daily ones and checked the first contained every table. It load tested the live site and, when a heavier run stalled, checked Heroku's router logs before blaming the site: the stalled requests never reached Heroku. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |

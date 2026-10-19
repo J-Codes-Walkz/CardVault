@@ -1,8 +1,14 @@
 """Tests for accounts: register, log in and out, age check, deleting
 an account, the information pages and security."""
 from datetime import timedelta
+from io import StringIO
+from unittest import mock
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
+from django.core.management import call_command
+from django.db import connection
 from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
@@ -12,6 +18,8 @@ from cards.models import Card, CardSet, Review
 from collection.models import CollectionEntry
 
 from .adapter import LOCKED, LOGIN_FAILED
+
+COMMAND = "accounts.management.commands.clear_expired_cache"
 
 User = get_user_model()
 
@@ -308,12 +316,26 @@ class SignupRateLimitTests(TestCase):
         self.assertContains(response, "Too many attempts", status_code=429)
 
 
+class ClearExpiredCacheTests(TestCase):
+    """Expired rate limit notes are deleted from the database."""
+
+    def test_deletes_expired_entries_and_keeps_current_ones(self):
+        cache.set("old-note", 1, 60)
+        cache.set("current-note", 1, 3600)
+        later = timezone.now() + timedelta(minutes=5)
+        with mock.patch(f"{COMMAND}.timezone.now", return_value=later):
+            call_command("clear_expired_cache", stdout=StringIO())
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT cache_key FROM cardvault_cache")
+            keys = [row[0] for row in cursor.fetchall()]
+        self.assertFalse(any(key.endswith("old-note") for key in keys))
+        self.assertTrue(any(key.endswith("current-note") for key in keys))
+
+
 class DatabaseSettingsTests(TestCase):
     """Database connections are checked and slow queries stopped."""
 
     def test_slow_queries_are_stopped_after_10_seconds(self):
-        from django.conf import settings
-        from django.db import connection
         database = settings.DATABASES["default"]
         self.assertTrue(database["CONN_HEALTH_CHECKS"])
         with connection.cursor() as cursor:

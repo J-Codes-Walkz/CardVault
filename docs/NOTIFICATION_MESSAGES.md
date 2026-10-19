@@ -22,6 +22,8 @@ are placeholders filled in per request.
 | Register: passwords differ | Error | You must type the same password each time. | US01 |
 | Log in: success | Success | Welcome back, {username}! | US02 |
 | Log in: wrong details | Error | Invalid username or password. Please try again. | US02 |
+| Log in: 3 wrong passwords for one username, or too many from one address | Error | Too many failed log in attempts. For your safety, logging in is paused for up to 15 minutes. Please try again later. | US05 |
+| Too many registrations from one address (page, HTTP 429) | Page | Too many attempts. For your safety, CardVault has paused requests like this one from your connection for a short while. | US05 |
 | Log out | Success | You have been logged out. See you soon! | US03 |
 | Private page while logged out | Info | Please log in to view that page. | US05 |
 | My Cards: add | Success | {card} was added to your cards. | US11 |
