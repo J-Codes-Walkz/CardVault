@@ -189,6 +189,27 @@ STORAGES = {
     },
 }
 
+# --- Logging ---------------------------------------------------------------
+# Django only prints errors to the console when DEBUG is on, so on the
+# live site a crash would leave no trace. Send warnings (such as 404s
+# and refused requests) and errors (with their traceback) to the
+# console, where Heroku's logs collect them. No passwords or form data
+# are logged.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+    },
+    "loggers": {
+        "django": {"handlers": ["console"], "level": "WARNING"},
+    },
+}
+# Tests cause many 404s and refusals on purpose; keep them out of the
+# test output. The tests that check logging capture it themselves.
+if TESTING:
+    LOGGING["handlers"]["console"] = {"class": "logging.NullHandler"}
+
 # --- Production-only hardening ---------------------------------------------
 if not DEBUG and not TESTING:
     SECURE_SSL_REDIRECT = True

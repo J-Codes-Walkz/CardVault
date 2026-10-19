@@ -1,0 +1,9 @@
+{% extends "errors/error_base.html" %}
+
+{% block head_title %}Bad request | CardVault{% endblock head_title %}
+{% block error_code %}Error 400: bad request{% endblock error_code %}
+{% block error_title %}Something about that request wasn't right{% endblock error_title %}
+
+{% block error_body %}
+<p>CardVault couldn't understand the request your browser sent. Please go back and try again.</p>
+{% endblock error_body %}

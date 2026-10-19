@@ -108,7 +108,8 @@ explains this for users.
 - A Permissions Policy turns off the camera, microphone, location and
   payment features the site never uses.
 - `DEBUG` is off on the live site, so errors never show code or
-  settings.
+  settings: visitors see a plain error page, and the details go only
+  to Heroku's logs.
 
 ### Secrets, code and dependencies
 

@@ -266,6 +266,7 @@ changing any code.
 | Backups | A full backup every day at 03:00 (UK time), set up with `heroku pg:backups:schedule`, plus Heroku's own continuous protection. The first backup (19 October 2026) was checked: it contains all 18 tables. Restore with `heroku pg:backups:restore`. |
 | If the password leaked | `heroku pg:credentials:rotate` issues a new database password and Heroku updates `DATABASE_URL` and restarts the app. |
 | Admin | Only staff accounts can open the Django admin, through the rate-limited log in page. Contact messages are read-only there. |
+| Errors | A database error shows the plain 500 page, never the error itself, and the full traceback goes to Heroku's logs (`heroku logs --tail`) for investigation. |
 
 **Known limits:** the Essential database plan has a single database
 user, so the app cannot have a separate read-only login, and it has
@@ -440,6 +441,29 @@ From any card's page a logged-in user can:
 - **Secrets and debug** (US26): every secret read from environment
   variables, `DEBUG` off by default, and a [security policy](./SECURITY.md)
   for reporting vulnerabilities privately.
+- **Helpful error pages** (US25): branded pages for every error a
+  visitor can meet, each in plain language with a way back, and never
+  any technical detail:
+
+  | Error | When | Page says |
+  |---|---|---|
+  | 404 | The address does not exist, or the card or entry does not (or is someone else's) | "We couldn't find that page", with a card search |
+  | 403 | A logged-in user who is not staff opens the admin | "You don't have permission to see this page" |
+  | 403 (form expired) | A form is sent after its session ended, for example after logging out in another tab | "This form has expired", and how to fix it |
+  | 400 | A malformed request, such as an unknown web address for the site | "Something about that request wasn't right" |
+  | 429 | Too many log in or registration attempts | "Too many attempts" |
+  | 500 | Something breaks on the server | "Something went wrong on our side" |
+
+  The 500 page is plain HTML with every link written out, as Django
+  shows it without any context: whatever broke (even the database)
+  cannot break the error page too. Every crash is written to Heroku's
+  logs with its traceback
+  ([bug #69](https://github.com/J-Codes-Walkz/CardVault/issues/69)).
+
+<p>
+  <img src="./docs/images/screenshots/error-404.png" alt="The 404 page with a card search" width="480">
+  <img src="./docs/images/screenshots/error-500-mobile.png" alt="The 500 page on a phone in dark mode" width="180">
+</p>
 
 <p>
   <img src="./docs/images/screenshots/mobile-menu-closed.png" alt="Phone width with the menu closed" width="240">
@@ -450,8 +474,6 @@ From any card's page a logged-in user can:
 ### Still to build
 
 - My Cards totals, sorting and a one-click "Got it!" (US15 to US17)
-- Custom 404, 403 and 500 pages (US25)
-- The favicon and brand (#35)
 
 Every notification message the app shows (login success, duplicate
 username, "thank you for your review", and so on) is written out
@@ -742,6 +764,7 @@ section credible to an assessor.
 | 2026-10-16 | Design | Asked Claude to make the rarity symbols in the home page banner float rather than sit still. Claude pointed out that endless movement needs a way to pause it (WCAG 2.2.2) and that the Accessibility page promised movement "never loops", so it added a "Pause animation" button, updated that page, and checked that the button never covers the banner's text from 320px up, that pausing really stops the symbols, and that reduced motion still switches everything off. |
 | 2026-10-16 | Developing features | Asked Claude for a Home link and a Contact page (name, email, message, and a thank-you banner telling people to check their junk folder), and whether an automatic no-reply email was worth it. Claude advised against the email for now: anyone can type any address, so the form could be used to send mail to strangers, new senders often land in junk, and it would mean keeping a mail password on Heroku. I agreed to save messages for the admin instead and reply by hand from a dedicated mailbox. Claude built a `contact` app with a hidden bot trap and a 5-an-hour limit (storing a hash of the IP address, not the address), 19 tests, and updated the Privacy page, which had said we never ask for an email address. A browser check found the extra links pushed the logged-in header onto two rows at tablet widths, so the Menu button now appears below 1024px. |
 | 2026-10-19 | Security | Asked Claude to harden the site against password guessing and heavy traffic, cut log in tries to 3, and manage the database properly. Claude found that the existing per-IP limits never saw real visitors on Heroku: every request arrives from Heroku's router, so all visitors shared one count and 10 wrong passwords could pause logging in for everyone (bug #66). It set `ALLAUTH_TRUSTED_PROXY_COUNT`, wrote tests proving a faked `X-Forwarded-For` does not help, capped searches that could build huge queries (bug #67), added a 10-second query limit, threaded gunicorn workers and a branded 429 page, and found the live database had no backups, so scheduled daily ones and checked the first contained every table. It load tested the live site and, when a heavier run stalled, checked Heroku's router logs before blaming the site: the stalled requests never reached Heroku. |
+| 2026-10-19 | Developing features | Built the custom error pages (US25) with Claude. Claude made the 500 page plain HTML because Django renders it without context, and noticed while writing it that the page's promise ("the problem has been recorded") was untrue: with `DEBUG` off, Django logged nothing, so live crashes left no trace (bug #69). It added logging, then ran the site locally in production mode, starting a second copy pointed at a database that does not exist to cause a real 500. A first run showed every page failing; rather than change the site, Claude traced it to its own mistake (static files collected with `DEBUG` on) and redid the check properly. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |

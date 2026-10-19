@@ -1,0 +1,9 @@
+{% extends "errors/error_base.html" %}
+
+{% block head_title %}Access denied | CardVault{% endblock head_title %}
+{% block error_code %}Error 403: access denied{% endblock error_code %}
+{% block error_title %}You don't have permission to see this page{% endblock error_title %}
+
+{% block error_body %}
+<p>This page is only open to certain accounts. If you think you should be able to see it, check that you are logged in with the right account.</p>
+{% endblock error_body %}

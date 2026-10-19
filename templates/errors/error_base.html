@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% comment %}
+Shared layout for the error pages Django renders with the request
+(400, 403, 403_csrf, 404 and 429). The 500 page has its own copy of
+this markup, as Django renders it without any context.
+{% endcomment %}
+
+{% block content %}
+<section class="error-page" aria-labelledby="error-heading">
+    <img class="error-emblem" src="{% static 'images/emblem.svg' %}" alt="" width="96" height="134">
+    <p class="error-code">{% block error_code %}{% endblock error_code %}</p>
+    <h1 id="error-heading">{% block error_title %}{% endblock error_title %}</h1>
+    {% block error_body %}{% endblock error_body %}
+    <p class="actions">
+        {% block error_actions %}
+        <a class="button" href="{% url 'home' %}">Go to the home page</a>
+        <a class="button button-quiet" href="{% url 'cards:card_list' %}">Browse cards</a>
+        {% endblock error_actions %}
+    </p>
+</section>
+{% endblock content %}

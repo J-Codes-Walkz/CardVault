@@ -9,7 +9,7 @@ CardVault is tested in four ways:
 |---|---|---|
 | [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 57 of 57 checks passed |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
-| [Automated testing](#automated-testing) | 179 Django tests, including two-user ownership and security tests | 179 passed |
+| [Automated testing](#automated-testing) | 191 Django tests, including two-user ownership and security tests | 191 passed |
 | [Load testing](#load-testing) | 2,000 visits to the live site, 25 at a time | All succeeded; median 0.21 seconds |
 | [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only | No violations (one keyboard bug found and fixed) |
 | [Security testing](#security-testing) | Headers, log in limits, admin access, secrets, dependencies, code scanning | No issues found |
@@ -122,6 +122,20 @@ logged out and logged in.
 | US34 | Contact page in dark mode at 375px | Readable, no sideways scrolling | Pass |
 | US34 | On the live site, send a message from "Claude deploy check" (`test@example.com`, a reserved address that belongs to nobody) | Back on the home page with the thank you message, and the message saved in the admin | Pass. The message is deliberately kept in the live admin as visible evidence of this test |
 
+### Error pages (US25)
+
+Run on 19 October 2026 in Chrome against the site running locally
+with `DEBUG` off, as on Heroku. A second copy was pointed at a
+database that does not exist, to cause a real server error.
+
+| Test | Expected | Result | Screenshot |
+|---|---|---|---|
+| Open an address that does not exist | The 404 page (status 404), with a card search and links home | Pass | [error-404](./docs/images/screenshots/error-404.png) |
+| Send a form with no CSRF token (a form built in the browser and posted to Log in) | "This form has expired" (status 403) | Pass | [error-form-expired](./docs/images/screenshots/error-form-expired.png) |
+| Request the site under an unknown host name | The 400 page (status 400) | Pass | |
+| Load the home page with the database unreachable | The 500 page (status 500), styled, with no technical detail; the full traceback in the server log | Pass | [error-500-mobile](./docs/images/screenshots/error-500-mobile.png) |
+| Each page at 375 and 1280px, light and dark | No sideways scrolling | Pass | |
+
 ### Security checks (US05)
 
 Changing the ID in the address bar to another user's entry or review
@@ -151,7 +165,7 @@ Run with:
 python manage.py test
 ```
 
-179 tests, all passing on 19 October 2026:
+191 tests, all passing on 19 October 2026:
 
 | File | Tests | What they check |
 |---|---|---|
@@ -159,6 +173,7 @@ python manage.py test
 | `cards/tests.py` | 69 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404; search across name, set and rarity in any order ("holo rare", "rare holo", "holos"; "common" not matching Uncommon), the Rarity and Set filters alone and combined, unknown filter values ignored, filters kept in page links; Poké Ball ratings (full, empty, rounded averages, hidden from screen readers), the five-ball picker on the review form, the 1999 rarity symbols and which cards shimmer, and searches cut to 100 characters and 5 words |
 | `collection/tests.py` | 34 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged; My Cards shows my own rating (not other people's) or a Rate it link, the notes preview, and a fixed number of database queries however long the list |
 | `contact/tests.py` | 19 | The Contact page for anyone, every field required, a bad email address and a message over 2,000 characters refused, a valid message saved with the thank you message, the username filled in when logged in, the bot trap (thanked but not saved), the 5-an-hour limit and that it is per visitor, the IP address hashed and taken from the address Heroku adds, the admin (message read-only, only "handled" editable), Home and Contact links on every page with `aria-current="page"` on the current one, and the Privacy page's Contact section |
+| `cardvault/tests.py` | 12 | The error pages (US25): an unknown address and an unknown card show the 404 page, which links home, offers a card search, keeps the logged-in header and shows no technical detail; a non-staff user opening the admin gets the 403 page; a form sent without a valid CSRF token gets the "This form has expired" page; an unknown host gets the 400 page; a forced crash gets the 500 page with no technical detail, is logged with its traceback, and the 500 page uses no template tags |
 
 The two-user tests are the most important: they prove one user
 cannot view, change or delete another user's records by guessing an
@@ -186,6 +201,7 @@ same accessibility engine Lighthouse uses; it was run with every WCAG
 | High contrast (`prefers-contrast: more` emulated) | A card page | Text switches to black, borders darken and thicken |
 | Keyboard only: real Tab key presses, checking each stop's focus outline | Home, a card page, Register, Log in, Privacy (live site) | Every link, field and button reachable in a logical order; one stop without an outline (bug #56, fixed) |
 | axe (WCAG 2.2 AA), light and dark, 16 October 2026 | Contact (logged out, logged in, with errors), Home with the Menu open at 900px | 0 violations |
+| axe (WCAG 2.2 AA), light and dark, at 375 and 1280px, 19 October 2026 | The 404, form expired and 500 pages | 0 violations |
 | Sound | Whole site | No audio or video; every message is on-screen text |
 
 **Still to do by hand:** a pass with VoiceOver (the Mac's built-in
@@ -317,6 +333,7 @@ validated by URL on the live site: 0 errors, 0 warnings.
 | Write, edit and delete review pages, including review with errors | 0 | 0 |
 | Register (empty and with errors), Log in, Log out | 0 | 0 |
 | Contact (16 October 2026) | 0 | 0 |
+| Error pages: 400, 403, 403 form expired, 404, 429, 500 (19 October 2026) | 0 | 0 |
 
 The validator first reported "Article lacks heading" on card tiles;
 each card name is now a heading.
@@ -372,6 +389,7 @@ privately, as described in [SECURITY.md](./SECURITY.md).
 | [#58](https://github.com/J-Codes-Walkz/CardVault/issues/58) | Card page lost typed text: submitting the review form threw away unsaved My Cards notes, and the other way round (Jamie's manual test) | One form per page: reviews are written on their own page via a Write a review button | Fixed |
 | [#66](https://github.com/J-Codes-Walkz/CardVault/issues/66) | Log in limits were shared by every visitor on Heroku: django-allauth saw only the router's address, so 10 wrong passwords a minute from anyone could pause logging in for everyone | `ALLAUTH_TRUSTED_PROXY_COUNT = 1`, so the visitor's real address (added last by Heroku's router) is used; tests prove a faked header does not help | Fixed |
 | [#67](https://github.com/J-Codes-Walkz/CardVault/issues/67) | A search with thousands of words built one huge, slow database query | Searches cut to 100 characters and 5 words; Postgres stops any query after 10 seconds | Fixed |
+| [#69](https://github.com/J-Codes-Walkz/CardVault/issues/69) | Crashes on the live site left no trace in the logs: with `DEBUG` off, Django printed nothing | A `LOGGING` setting sends warnings and errors, with tracebacks, to the console that Heroku collects; tested | Fixed |
 
 Found and fixed while building, before they reached the live site:
 

@@ -1,0 +1,16 @@
+{% extends "errors/error_base.html" %}
+
+{% block head_title %}Page not found | CardVault{% endblock head_title %}
+{% block error_code %}Error 404: page not found{% endblock error_code %}
+{% block error_title %}We couldn't find that page{% endblock error_title %}
+
+{% block error_body %}
+<p>The address may be mistyped, or the page may have been moved or deleted.</p>
+<form class="error-search" method="get" action="{% url 'cards:card_list' %}" role="search">
+    <label for="error-search-q">Looking for a card?</label>
+    <div class="error-search-row">
+        <input type="search" name="q" id="error-search-q" maxlength="100" placeholder="For example: Charizard">
+        <button type="submit" class="button">Search</button>
+    </div>
+</form>
+{% endblock error_body %}

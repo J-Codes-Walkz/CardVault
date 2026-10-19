@@ -1,0 +1,10 @@
+{% extends "errors/error_base.html" %}
+
+{% block head_title %}Form expired | CardVault{% endblock head_title %}
+{% block error_code %}Error 403: form expired{% endblock error_code %}
+{% block error_title %}This form has expired{% endblock error_title %}
+
+{% block error_body %}
+<p>For your security, each form only works for the session it was opened in. This usually happens if you logged out or in on another tab, or left the page open for a long time.</p>
+<p>Please go back, refresh the page and try again. If it keeps happening, check that your browser allows cookies for this site.</p>
+{% endblock error_body %}

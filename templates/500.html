@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!--
+Django renders this page with no context at all, because whatever
+failed might be the database, the URL settings or the template
+system. So it uses no template tags: every link and file path is
+written out in full, and there are no scripts. It matches the layout
+of templates/errors/error_base.html.
+-->
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>Something went wrong | CardVault</title>
+    <link rel="icon" href="/static/images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="site-header">
+        <nav class="site-nav" aria-label="Main">
+            <a class="brand" href="/">
+                <img class="brand-emblem" src="/static/images/emblem.svg" alt="" width="30" height="42">
+                <span class="brand-word">Card<span class="brand-vault">Vault</span></span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/cards/">Browse cards</a></li>
+                <li><a href="/contact/">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="main" class="container">
+        <section class="error-page" aria-labelledby="error-heading">
+            <img class="error-emblem" src="/static/images/emblem.svg" alt="" width="96" height="134">
+            <p class="error-code">Error 500: server error</p>
+            <h1 id="error-heading">Something went wrong on our side</h1>
+            <p>It isn't anything you did. The problem has been recorded in the site's logs, and anything you had already saved is safe.</p>
+            <p>Please try again in a few minutes.</p>
+            <p class="actions">
+                <a class="button" href="/">Go to the home page</a>
+                <a class="button button-quiet" href="/cards/">Browse cards</a>
+            </p>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <nav class="footer-links" aria-label="Footer">
+            <a href="/privacy/">Privacy and cookies</a>
+            <a href="/accessibility/">Accessibility</a>
+            <a href="/contact/">Contact</a>
+        </nav>
+        <p>CardVault is an educational project. It is not affiliated with, endorsed by or sponsored by Nintendo, Game Freak or The Pokémon Company.</p>
+    </footer>
+</body>
+
+</html>
