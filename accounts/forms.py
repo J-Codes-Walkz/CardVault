@@ -10,7 +10,8 @@ MINIMUM_AGE = 13
 UNDER_AGE_SESSION_KEY = "cardvault_signup_under_age"
 TOO_YOUNG = "Sorry, you need to be 13 or older to create a CardVault account."
 NOT_A_REAL_DATE = "Please enter your real date of birth."
-WRONG_PASSWORD = "That password is not correct."
+# A message shown to the user, not a password.
+WRONG_PASSWORD = "That password is not correct."  # nosec B105
 DATE_OF_BIRTH_HELP = "Used only to check your age. It is not stored."
 NO_EMAIL_USERNAME = "Please don't use an email address as your username: "
 NO_EMAIL_USERNAME += "usernames are shown publicly next to your reviews."

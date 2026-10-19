@@ -23,11 +23,14 @@ def balls(rating):
     """Five Poké Balls with `rating` of them full, e.g. 4 -> 4 full."""
     full = round(rating or 0)
     states = ["ball-full"] * full + ["ball-empty"] * (5 - full)
-    icons = mark_safe("".join(ball(state) for state in states))
+    # Safe: only our own SVG template, filled with fixed state names.
+    # No text typed by a user ever reaches it.
+    icons = mark_safe("".join(ball(state) for state in states))  # nosec
     return format_html(BALLS_WRAPPER, icons)
 
 
 @register.simple_tag
 def ball_icon():
     """One Poké Ball for the rating picker; CSS fills it when chosen."""
-    return mark_safe(ball("ball-pick"))
+    # Safe: our own SVG template with a fixed state name.
+    return mark_safe(ball("ball-pick"))  # nosec

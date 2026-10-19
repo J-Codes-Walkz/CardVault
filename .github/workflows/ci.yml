@@ -1,0 +1,91 @@
+# Checks every push and pull request to main. Heroku's "Wait for CI to
+# pass before deploy" setting means the live site only updates once
+# both jobs pass.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# The workflow only needs to read the code.
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Lint and test
+    runs-on: ubuntu-latest
+
+    # A temporary PostgreSQL database, thrown away after the run.
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: cardvault
+          POSTGRES_PASSWORD: cardvault
+          POSTGRES_DB: cardvault
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    # Throwaway values for this run only. They are not secrets: the
+    # key signs nothing real and the database disappears afterwards.
+    # DEBUG=True matches local development, where the database has no
+    # TLS; the test runner itself always runs with DEBUG off.
+    env:
+      SECRET_KEY: ci-only-throwaway-key-not-used-anywhere-else
+      DEBUG: "True"
+      DATABASE_URL: postgres://cardvault:cardvault@localhost:5432/cardvault
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+          cache: pip
+
+      - name: Install packages
+        run: pip install -r requirements.txt flake8
+
+      - name: PEP8 (flake8)
+        run: flake8 .
+
+      - name: Django system check
+        run: python manage.py check
+
+      - name: No missing migrations
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Automated tests
+        run: python manage.py test
+
+  security:
+    name: Security scans
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+
+      - name: Install scanners
+        run: pip install bandit pip-audit
+
+      # Python security problems. Test files are skipped, as their
+      # made-up passwords are flagged; each "# nosec" in the code
+      # explains why that line is safe.
+      - name: Bandit
+        run: bandit -r . -x "./.venv,./staticfiles,./graphify-out,*/tests.py"
+
+      # Known vulnerabilities in the pinned packages.
+      - name: pip-audit
+        run: pip-audit -r requirements.txt

@@ -51,7 +51,9 @@ def fetch_page(page, headers):
     request = urllib.request.Request(URL + query, headers=headers)
     for attempt in range(1, ATTEMPTS + 1):
         try:
-            with urllib.request.urlopen(request, timeout=60) as response:
+            # Always the fixed https:// address in URL above.
+            opened = urllib.request.urlopen(request, timeout=60)  # nosec
+            with opened as response:
                 return json.load(response)
         except urllib.error.HTTPError as error:
             if error.code < 500 or attempt == ATTEMPTS:

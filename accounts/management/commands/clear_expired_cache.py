@@ -18,9 +18,10 @@ class Command(BaseCommand):
         name = settings.CACHES["default"]["LOCATION"]
         table = connection.ops.quote_name(name)
         now = connection.ops.adapt_datetimefield_value(timezone.now())
-        # A fixed statement with the time passed as a parameter: no
-        # user input ever reaches it.
+        # A fixed statement: the table name comes from settings and the
+        # time is passed as a parameter, so no user input reaches it.
+        sql = f"DELETE FROM {table} WHERE expires < %s"  # nosec B608
         with connection.cursor() as cursor:
-            cursor.execute(f"DELETE FROM {table} WHERE expires < %s", [now])
+            cursor.execute(sql, [now])
             deleted = cursor.rowcount
         self.stdout.write(f"Deleted {deleted} expired cache entries.")

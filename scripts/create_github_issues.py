@@ -17,7 +17,8 @@ Usage:
 """
 import argparse
 import csv
-import subprocess
+# Runs the GitHub CLI with a fixed list of arguments and no shell.
+import subprocess  # nosec B404
 import sys
 from pathlib import Path
 
@@ -82,7 +83,7 @@ def main():
             cmd += ["--label", label]
 
         print(f"Creating {row['id']}: {row['title']}")
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, capture_output=True, text=True)  # nosec
         if result.returncode != 0:
             print(f"  FAILED: {result.stderr.strip()}", file=sys.stderr)
             print(LABEL_HINT, file=sys.stderr)
