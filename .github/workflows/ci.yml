@@ -8,6 +8,9 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Adds a "Run workflow" button in the Actions tab, to run the checks
+  # again without pushing code.
+  workflow_dispatch:
 
 # The workflow only needs to read the code.
 permissions:

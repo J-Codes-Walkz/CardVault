@@ -586,7 +586,8 @@ The full testing write-up is in **[TESTING.md](./TESTING.md)**: manual tests for
 
 Every push and pull request to `main` runs the
 [CI workflow](./.github/workflows/ci.yml) on GitHub Actions (the badge
-at the top of this README shows the latest result). It has two jobs,
+at the top of this README shows the latest result). It can also be
+run by hand with the **Run workflow** button in the Actions tab. It has two jobs,
 which run side by side:
 
 | Job | Checks | Fails if |
