@@ -194,6 +194,13 @@ and Heroku waits for it to pass before deploying.
 
 ![The first CI run passing on GitHub Actions](./docs/images/screenshots/ci-passing.png)
 
+**Heroku waits for CI**, checked on 19 October 2026 after switching on
+"Wait for CI to pass before deploy": CI passed for commit `0bf1b4c` at
+17:17:28 (UK time), Heroku started the build 33 seconds later, at
+17:18:01, and it was live as release v31 at 17:18:18. Runs pushed during
+a GitHub Actions incident that afternoon waited in the queue and ran
+once GitHub recovered; nothing was deployed until they passed.
+
 Before the workflow was added, Bandit was run locally and reported 21
 possible problems, none high severity. Each was checked:
 
