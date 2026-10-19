@@ -553,6 +553,16 @@ class SearchAndFilterTests(TestCase):
         self.assertEqual(self.names("?q=char+holo"), ["Charizard"])
         self.assertEqual(self.names("?q=jungle"), ["Jolteon"])
 
+    def test_only_the_first_five_words_are_searched(self):
+        query = "?q=charizard+base+set+holo+rare+zzzz"
+        self.assertEqual(self.names(query), ["Charizard"])
+
+    def test_long_search_is_cut_to_100_characters(self):
+        url = reverse("cards:card_list") + "?q=" + "x" * 500
+        response = self.client.get(url)
+        self.assertEqual(len(response.context["query"]), 100)
+        self.assertContains(response, 'maxlength="100"')
+
     def test_rarity_filter(self):
         self.assertEqual(self.names("?rarity=RARE"), ["Electabuzz"])
 

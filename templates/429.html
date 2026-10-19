@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block head_title %}Too many attempts | CardVault{% endblock head_title %}
+
+{% block content %}
+<section class="prose">
+    <h1>Too many attempts</h1>
+    <p>For your safety, CardVault has paused requests like this one from your connection for a short while. This protects accounts from people trying to guess passwords.</p>
+    <p>Please wait a few minutes, then try again.</p>
+    <p class="actions">
+        <a class="button" href="{% url 'home' %}">Go to the home page</a>
+    </p>
+</section>
+{% endblock content %}

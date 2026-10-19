@@ -12,6 +12,8 @@ SIGNED_UP_TEMPLATE = "account/messages/signed_up.txt"
 
 USERNAME_TAKEN = "That username is already taken. Please choose another."
 LOGIN_FAILED = "Invalid username or password. Please try again."
+LOCKED = "Too many failed log in attempts. For your safety, logging in is "
+LOCKED += "paused for up to 15 minutes. Please try again later."
 
 
 class AccountAdapter(DefaultAccountAdapter):
@@ -23,6 +25,7 @@ class AccountAdapter(DefaultAccountAdapter):
         # One message for both cases, so the form never reveals whether
         # it was the username or the password that was wrong.
         "username_password_mismatch": LOGIN_FAILED,
+        "too_many_login_attempts": LOCKED,
     }
 
     def is_open_for_signup(self, request):

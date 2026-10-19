@@ -79,14 +79,21 @@ TEMPLATES = [
 WSGI_APPLICATION = "cardvault.wsgi.application"
 
 # --- Database ------------------------------------------------------------
-# PostgreSQL everywhere. Heroku sets DATABASE_URL itself.
+# PostgreSQL everywhere. Heroku sets DATABASE_URL itself. Connections
+# are encrypted (TLS) outside local development, reused for up to 10
+# minutes, and checked before reuse in case the database restarted.
 DATABASES = {
     "default": dj_database_url.config(
         default=os.environ.get("DATABASE_URL"),
         conn_max_age=600,
+        conn_health_checks=True,
         ssl_require=not DEBUG,
     )
 }
+# Postgres stops any query still running after 10 seconds, so one slow
+# request cannot hold the database while other visitors wait.
+DATABASE_OPTIONS = DATABASES["default"].setdefault("OPTIONS", {})
+DATABASE_OPTIONS["options"] = "-c statement_timeout=10000"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -118,9 +125,26 @@ ACCOUNT_SIGNUP_FIELDS = ["username*", "password1*", "password2*"]
 # No email address is collected, so there is nothing to verify.
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_SESSION_REMEMBER = True
-# django-allauth's default rate limits stay on: at most 30 log ins a
-# minute per IP address, and after 5 wrong passwords for one username
-# that username is locked for 5 minutes (10 a minute per IP address).
+
+# Heroku's router sits in front of the app, so every request arrives
+# from the router's own address. The router adds the visitor's real IP
+# address as the last entry of X-Forwarded-For; trusting exactly one
+# proxy makes allauth (and the Contact page) use that entry, so each
+# "per IP address" limit applies to one visitor, not to everyone.
+ALLAUTH_TRUSTED_PROXY_COUNT = 1
+# Rate limits, stored in the shared database cache:
+# - 3 wrong passwords lock that username for 15 minutes, whichever
+#   addresses they came from, so a password cannot be guessed by
+#   spreading attempts across many computers;
+# - one IP address may get 5 passwords wrong a minute and 20 an hour,
+#   across any usernames, which stops one computer trying thousands;
+# - one IP address may try to log in 10 times a minute and register
+#   10 accounts an hour.
+ACCOUNT_RATE_LIMITS = {
+    "login_failed": "5/m/ip,20/h/ip,3/15m/key",
+    "login": "10/m/ip",
+    "signup": "10/h/ip",
+}
 
 # Keep messages in the session, so the site sets no cookie beyond the
 # two it needs (sessionid and csrftoken); see the privacy page.

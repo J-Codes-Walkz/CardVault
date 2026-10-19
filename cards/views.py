@@ -18,6 +18,10 @@ REVIEW_ADDED = "Thank you for submitting your review!"
 REVIEW_UPDATED = "Your review was updated successfully."
 REVIEW_DELETED = "Your review was deleted."
 REVIEW_EXISTS = "You have already reviewed {card}. You can edit it here."
+# Each search word adds a database filter, so very long searches are
+# cut short rather than building one huge query.
+MAX_QUERY_LENGTH = 100
+MAX_SEARCH_WORDS = 5
 
 
 class HomeView(TemplateView):
@@ -46,7 +50,7 @@ def search_cards(cards, query):
     both find Rare Holo cards, and "common" finds Common cards but not
     Uncommon ones. A plural such as "holos" also counts.
     """
-    for word in query.lower().split():
+    for word in query.lower().split()[:MAX_SEARCH_WORDS]:
         forms = {word, word.removesuffix("s")}
         match = Q(name__icontains=word) | Q(card_set__name__icontains=word)
         rarities = [
@@ -67,7 +71,8 @@ class CardListView(ListView):
 
     def get_queryset(self):
         cards = Card.objects.select_related("card_set")
-        self.query = self.request.GET.get("q", "").strip()
+        query = self.request.GET.get("q", "").strip()
+        self.query = query[:MAX_QUERY_LENGTH]
         self.rarity = self.request.GET.get("rarity", "")
         self.set_id = self.request.GET.get("set", "")
         if self.query:

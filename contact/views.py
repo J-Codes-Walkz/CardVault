@@ -1,6 +1,7 @@
 """The Contact page."""
 import hashlib
 
+from allauth.account.adapter import get_adapter
 from django.contrib import messages
 from django.core.cache import cache
 from django.shortcuts import redirect
@@ -21,11 +22,9 @@ LIMIT_SECONDS = 60 * 60
 
 def visitor_key(request):
     """A cache key for the visitor's IP address, hashed so the address
-    itself is never stored. On Heroku the router adds the visitor's
-    real address as the last entry of X-Forwarded-For."""
-    forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
-    address = forwarded.split(",")[-1].strip()
-    address = address or request.META.get("REMOTE_ADDR", "")
+    itself is never stored. The address is found the same way as for
+    the log in limits (see ALLAUTH_TRUSTED_PROXY_COUNT in settings)."""
+    address = get_adapter(request).get_client_ip(request)
     digest = hashlib.sha256(address.encode()).hexdigest()
     return f"contact-sent:{digest}"
 

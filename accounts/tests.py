@@ -11,6 +11,8 @@ from django.utils import timezone
 from cards.models import Card, CardSet, Review
 from collection.models import CollectionEntry
 
+from .adapter import LOCKED, LOGIN_FAILED
+
 User = get_user_model()
 
 STRONG_PASSWORD = "Vault-Pass-2026"
@@ -222,24 +224,101 @@ class SecurityHeaderTests(TestCase):
 class LoginRateLimitTests(TestCase):
     """django-allauth stops repeated password guessing."""
 
-    def test_sixth_wrong_password_is_blocked(self):
+    url = reverse("account_login")
+    wrong = {"login": "misty", "password": "Wrong-Pass-2026"}
+
+    def setUp(self):
         User.objects.create_user("misty", password=STRONG_PASSWORD)
-        url = reverse("account_login")
-        data = {"login": "misty", "password": "Wrong-Pass-2026"}
-        for _ in range(5):
-            self.client.post(url, data)
-        response = self.client.post(url, data)
-        self.assertContains(response, "Too many failed login attempts.")
+
+    def guess(self, data, address="203.0.113.1"):
+        """Post a log in from one visitor's IP address, as Heroku's
+        router reports it: the last entry of X-Forwarded-For."""
+        forwarded = f"198.51.100.7, {address}"
+        return self.client.post(self.url, data, HTTP_X_FORWARDED_FOR=forwarded)
+
+    def test_third_wrong_password_is_an_ordinary_error(self):
+        for _ in range(2):
+            self.guess(self.wrong)
+        response = self.guess(self.wrong)
+        self.assertContains(response, LOGIN_FAILED)
+        self.assertNotContains(response, "Too many failed log in attempts.")
+
+    def test_fourth_wrong_password_is_blocked(self):
+        for _ in range(3):
+            self.guess(self.wrong)
+        response = self.guess(self.wrong)
+        self.assertContains(response, LOCKED)
 
     def test_correct_password_is_also_blocked_while_locked(self):
-        User.objects.create_user("misty", password=STRONG_PASSWORD)
-        url = reverse("account_login")
-        wrong = {"login": "misty", "password": "Wrong-Pass-2026"}
-        for _ in range(5):
-            self.client.post(url, wrong)
+        for _ in range(3):
+            self.guess(self.wrong)
         right = {"login": "misty", "password": STRONG_PASSWORD}
-        response = self.client.post(url, right)
+        response = self.guess(right)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+    def test_lock_follows_the_username_across_ip_addresses(self):
+        for number in range(1, 4):
+            self.guess(self.wrong, address=f"203.0.113.{number}")
+        response = self.guess(self.wrong, address="192.0.2.50")
+        self.assertContains(response, LOCKED)
+
+    def test_one_address_cannot_guess_across_many_usernames(self):
+        for number in range(5):
+            data = {"login": f"user{number}", "password": "Wrong-Pass-2026"}
+            self.guess(data)
+        right = {"login": "misty", "password": STRONG_PASSWORD}
+        response = self.guess(right)
+        self.assertContains(response, LOCKED)
+
+    def test_other_visitors_can_still_log_in(self):
+        for number in range(5):
+            data = {"login": f"user{number}", "password": "Wrong-Pass-2026"}
+            self.guess(data)
+        right = {"login": "misty", "password": STRONG_PASSWORD}
+        response = self.guess(right, address="192.0.2.50")
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+
+    def test_changing_the_first_forwarded_address_does_not_help(self):
+        for number in range(5):
+            data = {"login": f"user{number}", "password": "Wrong-Pass-2026"}
+            forwarded = f"10.0.0.{number}, 203.0.113.1"
+            self.client.post(self.url, data, HTTP_X_FORWARDED_FOR=forwarded)
+        right = {"login": "misty", "password": STRONG_PASSWORD}
+        response = self.guess(right)
+        self.assertContains(response, LOCKED)
+
+
+class SignupRateLimitTests(TestCase):
+    """One IP address can register at most 10 accounts an hour."""
+
+    def test_eleventh_registration_gets_the_too_many_attempts_page(self):
+        url = reverse("account_signup")
+        for number in range(10):
+            data = {
+                "username": f"trainer{number}",
+                "date_of_birth": ADULT_BIRTHDAY,
+                "password1": STRONG_PASSWORD,
+                "password2": STRONG_PASSWORD,
+            }
+            self.client.post(url, data)
+            self.client.post(reverse("account_logout"))
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 429)
+        self.assertTemplateUsed(response, "429.html")
+        self.assertContains(response, "Too many attempts", status_code=429)
+
+
+class DatabaseSettingsTests(TestCase):
+    """Database connections are checked and slow queries stopped."""
+
+    def test_slow_queries_are_stopped_after_10_seconds(self):
+        from django.conf import settings
+        from django.db import connection
+        database = settings.DATABASES["default"]
+        self.assertTrue(database["CONN_HEALTH_CHECKS"])
+        with connection.cursor() as cursor:
+            cursor.execute("SHOW statement_timeout")
+            self.assertEqual(cursor.fetchone()[0], "10s")
 
 
 class AdminLoginTests(TestCase):
