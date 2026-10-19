@@ -1,5 +1,7 @@
 # CardVault
 
+[![CI](https://github.com/J-Codes-Walkz/CardVault/actions/workflows/ci.yml/badge.svg)](https://github.com/J-Codes-Walkz/CardVault/actions/workflows/ci.yml)
+
 A full-stack web app for Pok&eacute;mon card collectors: track the
 cards you own, keep a wishlist of the ones you want, and read and
 write reviews &mdash; built with Django and PostgreSQL, and deployed
@@ -580,6 +582,29 @@ in the catalogue before reviews mean anything):
 
 The full testing write-up is in **[TESTING.md](./TESTING.md)**: manual tests for every user story, the automated test suite, validator results (HTML, CSS, Python) and every bug found, each logged as a GitHub issue labelled [`bug`](https://github.com/J-Codes-Walkz/CardVault/issues?q=label%3Abug).
 
+### Continuous integration
+
+Every push and pull request to `main` runs the
+[CI workflow](./.github/workflows/ci.yml) on GitHub Actions (the badge
+at the top of this README shows the latest result). It has two jobs,
+which run side by side:
+
+| Job | Checks | Fails if |
+|---|---|---|
+| Lint and test | `flake8 .`, `python manage.py check`, `makemigrations --check`, then the full test suite against a temporary PostgreSQL 18 database | Any PEP8 problem, a system check error, a model change without a migration, or any failing test |
+| Security scans | [Bandit](https://bandit.readthedocs.io/) on the Python code, and [pip-audit](https://pypi.org/project/pip-audit/) on `requirements.txt` | A possible security problem in the code, or a package with a known vulnerability |
+
+The workflow uses a throwaway `SECRET_KEY` and database written into
+the file itself: they protect nothing real, so no repository secrets
+are needed. Heroku's **Wait for CI to pass before deploy** setting is
+on, so a push only reaches the live site once both jobs pass.
+
+Bandit skips the test files, whose made-up passwords it would flag.
+Every other line it flags but that is safe carries a `# nosec` marker
+with a comment saying why, so each exception can be checked.
+
+![The first CI run passing on GitHub Actions](./docs/images/screenshots/ci-passing.png)
+
 ## Deployment
 
 ### Local setup
@@ -765,6 +790,7 @@ section credible to an assessor.
 | 2026-10-16 | Developing features | Asked Claude for a Home link and a Contact page (name, email, message, and a thank-you banner telling people to check their junk folder), and whether an automatic no-reply email was worth it. Claude advised against the email for now: anyone can type any address, so the form could be used to send mail to strangers, new senders often land in junk, and it would mean keeping a mail password on Heroku. I agreed to save messages for the admin instead and reply by hand from a dedicated mailbox. Claude built a `contact` app with a hidden bot trap and a 5-an-hour limit (storing a hash of the IP address, not the address), 19 tests, and updated the Privacy page, which had said we never ask for an email address. A browser check found the extra links pushed the logged-in header onto two rows at tablet widths, so the Menu button now appears below 1024px. |
 | 2026-10-19 | Security | Asked Claude to harden the site against password guessing and heavy traffic, cut log in tries to 3, and manage the database properly. Claude found that the existing per-IP limits never saw real visitors on Heroku: every request arrives from Heroku's router, so all visitors shared one count and 10 wrong passwords could pause logging in for everyone (bug #66). It set `ALLAUTH_TRUSTED_PROXY_COUNT`, wrote tests proving a faked `X-Forwarded-For` does not help, capped searches that could build huge queries (bug #67), added a 10-second query limit, threaded gunicorn workers and a branded 429 page, and found the live database had no backups, so scheduled daily ones and checked the first contained every table. It load tested the live site and, when a heavier run stalled, checked Heroku's router logs before blaming the site: the stalled requests never reached Heroku. |
 | 2026-10-19 | Developing features | Built the custom error pages (US25) with Claude. Claude made the 500 page plain HTML because Django renders it without context, and noticed while writing it that the page's promise ("the problem has been recorded") was untrue: with `DEBUG` off, Django logged nothing, so live crashes left no trace (bug #69). It added logging, then ran the site locally in production mode, starting a second copy pointed at a database that does not exist to cause a real 500. A first run showed every page failing; rather than change the site, Claude traced it to its own mistake (static files collected with `DEBUG` on) and redid the check properly. |
+| 2026-10-19 | Automated tests | Asked Claude to set up the CI workflow (#39), adding free security scans because CodeQL stops while the repo is private. Before writing the workflow, Claude ran Bandit and pip-audit locally and went through all 21 Bandit findings: 12 were made-up passwords in tests (tests excluded from the scan), and the other 9 were checked line by line and each marked `# nosec` with the reason it is safe. When Bandit said one marker was unnecessary, Claude removed it, saw the finding come back, and restored it rather than trusting the warning. The workflow passed first time: 191 tests in 40 seconds. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |

@@ -124,6 +124,9 @@ explains this for users.
 - Dependabot watches the pinned packages in `requirements.txt` and opens
   a pull request when a security fix is released. `pip-audit` found no
   known vulnerabilities on 15 October 2026.
+- The CI workflow runs Bandit (Python security problems) and
+  pip-audit (packages with known vulnerabilities) on every push, and
+  Heroku only deploys once it passes.
 - CodeQL scans the Python and JavaScript for security problems on every
   push.
 - The `main` branch cannot be force-pushed or deleted.

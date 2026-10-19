@@ -3,13 +3,14 @@
 Testing for [CardVault](./README.md). Live site:
 [cardvault-0a18b8d773ca.herokuapp.com](https://cardvault-0a18b8d773ca.herokuapp.com/).
 
-CardVault is tested in four ways:
+CardVault is tested in these ways:
 
-| Method | What it covers | Result (15 October 2026) |
+| Method | What it covers | Result |
 |---|---|---|
 | [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 57 of 57 checks passed |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
 | [Automated testing](#automated-testing) | 191 Django tests, including two-user ownership and security tests | 191 passed |
+| [Continuous integration](#continuous-integration) | flake8, Django checks, the tests, Bandit and pip-audit on every push, on GitHub Actions | Passing since 19 October 2026 |
 | [Load testing](#load-testing) | 2,000 visits to the live site, 25 at a time | All succeeded; median 0.21 seconds |
 | [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only | No violations (one keyboard bug found and fixed) |
 | [Security testing](#security-testing) | Headers, log in limits, admin access, secrets, dependencies, code scanning | No issues found |
@@ -179,6 +180,31 @@ The two-user tests are the most important: they prove one user
 cannot view, change or delete another user's records by guessing an
 ID, which is a security boundary rather than just a feature.
 
+## Continuous integration
+
+Since 19 October 2026 every push and pull request to `main` runs the
+[CI workflow](./.github/workflows/ci.yml) on GitHub Actions
+([issue #39](https://github.com/J-Codes-Walkz/CardVault/issues/39)),
+and Heroku waits for it to pass before deploying.
+
+| Job | Steps | First run (commit `cf3a585`) |
+|---|---|---|
+| Lint and test | flake8; `manage.py check`; `makemigrations --check --dry-run`; `manage.py test` against PostgreSQL 18 | Passed in 76 seconds; 191 tests in 40 seconds |
+| Security scans | Bandit (test files skipped); pip-audit on `requirements.txt` | Passed in 20 seconds: "No issues identified", "No known vulnerabilities found" |
+
+![The first CI run passing on GitHub Actions](./docs/images/screenshots/ci-passing.png)
+
+Before the workflow was added, Bandit was run locally and reported 21
+possible problems, none high severity. Each was checked:
+
+| Finding | Where | Decision |
+|---|---|---|
+| Possible hard-coded password (12) | Made-up passwords in the test files | Test files are skipped by the scan |
+| Possible hard-coded password | The message "That password is not correct." in `accounts/forms.py` | A message, not a password: `# nosec` |
+| `mark_safe` could allow cross-site scripting (4) | The Poké Ball rating tags | Only our own SVG template with fixed values; no user text reaches it: `# nosec` |
+| SQL built from a string | `clear_expired_cache` | Table name from settings, time passed as a parameter: `# nosec` |
+| `urlopen` and `subprocess` (3) | The one-off scripts in `scripts/` | A fixed `https` address, and the GitHub CLI run with no shell: `# nosec` |
+
 For a coverage report:
 
 ```bash
@@ -278,6 +304,7 @@ what each protection does is explained in [SECURITY.md](./SECURITY.md).
 | Secret scanning | GitHub secret scanning with push protection | On; 0 alerts |
 | Dependencies | `pip-audit -r requirements.txt` and Dependabot alerts | No known vulnerabilities; 0 alerts |
 | Code scanning | GitHub CodeQL on the Python and JavaScript | 0 results |
+| Code scanning on every push | Bandit and pip-audit in the CI workflow (19 October 2026) | No issues; no known vulnerabilities |
 | Deployment settings | `python manage.py check --deploy` with production settings | No issues |
 | Security headers on the live site | `curl -I` on the home page | `Content-Security-Policy`, `Permissions-Policy`, `Strict-Transport-Security` and `X-Frame-Options: DENY` all present |
 | Content Security Policy breaks nothing | Every public, logged-in and admin page loaded in Chrome, watching the console | No violations; the only console error was the missing favicon (#35) |
