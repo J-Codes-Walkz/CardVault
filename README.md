@@ -443,6 +443,11 @@ From any card's page a logged-in user can:
 - **Secrets and debug** (US26): every secret read from environment
   variables, `DEBUG` off by default, and a [security policy](./SECURITY.md)
   for reporting vulnerabilities privately.
+- **Django admin:** staff manage the card sets, cards, reviews, My
+  Cards entries and Contact messages from the admin, reached through
+  the same rate-limited log in page as everyone else.
+
+  ![The Django admin listing CardVault's models](./docs/images/screenshots/admin-models.png)
 - **Helpful error pages** (US25): branded pages for every error a
   visitor can meet, each in plain language with a way back, and never
   any technical detail:

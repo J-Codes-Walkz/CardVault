@@ -47,11 +47,14 @@ site on 12 October 2026, with the expected message at each step
 | Story | Test | Expected | Result | Screenshot |
 |---|---|---|---|---|
 | US05 | Open My Cards while logged out | Sent to Log in with "Please log in to view that page." | Pass | [login-required-message](./docs/images/screenshots/login-required-message.png) |
+| US01 | Open Register | Username, date of birth and two password fields, with the password rules listed | Pass | [register-form](./docs/images/screenshots/register-form.png) |
+| US01 | Register with a username that is already taken (live site, 26 October 2026) | No account; "That username is already taken. Please choose another." under the username | Pass | [register-username-taken](./docs/images/screenshots/register-username-taken.png) |
 | US01 | Register with the password `abc12` | No account; error names the rule broken ("too short") | Pass | [register-weak-password](./docs/images/screenshots/register-weak-password.png) |
 | US01 | Register with two different passwords | No account; "You must type the same password each time." | Pass | [register-password-mismatch](./docs/images/screenshots/register-password-mismatch.png) |
 | US01 | Register with a new username and a strong password | Logged in, "Your account has been created. Welcome to CardVault, cardvault_tester!" | Pass | [register-success](./docs/images/screenshots/register-success.png) |
 | US04 | Look at the navigation after registering | "Logged in as cardvault_tester", My Cards and Log out | Pass | [register-success](./docs/images/screenshots/register-success.png) |
 | US03 | Log out | "You have been logged out. See you soon!" | Pass | [logout-success](./docs/images/screenshots/logout-success.png) |
+| US02 | Open Log in (live site, 26 October 2026) | Username and password fields, and a link to register; no password reset link | Pass | [login-form](./docs/images/screenshots/login-form.png) |
 | US02 | Log in with a wrong password | "Invalid username or password. Please try again." | Pass | [login-invalid](./docs/images/screenshots/login-invalid.png) |
 | US02 | Log in with the right password | "Welcome back, cardvault_tester!" and My Cards | Pass | [login-success](./docs/images/screenshots/login-success.png) |
 
@@ -134,6 +137,7 @@ database that does not exist, to cause a real server error.
 | Open an address that does not exist | The 404 page (status 404), with a card search and links home | Pass | [error-404](./docs/images/screenshots/error-404.png) |
 | Send a form with no CSRF token (a form built in the browser and posted to Log in) | "This form has expired" (status 403) | Pass | [error-form-expired](./docs/images/screenshots/error-form-expired.png) |
 | Request the site under an unknown host name | The 400 page (status 400) | Pass | |
+| Open a made-up address on the live site (26 October 2026) | The branded 404 page, not Django's debug page, so `DEBUG` is off | Pass | [test-404-no-debug](./docs/images/screenshots/test-404-no-debug.png) |
 | Load the home page with the database unreachable | The 500 page (status 500), styled, with no technical detail; the full traceback in the server log | Pass | [error-500-mobile](./docs/images/screenshots/error-500-mobile.png) |
 | Each page at 375 and 1280px, light and dark | No sideways scrolling | Pass | |
 
@@ -372,12 +376,24 @@ validated by URL on the live site: 0 errors, 0 warnings.
 The validator first reported "Article lacks heading" on card tiles;
 each card name is now a heading.
 
+The live home page, validated by address on 26 October 2026:
+
+![W3C validator: no errors or warnings on the live home page](./docs/images/screenshots/validator-html-home.png)
+
 ### CSS: W3C Jigsaw
 
-`static/css/style.css`: **0 errors**. One warning remains:
-`system-ui` and `-apple-system` in the font list are reported as
-vendor extensions. They are deliberate, so the site uses each
-device's own system font, with `Arial, sans-serif` as the fallback.
+`static/css/style.css`: **0 errors**, checked again on the live site
+on 26 October 2026. Three warnings remain, all expected:
+
+- Two are for `system-ui` and `-apple-system` in the body and heading
+  font lists, reported as vendor extensions. They are deliberate, so
+  the site uses each device's own system font, with
+  `Arial, sans-serif` as the fallback.
+- One says CSS variables are not checked: the floating rarity symbols
+  on the home page use variables for each symbol's path and speed.
+  Jigsaw cannot check a value that is only known in the browser.
+
+![W3C CSS validator: no errors in the live stylesheet](./docs/images/screenshots/validator-css.png)
 
 ### JavaScript
 
