@@ -170,7 +170,15 @@ Run with:
 python manage.py test
 ```
 
-191 tests, all passing on 19 October 2026:
+191 tests, all passing on 19 October 2026, and again when Jamie ran
+them in his own terminal on 26 October 2026:
+
+![python manage.py test: Ran 191 tests, OK](./docs/images/screenshots/tests-passing.png)
+
+The yellow "No directory at … staticfiles" line is a harmless warning
+from Whitenoise: it looks for the folder that `collectstatic` creates
+on Heroku, which does not exist on a development machine.
+
 
 | File | Tests | What they check |
 |---|---|---|
@@ -406,6 +414,11 @@ JavaScriptCore. It uses `const`, strict equality and no globals.
 `.flake8`. Statements are written on single lines where they fit;
 lists and calls laid out one item per line use PEP8's standard
 hanging indent (see [issue #44](https://github.com/J-Codes-Walkz/CardVault/issues/44)).
+
+Run by Jamie on 26 October 2026 (the `echo` only prints if flake8
+found nothing):
+
+![flake8 . reports no problems](./docs/images/screenshots/flake8-clean.png)
 
 ### Deployment settings
 
