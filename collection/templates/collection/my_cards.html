@@ -6,11 +6,57 @@
 {% block content %}
 <h1>My Cards</h1>
 
+{% if has_any %}
+<section class="collection-summary" aria-labelledby="summary-heading">
+    <h2 id="summary-heading" class="visually-hidden">Your collection in numbers</h2>
+    <dl>
+        <div>
+            <dt>Cards owned</dt>
+            <dd>{{ totals.owned_total }}</dd>
+        </div>
+        <div>
+            <dt>Different cards</dt>
+            <dd>{{ totals.owned_cards }}</dd>
+        </div>
+        <div>
+            <dt>On my wanted list</dt>
+            <dd>{{ totals.wanted_cards }}</dd>
+        </div>
+    </dl>
+</section>
+{% endif %}
+
 <nav class="tabs" aria-label="Filter My Cards">
-    <a href="{% url 'collection:my_cards' %}"{% if tab == "all" %} aria-current="page"{% endif %}>All</a>
-    <a href="{% url 'collection:my_cards' %}?status=owned"{% if tab == "owned" %} aria-current="page"{% endif %}>Owned</a>
-    <a href="{% url 'collection:my_cards' %}?status=wanted"{% if tab == "wanted" %} aria-current="page"{% endif %}>Wanted</a>
+    {% for tab_link in tabs %}
+    <a href="{{ tab_link.url }}"{% if tab_link.current %} aria-current="page"{% endif %}>{{ tab_link.label }}</a>
+    {% endfor %}
 </nav>
+
+{% if has_any %}
+<form class="search-form list-controls" method="get" action="{% url 'collection:my_cards' %}" aria-label="Sort and filter My Cards">
+    {% if tab != "all" %}<input type="hidden" name="status" value="{{ tab }}">{% endif %}
+    <div class="search-field">
+        <label for="id_sort">Sort by</label>
+        <select name="sort" id="id_sort">
+            {% for value, label in sorts %}
+            <option value="{{ value }}"{% if value == sort %} selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="search-field">
+        <label for="id_set">Set</label>
+        <select name="set" id="id_set">
+            <option value="">All sets</option>
+            {% for card_set in card_sets %}
+            <option value="{{ card_set.pk }}"{% if card_set.pk|stringformat:"s" == set_id %} selected{% endif %}>{{ card_set.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="search-field search-submit">
+        <button type="submit" class="button">Apply</button>
+    </div>
+</form>
+{% endif %}
 
 {% if entries %}
 <table class="entry-table">
@@ -42,7 +88,12 @@
                 {% endif %}
             </td>
             <td data-label="Set" class="col-set">{{ entry.card.card_set.name }} #{{ entry.card.number }}</td>
-            <td data-label="Status" class="col-status">{{ entry.get_status_display }}</td>
+            <td data-label="Status" class="col-status">
+                {{ entry.get_status_display }}
+                {% if entry.status == "WANTED" %}
+                <a class="button button-small got-it" href="{% url 'collection:got_it' entry.pk %}">Got it!<span class="visually-hidden"> {{ entry.card.name }}</span></a>
+                {% endif %}
+            </td>
             <td data-label="Quantity" class="col-qty">{{ entry.quantity }}</td>
             <td data-label="My rating" class="col-rating">
                 {% if entry.my_rating %}
@@ -61,6 +112,8 @@
         {% endfor %}
     </tbody>
 </table>
+{% elif set_id %}
+<p>None of your {% if tab != "all" %}{{ tab }} {% endif %}cards are from that set. <a href="{% url 'collection:my_cards' %}">Show all my cards</a></p>
 {% elif has_any %}
 <p>You have no {{ tab }} cards yet. <a href="{% url 'cards:card_list' %}">Browse cards</a> to add one.</p>
 {% else %}

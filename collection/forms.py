@@ -16,3 +16,13 @@ class CollectionEntryForm(forms.ModelForm):
             "quantity": forms.NumberInput(attrs={"min": 1}),
             "notes": forms.Textarea(attrs={"rows": 3}),
         }
+
+
+class GotItForm(forms.ModelForm):
+    """How many copies of a Wanted card you now own."""
+
+    class Meta:
+        model = CollectionEntry
+        fields = ["quantity"]
+        labels = {"quantity": "How many did you get?"}
+        widgets = {"quantity": forms.NumberInput(attrs={"min": 1})}

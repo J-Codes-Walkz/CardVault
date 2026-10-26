@@ -373,6 +373,31 @@ From any card's page a logged-in user can:
 
 ![My Cards after adding Alakazam, with Edit and Remove buttons](./docs/images/screenshots/add-card-success.png)
 
+On top of the CRUD, My Cards helps with a growing collection:
+
+- **Collection summary** (US15): three totals at the top: cards owned
+  (every copy counted), different cards owned, and cards on the
+  wanted list. Wanted cards are never counted as owned. All three
+  come from one database query.
+- **Sort and filter** (US16): sort by newest or oldest added, by name,
+  or by set and card number, and filter to one set (only sets you
+  have cards from are offered). The choices go in the address, so the
+  page can be bookmarked, and the All, Owned and Wanted tabs keep
+  them. Only the four listed sort orders are accepted; anything else
+  typed into the address is ignored.
+- **Got it!** (US17): every Wanted card has a Got it! button. It asks
+  how many you got (already filled in with the number you wanted),
+  then moves the card to Owned, keeping its notes, and shows
+  "Charizard moved to your collection." Owned cards and other users'
+  cards cannot be "got" (404).
+
+![My Cards with the collection totals, sort and set filter, and Got it! buttons on wanted cards](./docs/images/screenshots/my-cards-summary.png)
+
+<p>
+  <img src="./docs/images/screenshots/got-it-form.png" alt="The Got it! page asking how many were got" width="420">
+  <img src="./docs/images/screenshots/my-cards-wanted-mobile.png" alt="Wanted cards on a phone in dark mode, each with a Got it! button" width="160">
+</p>
+
 ### Reviews: comments and star ratings
 
 - **Create** (US18): press Write a review on a card's page, then rate
@@ -480,7 +505,7 @@ From any card's page a logged-in user can:
 
 ### Still to build
 
-- My Cards totals, sorting and a one-click "Got it!" (US15 to US17)
+- Django admin improvements (US28)
 
 Every notification message the app shows (login success, duplicate
 username, "thank you for your review", and so on) is written out
@@ -801,6 +826,7 @@ section credible to an assessor.
 | 2026-10-19 | Security | Asked Claude to harden the site against password guessing and heavy traffic, cut log in tries to 3, and manage the database properly. Claude found that the existing per-IP limits never saw real visitors on Heroku: every request arrives from Heroku's router, so all visitors shared one count and 10 wrong passwords could pause logging in for everyone (bug #66). It set `ALLAUTH_TRUSTED_PROXY_COUNT`, wrote tests proving a faked `X-Forwarded-For` does not help, capped searches that could build huge queries (bug #67), added a 10-second query limit, threaded gunicorn workers and a branded 429 page, and found the live database had no backups, so scheduled daily ones and checked the first contained every table. It load tested the live site and, when a heavier run stalled, checked Heroku's router logs before blaming the site: the stalled requests never reached Heroku. |
 | 2026-10-19 | Developing features | Built the custom error pages (US25) with Claude. Claude made the 500 page plain HTML because Django renders it without context, and noticed while writing it that the page's promise ("the problem has been recorded") was untrue: with `DEBUG` off, Django logged nothing, so live crashes left no trace (bug #69). It added logging, then ran the site locally in production mode, starting a second copy pointed at a database that does not exist to cause a real 500. A first run showed every page failing; rather than change the site, Claude traced it to its own mistake (static files collected with `DEBUG` on) and redid the check properly. |
 | 2026-10-19 | Automated tests | Asked Claude to set up the CI workflow (#39), adding free security scans because CodeQL stops while the repo is private. Before writing the workflow, Claude ran Bandit and pip-audit locally and went through all 21 Bandit findings: 12 were made-up passwords in tests (tests excluded from the scan), and the other 9 were checked line by line and each marked `# nosec` with the reason it is safe. When Bandit said one marker was unnecessary, Claude removed it, saw the finding come back, and restored it rather than trusting the warning. The workflow passed first time: 191 tests in 40 seconds. |
+| 2026-10-26 | Developing features | Built US15 to US17 (My Cards totals, sort and filter, Got it!) with Claude, following the acceptance criteria already in the user stories. Claude worked out the database cost first (an existing test fixes how many queries My Cards makes) and kept it fixed, with the totals in one query. Its browser check measured every Got it! button against its table cell and found the button spilling into the Quantity column on wide screens, which the tests could not see; it moved the button onto its own line and re-measured at five widths. A first HTML check validated an error page by mistake (the test client was refused by the host check); Claude noticed the expected content was missing and redid it. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |

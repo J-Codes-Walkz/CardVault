@@ -1,10 +1,13 @@
 """Tests for collection entries and the My Cards pages."""
+from datetime import timedelta
+
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from cards.models import Card, CardSet, Review
 
@@ -343,7 +346,196 @@ class MyCardsRatingTests(TestCase):
 
     def test_ratings_are_read_in_one_query(self):
         url = reverse("collection:my_cards")
-        # Session, user, entries with ratings, and "has any entries":
-        # the same 4 queries however many cards are on the list.
-        with self.assertNumQueries(4):
+        # Session, user, entries with ratings, the totals, and the
+        # sets for the Set filter: the same 5 queries however many
+        # cards are on the list.
+        with self.assertNumQueries(5):
             self.client.get(url)
+
+
+class CollectionSummaryTests(TestCase):
+    """US15: totals for the cards I own; wanted cards not counted."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.ash = User.objects.create_user("ash", password=PASSWORD)
+        cls.url = reverse("collection:my_cards")
+        owned = [("Charizard", 4, 3), ("Blastoise", 2, 1)]
+        for name, number, quantity in owned:
+            CollectionEntry.objects.create(
+                user=cls.ash, card=make_card(name, number), quantity=quantity
+            )
+        CollectionEntry.objects.create(
+            user=cls.ash, card=make_card("Venusaur", 15), quantity=5,
+            status=WANTED,
+        )
+
+    def setUp(self):
+        self.client.force_login(self.ash)
+
+    def test_totals_count_owned_copies_and_different_cards(self):
+        totals = self.client.get(self.url).context["totals"]
+        self.assertEqual(totals["owned_total"], 4)
+        self.assertEqual(totals["owned_cards"], 2)
+        self.assertEqual(totals["wanted_cards"], 1)
+
+    def test_totals_are_shown_on_the_page(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, "<dt>Cards owned</dt>", html=True)
+        self.assertContains(response, "<dd>4</dd>", html=True)
+        self.assertContains(response, "<dd>2</dd>", html=True)
+
+    def test_totals_ignore_the_tab_and_filters(self):
+        response = self.client.get(self.url + "?status=wanted&sort=name")
+        self.assertEqual(response.context["totals"]["owned_total"], 4)
+
+    def test_no_summary_when_the_list_is_empty(self):
+        CollectionEntry.objects.filter(user=self.ash).delete()
+        response = self.client.get(self.url)
+        self.assertNotContains(response, "Cards owned")
+
+
+class SortAndFilterTests(TestCase):
+    """US16: sort by name, set or date added, and filter by set."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.ash = User.objects.create_user("ash", password=PASSWORD)
+        cls.url = reverse("collection:my_cards")
+        base = CardSet.objects.create(name="Base Set", quantity=102)
+        cls.jungle = CardSet.objects.create(name="Jungle", quantity=64)
+        CardSet.objects.create(name="Fossil", quantity=62)
+        cards = [
+            ("Raichu", base, 14),
+            ("Alakazam", base, 1),
+            ("Jolteon", cls.jungle, 4),
+        ]
+        now = timezone.now()
+        # Added in this order, a day apart: Raichu, Alakazam, Jolteon.
+        for days, (name, card_set, number) in enumerate(cards):
+            card = Card.objects.create(
+                name=name, card_set=card_set, number=number,
+                rarity=Card.Rarity.RARE,
+            )
+            entry = CollectionEntry.objects.create(user=cls.ash, card=card)
+            added = now - timedelta(days=10 - days)
+            CollectionEntry.objects.filter(pk=entry.pk).update(
+                created_at=added
+            )
+
+    def setUp(self):
+        self.client.force_login(self.ash)
+
+    def names(self, query=""):
+        response = self.client.get(self.url + query)
+        return [entry.card.name for entry in response.context["entries"]]
+
+    def test_newest_first_by_default(self):
+        self.assertEqual(self.names(), ["Jolteon", "Alakazam", "Raichu"])
+
+    def test_oldest_first(self):
+        names = self.names("?sort=oldest")
+        self.assertEqual(names, ["Raichu", "Alakazam", "Jolteon"])
+
+    def test_by_name(self):
+        names = self.names("?sort=name")
+        self.assertEqual(names, ["Alakazam", "Jolteon", "Raichu"])
+
+    def test_by_set_and_card_number(self):
+        names = self.names("?sort=set")
+        self.assertEqual(names, ["Alakazam", "Raichu", "Jolteon"])
+
+    def test_unknown_sort_is_ignored(self):
+        names = self.names("?sort=user__password")
+        self.assertEqual(names, ["Jolteon", "Alakazam", "Raichu"])
+
+    def test_filter_by_set(self):
+        self.assertEqual(self.names(f"?set={self.jungle.pk}"), ["Jolteon"])
+
+    def test_unknown_set_value_is_ignored(self):
+        self.assertEqual(len(self.names("?set=jungle")), 3)
+
+    def test_set_with_none_of_my_cards_says_so(self):
+        other = CardSet.objects.get(name="Fossil")
+        response = self.client.get(self.url + f"?set={other.pk}")
+        self.assertContains(response, "None of your cards are from that set")
+
+    def test_set_choices_are_only_sets_i_have_cards_from(self):
+        response = self.client.get(self.url)
+        names = [card_set.name for card_set in response.context["card_sets"]]
+        self.assertEqual(names, ["Base Set", "Jungle"])
+
+    def test_choices_are_kept_in_the_address_and_the_tabs(self):
+        query = f"?status=owned&sort=name&set={self.jungle.pk}"
+        response = self.client.get(self.url + query)
+        self.assertContains(response, 'name="status" value="owned"')
+        wanted_tab = f"{self.url}?sort=name&amp;set={self.jungle.pk}"
+        self.assertContains(response, wanted_tab + "&amp;status=wanted")
+        self.assertContains(response, f'href="{wanted_tab}"')
+
+
+class GotItTests(TestCase):
+    """US17: move a wanted card to owned in one step."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.ash = User.objects.create_user("ash", password=PASSWORD)
+        cls.misty = User.objects.create_user("misty", password=PASSWORD)
+        cls.card = make_card("Charizard", 4)
+        cls.owned_card = make_card("Blastoise", 2)
+
+    def setUp(self):
+        self.wanted = CollectionEntry.objects.create(
+            user=self.ash, card=self.card, status=WANTED, quantity=2,
+            notes="For my binder",
+        )
+        self.owned = CollectionEntry.objects.create(
+            user=self.ash, card=self.owned_card
+        )
+        self.url = reverse("collection:got_it", args=[self.wanted.pk])
+        self.client.force_login(self.ash)
+
+    def test_button_shows_on_wanted_entries_only(self):
+        response = self.client.get(reverse("collection:my_cards"))
+        self.assertContains(response, f'href="{self.url}"')
+        owned_url = reverse("collection:got_it", args=[self.owned.pk])
+        self.assertNotContains(response, f'href="{owned_url}"')
+
+    def test_page_asks_for_the_quantity_already_filled_in(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, "You got Charizard!")
+        self.assertEqual(response.context["form"].initial["quantity"], 2)
+
+    def test_confirming_moves_the_card_to_owned(self):
+        response = self.client.post(self.url, {"quantity": 1}, follow=True)
+        self.wanted.refresh_from_db()
+        self.assertEqual(self.wanted.status, OWNED)
+        self.assertEqual(self.wanted.quantity, 1)
+        self.assertEqual(self.wanted.notes, "For my binder")
+        owned_tab = reverse("collection:my_cards") + "?status=owned"
+        self.assertRedirects(response, owned_tab)
+        texts = message_texts(response)
+        self.assertEqual(texts, ["Charizard moved to your collection."])
+
+    def test_quantity_below_one_is_refused(self):
+        response = self.client.post(self.url, {"quantity": 0})
+        self.assertEqual(response.status_code, 200)
+        self.wanted.refresh_from_db()
+        self.assertEqual(self.wanted.status, WANTED)
+
+    def test_owned_entry_cannot_be_got_again(self):
+        url = reverse("collection:got_it", args=[self.owned.pk])
+        self.assertEqual(self.client.get(url).status_code, 404)
+
+    def test_cannot_change_another_users_entry(self):
+        self.client.force_login(self.misty)
+        response = self.client.post(self.url, {"quantity": 1})
+        self.assertEqual(response.status_code, 404)
+        self.wanted.refresh_from_db()
+        self.assertEqual(self.wanted.status, WANTED)
+
+    def test_logged_out_visitor_is_sent_to_log_in(self):
+        self.client.logout()
+        response = self.client.post(self.url, {"quantity": 1})
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("account_login"), response.url)

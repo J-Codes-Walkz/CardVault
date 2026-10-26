@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block head_title %}Got {{ entry.card.name }} | CardVault{% endblock head_title %}
+
+{% block content %}
+<section class="form-page">
+    <h1>You got {{ entry.card.name }}!</h1>
+    <p>This moves {{ entry.card.name }} from your wanted list to the cards you own. Your notes stay as they are.</p>
+    <form method="post">
+        {% csrf_token %}
+        {% include "includes/form_fields.html" %}
+        <p class="actions">
+            <button type="submit" class="button">Move to my collection</button>
+            <a class="button button-quiet" href="{% url 'collection:my_cards' %}?status=wanted">Cancel</a>
+        </p>
+    </form>
+</section>
+{% endblock content %}

@@ -1,15 +1,16 @@
-"""Views for a user's own cards: list, add, edit and remove."""
+"""Views for a user's own cards: list, add, edit, got it and remove."""
 from django.contrib import messages
-from django.db.models import OuterRef, Subquery
+from django.db.models import Count, OuterRef, Q, Subquery, Sum
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.functional import cached_property
+from django.utils.http import urlencode
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from accounts.mixins import FormErrorMixin, LoginMessageMixin
-from cards.models import Card, Review
+from cards.models import Card, CardSet, Review
 
-from .forms import CollectionEntryForm
+from .forms import CollectionEntryForm, GotItForm
 from .models import CollectionEntry
 
 ENTRY_ADDED = "{card} was added to your cards."
@@ -17,11 +18,22 @@ ENTRY_EXISTS = "You already have {card} on your list. "
 ENTRY_EXISTS += "Edit that entry to change it."
 ENTRY_UPDATED = "Your entry for {card} was updated."
 ENTRY_REMOVED = "{card} was removed from your cards."
+GOT_IT = "{card} moved to your collection."
 
-STATUS_TABS = {
-    "owned": CollectionEntry.Status.OWNED,
-    "wanted": CollectionEntry.Status.WANTED,
+OWNED = CollectionEntry.Status.OWNED
+WANTED = CollectionEntry.Status.WANTED
+STATUS_TABS = {"owned": OWNED, "wanted": WANTED}
+TAB_LABELS = {"all": "All", "owned": "Owned", "wanted": "Wanted"}
+
+# The only orders My Cards can be sorted in: anything else in the
+# address is ignored, so it can never reach the database.
+SORTS = {
+    "newest": ("Newest first", ["-created_at"]),
+    "oldest": ("Oldest first", ["created_at"]),
+    "name": ("Name, A to Z", ["card__name", "card__card_set__name"]),
+    "set": ("Set and card number", ["card__card_set__name", "card__number"]),
 }
+DEFAULT_SORT = "newest"
 
 
 class MyCardsView(LoginMessageMixin, ListView):
@@ -45,13 +57,57 @@ class MyCardsView(LoginMessageMixin, ListView):
             entries = entries.filter(status=STATUS_TABS[self.tab])
         else:
             self.tab = "all"
-        return entries
+        self.set_id = self.request.GET.get("set", "")
+        if self.set_id.isdigit():
+            entries = entries.filter(card__card_set_id=self.set_id)
+        else:
+            self.set_id = ""
+        self.sort = self.request.GET.get("sort", DEFAULT_SORT)
+        if self.sort not in SORTS:
+            self.sort = DEFAULT_SORT
+        return entries.order_by(*SORTS[self.sort][1])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
+        totals = self.totals(user)
+        context["totals"] = totals
+        context["has_any"] = totals["owned_cards"] + totals["wanted_cards"]
+        sets = CardSet.objects.filter(cards__collection_entries__user=user)
+        context["card_sets"] = sets.distinct()
+        context["sorts"] = [(key, label) for key, (label, _) in SORTS.items()]
+        context["sort"] = self.sort
+        context["set_id"] = self.set_id
         context["tab"] = self.tab
-        context["has_any"] = self.request.user.collection_entries.exists()
+        context["tabs"] = self.tab_links()
         return context
+
+    def totals(self, user):
+        """US15: copies owned, different cards owned and cards wanted,
+        counted in one query. Wanted cards are not in the owned totals."""
+        owned = Q(status=OWNED)
+        return user.collection_entries.aggregate(
+            owned_total=Sum("quantity", filter=owned, default=0),
+            owned_cards=Count("pk", filter=owned),
+            wanted_cards=Count("pk", filter=Q(status=WANTED)),
+        )
+
+    def tab_links(self):
+        """The All, Owned and Wanted tabs, each keeping the chosen sort
+        and set, so switching tab does not undo them."""
+        keep = {}
+        if self.sort != DEFAULT_SORT:
+            keep["sort"] = self.sort
+        if self.set_id:
+            keep["set"] = self.set_id
+        url = reverse("collection:my_cards")
+        tabs = []
+        for key, label in TAB_LABELS.items():
+            query = dict(keep, status=key) if key != "all" else keep
+            link = f"{url}?{urlencode(query)}" if query else url
+            current = key == self.tab
+            tabs.append({"label": label, "url": link, "current": current})
+        return tabs
 
 
 class OwnEntryMixin(LoginMessageMixin):
@@ -123,6 +179,28 @@ class EntryEdit(OwnEntryMixin, FormErrorMixin, UpdateView):
         card = self.object.card.name
         messages.success(self.request, ENTRY_UPDATED.format(card=card))
         return response
+
+
+class EntryGotIt(OwnEntryMixin, FormErrorMixin, UpdateView):
+    """US17: move one of your Wanted cards to Owned, confirming how
+    many you got. Owned entries, and other users' entries, are 404."""
+
+    form_class = GotItForm
+    template_name = "collection/got_it.html"
+    context_object_name = "entry"
+
+    def get_queryset(self):
+        return super().get_queryset().filter(status=WANTED)
+
+    def form_valid(self, form):
+        form.instance.status = OWNED
+        response = super().form_valid(form)
+        card = self.object.card.name
+        messages.success(self.request, GOT_IT.format(card=card))
+        return response
+
+    def get_success_url(self):
+        return reverse("collection:my_cards") + "?status=owned"
 
 
 class EntryDelete(OwnEntryMixin, DeleteView):

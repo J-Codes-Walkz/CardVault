@@ -9,7 +9,7 @@ CardVault is tested in these ways:
 |---|---|---|
 | [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 57 of 57 checks passed |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
-| [Automated testing](#automated-testing) | 191 Django tests, including two-user ownership and security tests | 191 passed |
+| [Automated testing](#automated-testing) | 212 Django tests, including two-user ownership and security tests | 212 passed |
 | [Continuous integration](#continuous-integration) | flake8, Django checks, the tests, Bandit and pip-audit on every push, on GitHub Actions | Passing since 19 October 2026 |
 | [Load testing](#load-testing) | 2,000 visits to the live site, 25 at a time | All succeeded; median 0.21 seconds |
 | [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only | No violations (one keyboard bug found and fixed) |
@@ -84,6 +84,29 @@ site on 12 October 2026, with the expected message at each step
 | US13 | Edit the entry to Wanted, quantity 3 | "Your entry for Alakazam was updated." and the list shows Wanted, 3 | Pass | [edit-card-form](./docs/images/screenshots/edit-card-form.png), [edit-card-success](./docs/images/screenshots/edit-card-success.png) |
 | US12 | Open the Owned tab | "You have no owned cards yet." | Pass | |
 | US14 | Remove the entry | Confirmation page names the card; then "Alakazam was removed from your cards." and the list is empty | Pass | [remove-card-confirm](./docs/images/screenshots/remove-card-confirm.png), [remove-card-success](./docs/images/screenshots/remove-card-success.png) |
+
+### My Cards: summary, sorting and Got it! (US15 to US17)
+
+Run on 26 October 2026 in Chrome against a local copy of the site,
+logged in as a test account with four owned cards (7 copies) and two
+wanted cards, from two sets.
+
+| Story | Test | Expected | Result | Screenshot |
+|---|---|---|---|---|
+| US15 | Open My Cards | "Cards owned 7", "Different cards 4", "On my wanted list 2" | Pass | [my-cards-summary](./docs/images/screenshots/my-cards-summary.png) |
+| US15 | Switch to the Wanted tab | The totals stay the same; only the list changes | Pass | |
+| US16 | Sort by Name, A to Z, choose Base Set, press Apply | Only Base Set cards, in name order; the address shows `?sort=name&set=1` | Pass | [my-cards-sorted](./docs/images/screenshots/my-cards-sorted.png) |
+| US16 | Look at the tab links after sorting | Each tab keeps `sort=name&set=1` | Pass | |
+| US16 | Choose a set with none of my cards (typed into the address) | "None of your cards are from that set." and a link to show all | Pass | |
+| US17 | Press Got it! on a wanted card | "You got Venusaur!" with "How many did you get?" filled in with 2 | Pass | [got-it-form](./docs/images/screenshots/got-it-form.png) |
+| US17 | Press Move to my collection | The Owned tab, with "Success: Venusaur moved to your collection." | Pass | [got-it-success](./docs/images/screenshots/got-it-success.png) |
+| US15 to US17 | My Cards at 375, 768, 900, 1024 and 1440px, light and dark | No sideways scrolling; no button outside its table cell | Pass after fix (see below) | [my-cards-wanted-mobile](./docs/images/screenshots/my-cards-wanted-mobile.png) |
+
+**Found and fixed during this run:** from 900px up, the Got it!
+button sat beside "Wanted" and spilled into the Quantity column, as
+the Status column is set not to wrap. The browser check measures each
+Got it! button against its table cell; it now sits on its own line
+under "Wanted", and the check passed at all five widths.
 
 ### Reviews: comment and star rating (US18 to US21)
 
@@ -170,8 +193,8 @@ Run with:
 python manage.py test
 ```
 
-191 tests, all passing on 19 October 2026, and again when Jamie ran
-them in his own terminal on 26 October 2026:
+212 tests, all passing on 26 October 2026. Jamie ran the suite in his
+own terminal earlier that day, before US15 to US17 added 21 tests:
 
 ![python manage.py test: Ran 191 tests, OK](./docs/images/screenshots/tests-passing.png)
 
@@ -184,7 +207,7 @@ on Heroku, which does not exist on a development machine.
 |---|---|---|
 | `accounts/tests.py` | 57 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (a third wrong password is an ordinary error, the fourth is blocked, even a correct one while locked; the lock follows the username across addresses; one address cannot guess across many usernames; other visitors can still log in; a faked first `X-Forwarded-For` entry does not help), the eleventh registration in an hour gets the 429 page, expired cache rows are deleted, the 10-second query limit, and the admin log in going through django-allauth (staff in, others refused, unsafe `next` addresses ignored); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie, and an email address refused as a username, the privacy page's browser-storage section, and `/favicon.ico` |
 | `cards/tests.py` | 69 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404; search across name, set and rarity in any order ("holo rare", "rare holo", "holos"; "common" not matching Uncommon), the Rarity and Set filters alone and combined, unknown filter values ignored, filters kept in page links; Poké Ball ratings (full, empty, rounded averages, hidden from screen readers), the five-ball picker on the review form, the 1999 rarity symbols and which cards shimmer, and searches cut to 100 characters and 5 words |
-| `collection/tests.py` | 34 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged; My Cards shows my own rating (not other people's) or a Rate it link, the notes preview, and a fixed number of database queries however long the list |
+| `collection/tests.py` | 55 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged; My Cards shows my own rating (not other people's) or a Rate it link, the notes preview, and a fixed number of database queries however long the list; the collection totals (owned copies, different cards, wanted not counted, unaffected by tab or filters, hidden when empty), sorting (newest, oldest, name, set and number; unknown sorts ignored), the set filter (only my sets offered; unknown values ignored; an empty set says so), choices kept in the tabs, and Got it! (button only on wanted entries, quantity filled in, moves to owned keeping notes, quantity below 1 refused, owned and other users' entries 404, logged out sent to log in) |
 | `contact/tests.py` | 19 | The Contact page for anyone, every field required, a bad email address and a message over 2,000 characters refused, a valid message saved with the thank you message, the username filled in when logged in, the bot trap (thanked but not saved), the 5-an-hour limit and that it is per visitor, the IP address hashed and taken from the address Heroku adds, the admin (message read-only, only "handled" editable), Home and Contact links on every page with `aria-current="page"` on the current one, and the Privacy page's Contact section |
 | `cardvault/tests.py` | 12 | The error pages (US25): an unknown address and an unknown card show the 404 page, which links home, offers a card search, keeps the logged-in header and shows no technical detail; a non-staff user opening the admin gets the 403 page; a form sent without a valid CSRF token gets the "This form has expired" page; an unknown host gets the 400 page; a forced crash gets the 500 page with no technical detail, is logged with its traceback, and the 500 page uses no template tags |
 
@@ -247,6 +270,7 @@ same accessibility engine Lighthouse uses; it was run with every WCAG
 | Keyboard only: real Tab key presses, checking each stop's focus outline | Home, a card page, Register, Log in, Privacy (live site) | Every link, field and button reachable in a logical order; one stop without an outline (bug #56, fixed) |
 | axe (WCAG 2.2 AA), light and dark, 16 October 2026 | Contact (logged out, logged in, with errors), Home with the Menu open at 900px | 0 violations |
 | axe (WCAG 2.2 AA), light and dark, at 375 and 1280px, 19 October 2026 | The 404, form expired and 500 pages | 0 violations |
+| axe (WCAG 2.2 AA), light and dark, 26 October 2026 | My Cards with totals and Got it! buttons (1440 and 375px), the Got it! page | 0 violations |
 | Sound | Whole site | No audio or video; every message is on-screen text |
 
 **Still to do by hand:** a pass with VoiceOver (the Mac's built-in
@@ -375,6 +399,7 @@ validated by URL on the live site: 0 errors, 0 warnings.
 | Browse cards (logged out, logged in, search with results, search with no results) | 0 | 0 |
 | Card page (logged out, logged in with forms, logged in with own entry and review) | 0 | 0 |
 | My Cards (with entries, empty tab) | 0 | 0 |
+| My Cards with totals, sorted and filtered, a set with no cards; Got it! page, with and without an error (26 October 2026) | 0 | 0 |
 | Add, edit and remove entry pages, including add with errors | 0 | 0 |
 | Write, edit and delete review pages, including review with errors | 0 | 0 |
 | Register (empty and with errors), Log in, Log out | 0 | 0 |
