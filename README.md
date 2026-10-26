@@ -497,8 +497,12 @@ GitHub Issues, one issue per user story.
 &mdash; four columns (`Backlog`, `To do`, `In progress`, `Done`), with
 every user story and development task as an
 [issue](https://github.com/J-Codes-Walkz/CardVault/issues), labelled by
-MoSCoW priority and epic, and grouped into three sprint
-[milestones](https://github.com/J-Codes-Walkz/CardVault/milestones).
+MoSCoW priority and epic, and grouped into
+[milestones](https://github.com/J-Codes-Walkz/CardVault/milestones):
+three sprints, plus a final "Day of Submission Check List" milestone
+for the last checks before submitting.
+
+![The project board on 26 October 2026: To do, In progress and Done](./docs/images/screenshots/project-board.png)
 
 1. **Create the board.** On the repository, go to the Projects tab
    and create a new board. Set its visibility to **public** (Settings
