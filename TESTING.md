@@ -12,7 +12,7 @@ CardVault is tested in these ways:
 | [Automated testing](#automated-testing) | 221 Django tests, including two-user ownership and security tests | 221 passed |
 | [Continuous integration](#continuous-integration) | flake8, Django checks, the tests, Bandit and pip-audit on every push, on GitHub Actions | Passing since 19 October 2026 |
 | [Load testing](#load-testing) | 2,000 visits to the live site, 25 at a time | All succeeded; median 0.21 seconds |
-| [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only | No violations (one keyboard bug found and fixed) |
+| [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only, Lighthouse and WAVE | No violations (one keyboard bug found and fixed); Lighthouse Accessibility 100 on every page |
 | [Security testing](#security-testing) | Headers, log in limits, admin access, secrets, dependencies, code scanning | No issues found |
 | [Validators](#validators) | HTML (W3C), CSS (Jigsaw), JavaScript, Python (PEP8) | 0 errors |
 
@@ -287,8 +287,70 @@ same accessibility engine Lighthouse uses; it was run with every WCAG
 | Sound | Whole site | No audio or video; every message is on-screen text |
 
 **Still to do by hand:** a pass with VoiceOver (the Mac's built-in
-screen reader), and Lighthouse's performance and best-practice scores
-(US22, US23, US32).
+screen reader) (US32).
+
+### Lighthouse
+
+Run on 28 October 2026 against the live site with Lighthouse 13.6.0
+(the same engine as Chrome DevTools' Lighthouse tab), in Chrome 150,
+for every public page, on both Lighthouse's mobile setting (a
+simulated mid-range phone on a slow 4G connection) and its desktop
+setting. Each run starts with an empty browser, as a first-time
+visitor, so the home page includes the welcome intro.
+
+| Page | Mobile: Performance / Accessibility / Best Practices / SEO | Desktop: Performance / Accessibility / Best Practices / SEO |
+|---|---|---|
+| Home | 97 / 100 / 96 / 100 | 98 / 100 / 100 / 100 |
+| Browse cards | 97 / 100 / 96 / 100 | 95 / 100 / 100 / 100 |
+| A card page (Charizard) | 97 / 100 / 96 / 100 | 99 / 100 / 100 / 100 |
+| Log in | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| Register | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| Contact | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| Privacy and cookies | 99 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| Accessibility | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+
+Accessibility and SEO score 100 on every page, mobile and desktop. No
+page moves while it loads (layout shift 0 everywhere).
+
+<p>
+  <img src="./docs/images/screenshots/lighthouse-home-mobile.png" alt="Lighthouse, home page, mobile: 97, 100, 96, 100" width="420">
+  <img src="./docs/images/screenshots/lighthouse-home-desktop.png" alt="Lighthouse, home page, desktop: 98, 100, 100, 100" width="420">
+</p>
+
+**Best Practices 96 on three mobile pages: a deliberate trade-off.**
+The only point lost is "Serves images with low resolution" on the
+pages with card pictures. CardVault uses the Pokémon TCG API's
+standard card images (240 x 330 pixels); a high-density phone screen
+could show more detail. The API also has large versions, but each is
+about 845 KB, more than 5 times the size of the standard image
+(161 KB). Using them on phones would add several megabytes to a page
+of 12 cards and slow every page down on mobile data, costing more in
+speed than it gains in sharpness. The standard images stay.
+
+### WAVE
+
+Run on 28 October 2026 with WebAIM's WAVE tool on the live site.
+
+| Page | Errors | Contrast errors | Alerts |
+|---|---|---|---|
+| Home (first visit, with the intro) | 0 | 1 (see below) | 3 |
+| Browse cards | 0 | 0 | 1 |
+| A card page | 0 | 0 | 2 |
+| Register | 0 | 0 | 1 |
+| Contact | 0 | 0 | 1 |
+
+![WAVE on a card page: 0 errors, 0 contrast errors](./docs/images/screenshots/wave-card.png)
+
+**The one contrast error was checked and is a false alarm.** It is
+the intro's "Enter the vault" button, which starts invisible and fades
+in at the end of the animation. WAVE checked it while it was still
+invisible (opacity 0, confirmed in Chrome). Once shown it is white on
+red at 5.88:1 in light mode and 4.63:1 in dark mode, both above the
+WCAG AA minimum of 4.5:1, and axe reports no contrast problem.
+
+The alerts are advice, not failures: mostly "redundant link", because
+each card's picture and name both link to the card's page, which gives
+a bigger area to tap.
 
 ## Brand and design testing
 

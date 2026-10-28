@@ -563,8 +563,8 @@ CardVault never collects email addresses.
 
 ### Still to build
 
-- Every feature is built. What remains is the Lighthouse checks for
-  US22 and US23, the final testing write-up and the submission checks.
+- Every feature is built. What remains is a check on a real phone
+  (US22), the final testing write-up and the submission checks.
 
 Every notification message the app shows (login success, duplicate
 username, "thank you for your review", and so on) is written out
@@ -672,6 +672,10 @@ in the catalogue before reviews mean anything):
    final step; treat it as a checklist you run against every PR.
 
 ## Testing
+
+Lighthouse scores **100 for Accessibility and SEO on every page**,
+mobile and desktop, with Performance 95 to 100 (see
+[Lighthouse in TESTING.md](./TESTING.md#lighthouse)).
 
 The full testing write-up is in **[TESTING.md](./TESTING.md)**: manual tests for every user story, the automated test suite, validator results (HTML, CSS, Python) and every bug found, each logged as a GitHub issue labelled [`bug`](https://github.com/J-Codes-Walkz/CardVault/issues?q=label%3Abug).
 
@@ -887,6 +891,7 @@ section credible to an assessor.
 | 2026-10-19 | Automated tests | Asked Claude to set up the CI workflow (#39), adding free security scans because CodeQL stops while the repo is private. Before writing the workflow, Claude ran Bandit and pip-audit locally and went through all 21 Bandit findings: 12 were made-up passwords in tests (tests excluded from the scan), and the other 9 were checked line by line and each marked `# nosec` with the reason it is safe. When Bandit said one marker was unnecessary, Claude removed it, saw the finding come back, and restored it rather than trusting the warning. The workflow passed first time: 191 tests in 40 seconds. |
 | 2026-10-26 | Developing features | Built US15 to US17 (My Cards totals, sort and filter, Got it!) with Claude, following the acceptance criteria already in the user stories. Claude worked out the database cost first (an existing test fixes how many queries My Cards makes) and kept it fixed, with the totals in one query. Its browser check measured every Got it! button against its table cell and found the button spilling into the Quantity column on wide screens, which the tests could not see; it moved the button onto its own line and re-measured at five widths. A first HTML check validated an error page by mistake (the test client was refused by the host check); Claude noticed the expected content was missing and redid it. |
 | 2026-10-28 | Developing features | Built US28 with Claude after I realised I did not know how to reach or use the Django admin myself. Claude limited the admin to superusers (Django lets any "staff" account in), added an Admin link only superusers see, renamed the admin for CardVault, removed allauth's always-empty Email addresses section, added a picture preview for checking card fixes, and wrote the walkthrough above so I can run the site and show an assessor how. Its screenshots showed an "Add contact message" button, which made no sense for messages that only come from visitors, so that was removed and tested too. Checking my own superuser on the live site was blocked by Claude Code's permission rules for reading production data, so I ran the commands myself. |
+| 2026-10-28 | Debugging | Ran Lighthouse on every public page with Claude. Google's PageSpeed service had run out of its shared daily allowance, so Claude installed Node and Lighthouse into the test folder (checksum-verified, nothing installed system-wide). The batch runs then failed twice with "command not found". Claude first blamed the background shell's environment, then traced the real cause: the script used a variable called `path`, which zsh ties to the command search path, so every run wiped it. Renaming the variable fixed it. Lighthouse asked for higher-resolution card images; Claude measured them (845 KB against 161 KB) and advised keeping the small ones, recording the 96 Best Practices score as a trade-off. WAVE flagged one contrast error, which Claude proved was the intro button being measured while still invisible. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |
