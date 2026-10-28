@@ -127,6 +127,12 @@ class ContactAdminTests(TestCase):
         self.assertIn("email", model_admin.readonly_fields)
         self.assertEqual(model_admin.list_editable, ("handled",))
 
+    def test_messages_cannot_be_added_in_the_admin(self):
+        boss = User.objects.create_superuser("boss", password=PASSWORD)
+        self.client.force_login(boss)
+        response = self.client.get(reverse("admin:contact_contactmessage_add"))
+        self.assertEqual(response.status_code, 403)
+
 
 class NavigationTests(TestCase):
 

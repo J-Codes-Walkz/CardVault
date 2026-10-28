@@ -358,23 +358,32 @@ class AdminLoginTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertNotIn("_auth_user_id", self.client.session)
 
-    def test_staff_go_on_to_the_admin(self):
+    def test_superusers_go_on_to_the_admin(self):
         boss = User.objects.create_superuser("boss", password=STRONG_PASSWORD)
         self.client.force_login(boss)
         response = self.client.get(reverse("admin:login"))
         self.assertRedirects(response, reverse("admin:index"))
 
-    def test_staff_can_open_the_admin(self):
+    def test_superusers_can_open_the_admin(self):
         boss = User.objects.create_superuser("boss", password=STRONG_PASSWORD)
         self.client.force_login(boss)
         response = self.client.get(reverse("admin:index"))
         self.assertEqual(response.status_code, 200)
 
-    def test_users_who_are_not_staff_are_refused(self):
+    def test_ordinary_users_are_refused(self):
         user = User.objects.create_user("ash", password=STRONG_PASSWORD)
         self.client.force_login(user)
         response = self.client.get(reverse("admin:login"))
         self.assertEqual(response.status_code, 403)
+
+    def test_staff_who_are_not_superusers_are_refused(self):
+        staff = User.objects.create_user(
+            "helper", password=STRONG_PASSWORD, is_staff=True
+        )
+        self.client.force_login(staff)
+        response = self.client.get(reverse("admin:index"), follow=True)
+        self.assertEqual(response.status_code, 403)
+        self.assertTemplateUsed(response, "403.html")
 
     def test_unsafe_next_address_is_ignored(self):
         boss = User.objects.create_superuser("boss", password=STRONG_PASSWORD)
@@ -382,6 +391,85 @@ class AdminLoginTests(TestCase):
         url = reverse("admin:login") + "?next=https://evil.example/"
         response = self.client.get(url)
         self.assertRedirects(response, reverse("admin:index"))
+
+
+class AdminSiteTests(TestCase):
+    """US28: the admin is CardVault's own, with the right models."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.boss = User.objects.create_superuser(
+            "boss", password=STRONG_PASSWORD
+        )
+        base = CardSet.objects.create(name="Base Set", quantity=102)
+        cls.card = Card.objects.create(
+            name="Charizzard", card_set=base, number=4,
+            rarity=Card.Rarity.RARE_HOLO,
+        )
+
+    def setUp(self):
+        self.client.force_login(self.boss)
+
+    def test_admin_is_titled_for_cardvault(self):
+        response = self.client.get(reverse("admin:index"))
+        self.assertContains(response, "CardVault administration")
+        self.assertContains(response, "Manage CardVault")
+
+    def test_models_are_listed_without_email_addresses(self):
+        response = self.client.get(reverse("admin:index"))
+        models = [
+            "Card sets", "Cards", "Reviews", "Collection entries",
+            "Contact messages", "Users",
+        ]
+        for model in models:
+            self.assertContains(response, model)
+        self.assertNotContains(response, "Email addresses")
+
+    def test_cards_can_be_searched_by_set(self):
+        url = reverse("admin:cards_card_changelist") + "?q=base"
+        response = self.client.get(url)
+        self.assertContains(response, "Charizzard")
+
+    def test_a_wrong_card_detail_can_be_corrected(self):
+        url = reverse("admin:cards_card_change", args=[self.card.pk])
+        data = {
+            "name": "Charizard",
+            "card_set": self.card.card_set.pk,
+            "number": 4,
+            "rarity": Card.Rarity.RARE_HOLO,
+            "image_url": "https://images.pokemontcg.io/base1/4.png",
+        }
+        response = self.client.post(url, data)
+        self.assertRedirects(response, reverse("admin:cards_card_changelist"))
+        self.card.refresh_from_db()
+        self.assertEqual(self.card.name, "Charizard")
+
+    def test_card_page_shows_a_picture_preview(self):
+        self.card.image_url = "https://images.pokemontcg.io/base1/4.png"
+        self.card.save()
+        url = reverse("admin:cards_card_change", args=[self.card.pk])
+        response = self.client.get(url)
+        self.assertContains(response, 'src="https://images.pokemontcg.io/')
+
+
+class AdminLinkTests(TestCase):
+    """US28: an Admin link in the header, for superusers only."""
+
+    def test_superusers_see_the_admin_link(self):
+        boss = User.objects.create_superuser("boss", password=STRONG_PASSWORD)
+        self.client.force_login(boss)
+        response = self.client.get(reverse("home"))
+        link = f'<a href="{reverse("admin:index")}">Admin</a>'
+        self.assertContains(response, link, html=True)
+
+    def test_ordinary_users_and_visitors_do_not(self):
+        admin_url = f'href="{reverse("admin:index")}"'
+        response = self.client.get(reverse("home"))
+        self.assertNotContains(response, admin_url)
+        user = User.objects.create_user("ash", password=STRONG_PASSWORD)
+        self.client.force_login(user)
+        response = self.client.get(reverse("home"))
+        self.assertNotContains(response, admin_url)
 
 
 def years_ago(years, days=0):

@@ -15,18 +15,24 @@ from .mixins import FormErrorMixin, LoginMessageMixin
 ACCOUNT_DELETED = "Your account, cards and reviews have been deleted."
 
 
+def admin_allowed(request):
+    """Only active superusers may use the Django admin (US28), not
+    every "staff" account, as Django allows by default."""
+    return request.user.is_active and request.user.is_superuser
+
+
 def admin_login(request, extra_context=None):
     """Send every Django admin log in through django-allauth.
 
     Django admin's own login form has no limit on password guesses.
     allauth's has, so the admin's form is never shown: logged-out
-    visitors go to the normal Log in page, staff go on to the admin,
-    and logged-in users who are not staff are refused.
+    visitors go to the normal Log in page, superusers go on to the
+    admin, and every other logged-in user is refused.
     """
     if not request.user.is_authenticated:
         login_url = reverse("account_login")
         return redirect_to_login(request.get_full_path(), login_url)
-    if not request.user.is_staff:
+    if not admin_allowed(request):
         raise PermissionDenied
     next_url = request.GET.get("next", "")
     hosts = {request.get_host()}

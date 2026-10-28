@@ -9,7 +9,7 @@ CardVault is tested in these ways:
 |---|---|---|
 | [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 57 of 57 checks passed |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
-| [Automated testing](#automated-testing) | 212 Django tests, including two-user ownership and security tests | 212 passed |
+| [Automated testing](#automated-testing) | 221 Django tests, including two-user ownership and security tests | 221 passed |
 | [Continuous integration](#continuous-integration) | flake8, Django checks, the tests, Bandit and pip-audit on every push, on GitHub Actions | Passing since 19 October 2026 |
 | [Load testing](#load-testing) | 2,000 visits to the live site, 25 at a time | All succeeded; median 0.21 seconds |
 | [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only | No violations (one keyboard bug found and fixed) |
@@ -149,6 +149,18 @@ logged out and logged in.
 | US34 | Contact page in dark mode at 375px | Readable, no sideways scrolling | Pass |
 | US34 | On the live site, send a message from "Claude deploy check" (`test@example.com`, a reserved address that belongs to nobody) | Back on the home page with the thank you message, and the message saved in the admin | Pass. The message is deliberately kept in the live admin as visible evidence of this test |
 
+### Django admin (US28)
+
+| Test | Expected | Result | Screenshot |
+|---|---|---|---|
+| On the live site, Jamie's superuser opens `/admin/` (26 October 2026) | The admin, with every CardVault model | Pass | |
+| On the live site, Jamie's everyday account `Jay-Codes` opens `/admin/` (26 October 2026) | The 403 "You don't have permission to see this page" page | Pass | [admin-refused-live](./docs/images/screenshots/admin-refused-live.png) |
+| Locally, a superuser looks at the header at 1024, 1280 and 1440px (28 October 2026) | An Admin link, with the header still on one line | Pass | [admin-link](./docs/images/screenshots/admin-link.png) |
+| Open the admin home page | "CardVault administration"; Card sets, Cards, Reviews, Collection entries, Contact messages, Users; no Email addresses | Pass | [admin-models](./docs/images/screenshots/admin-models.png) |
+| Search Cards for `charizard`, open it | The card, with a working picture preview | Pass | [admin-card-edit](./docs/images/screenshots/admin-card-edit.png) |
+| Open Contact messages | Messages with a Handled tick box and no Add button | Pass | [admin-contact](./docs/images/screenshots/admin-contact.png) |
+| Log in as an ordinary user and open `/admin/` | The 403 page, and no Admin link in the header | Pass | |
+
 ### Error pages (US25)
 
 Run on 19 October 2026 in Chrome against the site running locally
@@ -193,8 +205,9 @@ Run with:
 python manage.py test
 ```
 
-212 tests, all passing on 26 October 2026. Jamie ran the suite in his
-own terminal earlier that day, before US15 to US17 added 21 tests:
+221 tests, all passing on 28 October 2026. Jamie ran the suite in his
+own terminal on 26 October 2026, before US15 to US17 and US28 added
+30 more:
 
 ![python manage.py test: Ran 191 tests, OK](./docs/images/screenshots/tests-passing.png)
 
@@ -205,11 +218,11 @@ on Heroku, which does not exist on a development machine.
 
 | File | Tests | What they check |
 |---|---|---|
-| `accounts/tests.py` | 57 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (a third wrong password is an ordinary error, the fourth is blocked, even a correct one while locked; the lock follows the username across addresses; one address cannot guess across many usernames; other visitors can still log in; a faked first `X-Forwarded-For` entry does not help), the eleventh registration in an hour gets the 429 page, expired cache rows are deleted, the 10-second query limit, and the admin log in going through django-allauth (staff in, others refused, unsafe `next` addresses ignored); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie, and an email address refused as a username, the privacy page's browser-storage section, and `/favicon.ico` |
+| `accounts/tests.py` | 65 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (a third wrong password is an ordinary error, the fourth is blocked, even a correct one while locked; the lock follows the username across addresses; one address cannot guess across many usernames; other visitors can still log in; a faked first `X-Forwarded-For` entry does not help), the eleventh registration in an hour gets the 429 page, expired cache rows are deleted, the 10-second query limit, and the admin log in going through django-allauth (superusers in; ordinary users and staff who are not superusers refused; unsafe `next` addresses ignored), the admin itself (titled for CardVault, every model listed and no Email addresses, cards searchable by set, a wrong card name corrected through the admin, a picture preview), the Admin header link (superusers only); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie, and an email address refused as a username, the privacy page's browser-storage section, and `/favicon.ico` |
 | `cards/tests.py` | 69 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404; search across name, set and rarity in any order ("holo rare", "rare holo", "holos"; "common" not matching Uncommon), the Rarity and Set filters alone and combined, unknown filter values ignored, filters kept in page links; Poké Ball ratings (full, empty, rounded averages, hidden from screen readers), the five-ball picker on the review form, the 1999 rarity symbols and which cards shimmer, and searches cut to 100 characters and 5 words |
 | `collection/tests.py` | 55 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged; My Cards shows my own rating (not other people's) or a Rate it link, the notes preview, and a fixed number of database queries however long the list; the collection totals (owned copies, different cards, wanted not counted, unaffected by tab or filters, hidden when empty), sorting (newest, oldest, name, set and number; unknown sorts ignored), the set filter (only my sets offered; unknown values ignored; an empty set says so), choices kept in the tabs, and Got it! (button only on wanted entries, quantity filled in, moves to owned keeping notes, quantity below 1 refused, owned and other users' entries 404, logged out sent to log in) |
-| `contact/tests.py` | 19 | The Contact page for anyone, every field required, a bad email address and a message over 2,000 characters refused, a valid message saved with the thank you message, the username filled in when logged in, the bot trap (thanked but not saved), the 5-an-hour limit and that it is per visitor, the IP address hashed and taken from the address Heroku adds, the admin (message read-only, only "handled" editable), Home and Contact links on every page with `aria-current="page"` on the current one, and the Privacy page's Contact section |
-| `cardvault/tests.py` | 12 | The error pages (US25): an unknown address and an unknown card show the 404 page, which links home, offers a card search, keeps the logged-in header and shows no technical detail; a non-staff user opening the admin gets the 403 page; a form sent without a valid CSRF token gets the "This form has expired" page; an unknown host gets the 400 page; a forced crash gets the 500 page with no technical detail, is logged with its traceback, and the 500 page uses no template tags |
+| `contact/tests.py` | 20 | The Contact page for anyone, every field required, a bad email address and a message over 2,000 characters refused, a valid message saved with the thank you message, the username filled in when logged in, the bot trap (thanked but not saved), the 5-an-hour limit and that it is per visitor, the IP address hashed and taken from the address Heroku adds, the admin (message read-only, only "handled" editable, no adding messages), Home and Contact links on every page with `aria-current="page"` on the current one, and the Privacy page's Contact section |
+| `cardvault/tests.py` | 12 | The error pages (US25): an unknown address and an unknown card show the 404 page, which links home, offers a card search, keeps the logged-in header and shows no technical detail; an ordinary user opening the admin gets the 403 page; a form sent without a valid CSRF token gets the "This form has expired" page; an unknown host gets the 400 page; a forced crash gets the 500 page with no technical detail, is logged with its traceback, and the 500 page uses no template tags |
 
 The two-user tests are the most important: they prove one user
 cannot view, change or delete another user's records by guessing an

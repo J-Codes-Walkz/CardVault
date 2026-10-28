@@ -267,7 +267,7 @@ changing any code.
 | Deletion | Deleting an account deletes its My Cards entries and reviews with it (`on_delete=CASCADE`). Contact messages are deleted once handled. |
 | Backups | A full backup every day at 03:00 (UK time), set up with `heroku pg:backups:schedule`, plus Heroku's own continuous protection. The first backup (19 October 2026) was checked: it contains all 18 tables. Restore with `heroku pg:backups:restore`. |
 | If the password leaked | `heroku pg:credentials:rotate` issues a new database password and Heroku updates `DATABASE_URL` and restarts the app. |
-| Admin | Only staff accounts can open the Django admin, through the rate-limited log in page. Contact messages are read-only there. |
+| Admin | Only superusers can open the Django admin, through the rate-limited log in page. Contact messages are read-only there. |
 | Errors | A database error shows the plain 500 page, never the error itself, and the full traceback goes to Heroku's logs (`heroku logs --tail`) for investigation. |
 
 **Known limits:** the Essential database plan has a single database
@@ -468,11 +468,9 @@ On top of the CRUD, My Cards helps with a growing collection:
 - **Secrets and debug** (US26): every secret read from environment
   variables, `DEBUG` off by default, and a [security policy](./SECURITY.md)
   for reporting vulnerabilities privately.
-- **Django admin:** staff manage the card sets, cards, reviews, My
-  Cards entries and Contact messages from the admin, reached through
-  the same rate-limited log in page as everyone else.
-
-  ![The Django admin listing CardVault's models](./docs/images/screenshots/admin-models.png)
+- **Django admin** (US28): the site owner manages the catalogue,
+  reviews, My Cards entries and Contact messages from the admin; see
+  [Running the site: the Django admin](#running-the-site-the-django-admin).
 - **Helpful error pages** (US25): branded pages for every error a
   visitor can meet, each in plain language with a way back, and never
   any technical detail:
@@ -480,7 +478,7 @@ On top of the CRUD, My Cards helps with a growing collection:
   | Error | When | Page says |
   |---|---|---|
   | 404 | The address does not exist, or the card or entry does not (or is someone else's) | "We couldn't find that page", with a card search |
-  | 403 | A logged-in user who is not staff opens the admin | "You don't have permission to see this page" |
+  | 403 | A logged-in user who is not a superuser opens the admin | "You don't have permission to see this page" |
   | 403 (form expired) | A form is sent after its session ended, for example after logging out in another tab | "This form has expired", and how to fix it |
   | 400 | A malformed request, such as an unknown web address for the site | "Something about that request wasn't right" |
   | 429 | Too many log in or registration attempts | "Too many attempts" |
@@ -503,9 +501,70 @@ On top of the CRUD, My Cards helps with a growing collection:
   <img src="./docs/images/screenshots/my-cards-mobile.png" alt="My Cards stacked on a phone" width="240">
 </p>
 
+### Running the site: the Django admin
+
+The public pages look the same for everyone. The site owner's tools
+are in the **Django admin**, at
+[/admin/](https://cardvault-0a18b8d773ca.herokuapp.com/admin/) (US28).
+
+**Who can use it:** only **superusers**. Django normally lets any
+"staff" account in; CardVault narrows that to superusers. Everyone
+logs in through the same rate-limited Log in page (the admin's own
+log in form is switched off), and anyone else who opens the admin
+sees the 403 "You don't have permission" page. A superuser sees an
+**Admin** link in the header; nobody else does.
+
+The site owner keeps two accounts: an everyday account, whose
+username appears next to reviews, and a separate superuser that is
+never shown anywhere, so the account with the most power is the
+hardest to target. A superuser is created on Heroku with
+`heroku run python manage.py createsuperuser`, and its password
+changed with `heroku run python manage.py changepassword <username>`.
+
+**What the admin is for:**
+
+| Section | What the owner can do |
+|---|---|
+| Card sets and Cards | Correct a card's name, number, rarity or picture link, or add cards. Cards can be searched by name or set and filtered by set and rarity. |
+| Reviews | Read every review, and edit or delete one that breaks the rules. |
+| Collection entries | See and correct any user's My Cards entries, filtered by status or set. |
+| Contact messages | Read enquiries and tick **Handled** once replied to. Messages are read-only, and cannot be added from the admin: they only ever come from visitors. |
+| Users | See accounts, and give or remove superuser access. |
+
+django-allauth's own "Email addresses" section is removed, as
+CardVault never collects email addresses.
+
+**Walkthrough: correcting a card**
+
+1. Log in as the superuser and press **Admin** in the header.
+2. Under **Cards**, open **Cards** and search, for example, `charizard`.
+3. Open the card, correct the field (the **Picture** preview shows the
+   image link working), and press **Save**.
+4. Press **View on site** to see the change on the card's page.
+
+<p>
+  <img src="./docs/images/screenshots/admin-link.png" alt="The Admin link in the header, seen only by a superuser" width="400">
+  <img src="./docs/images/screenshots/admin-card-edit.png" alt="Editing a card in the admin, with a picture preview" width="400">
+</p>
+
+**Walkthrough: handling a review or a Contact message**
+
+- **A review:** open **Reviews**, tick the review, choose **Delete
+  selected reviews** from the Action menu and press **Go**, then
+  confirm.
+- **A Contact message:** open **Contact messages**, read the message,
+  reply by email, then tick **Handled** and press **Save**. Once dealt
+  with, delete it, as the Privacy page promises.
+
+<p>
+  <img src="./docs/images/screenshots/admin-models.png" alt="The CardVault administration home page" width="400">
+  <img src="./docs/images/screenshots/admin-contact.png" alt="Contact messages in the admin, with the Handled tick box" width="400">
+</p>
+
 ### Still to build
 
-- Django admin improvements (US28)
+- Every feature is built. What remains is the Lighthouse checks for
+  US22 and US23, the final testing write-up and the submission checks.
 
 Every notification message the app shows (login success, duplicate
 username, "thank you for your review", and so on) is written out
@@ -827,6 +886,7 @@ section credible to an assessor.
 | 2026-10-19 | Developing features | Built the custom error pages (US25) with Claude. Claude made the 500 page plain HTML because Django renders it without context, and noticed while writing it that the page's promise ("the problem has been recorded") was untrue: with `DEBUG` off, Django logged nothing, so live crashes left no trace (bug #69). It added logging, then ran the site locally in production mode, starting a second copy pointed at a database that does not exist to cause a real 500. A first run showed every page failing; rather than change the site, Claude traced it to its own mistake (static files collected with `DEBUG` on) and redid the check properly. |
 | 2026-10-19 | Automated tests | Asked Claude to set up the CI workflow (#39), adding free security scans because CodeQL stops while the repo is private. Before writing the workflow, Claude ran Bandit and pip-audit locally and went through all 21 Bandit findings: 12 were made-up passwords in tests (tests excluded from the scan), and the other 9 were checked line by line and each marked `# nosec` with the reason it is safe. When Bandit said one marker was unnecessary, Claude removed it, saw the finding come back, and restored it rather than trusting the warning. The workflow passed first time: 191 tests in 40 seconds. |
 | 2026-10-26 | Developing features | Built US15 to US17 (My Cards totals, sort and filter, Got it!) with Claude, following the acceptance criteria already in the user stories. Claude worked out the database cost first (an existing test fixes how many queries My Cards makes) and kept it fixed, with the totals in one query. Its browser check measured every Got it! button against its table cell and found the button spilling into the Quantity column on wide screens, which the tests could not see; it moved the button onto its own line and re-measured at five widths. A first HTML check validated an error page by mistake (the test client was refused by the host check); Claude noticed the expected content was missing and redid it. |
+| 2026-10-28 | Developing features | Built US28 with Claude after I realised I did not know how to reach or use the Django admin myself. Claude limited the admin to superusers (Django lets any "staff" account in), added an Admin link only superusers see, renamed the admin for CardVault, removed allauth's always-empty Email addresses section, added a picture preview for checking card fixes, and wrote the walkthrough above so I can run the site and show an assessor how. Its screenshots showed an "Add contact message" button, which made no sense for messages that only come from visitors, so that was removed and tested too. Checking my own superuser on the live site was blocked by Claude Code's permission rules for reading production data, so I ran the commands myself. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |

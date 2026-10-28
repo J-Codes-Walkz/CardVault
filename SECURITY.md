@@ -55,8 +55,8 @@ explains this for users.
 - A failed log in never says whether the username or the password was
   wrong.
 - The Django admin's own log in form is switched off: admin log ins go
-  through the same rate-limited page, and only staff accounts can
-  open the admin.
+  through the same rate-limited page, and only superusers can open
+  the admin; other accounts, even "staff" ones, are refused.
 - Log out is a POST request with a CSRF token, so another site cannot
   log you out.
 

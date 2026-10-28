@@ -5,7 +5,8 @@ from django.templatetags.static import static
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from accounts.views import DeleteAccountView, SignupView, admin_login
+from accounts.views import DeleteAccountView, SignupView
+from accounts.views import admin_allowed, admin_login
 from cards.views import HomeView
 
 delete_account = DeleteAccountView.as_view()
@@ -20,8 +21,13 @@ def favicon(request):
 accessibility = TemplateView.as_view(template_name="accessibility.html")
 
 # The admin's own login form has no limit on password guesses, so
-# admin log ins go through django-allauth instead.
+# admin log ins go through django-allauth instead, and only
+# superusers may use the admin at all.
 admin.site.login = admin_login
+admin.site.has_permission = admin_allowed
+admin.site.site_header = "CardVault administration"
+admin.site.site_title = "CardVault admin"
+admin.site.index_title = "Manage CardVault"
 
 urlpatterns = [
     path("favicon.ico", favicon),
