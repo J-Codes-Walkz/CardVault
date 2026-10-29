@@ -331,6 +331,22 @@ exist. The planning-stage ERD image still shows the `market_price`
 field removed later; the graph faithfully records the old picture.
 So the graph is a guide, not a complete or perfectly current map.
 
+**Checking it: how far can the graph be trusted?** The report flagged
+that `Card` has 19 "inferred" links and asked whether they are right.
+On 29 October 2026 each one was checked against the code with a
+script that reads every class and function for a reference to
+`Card`:
+
+| Question | Result |
+|---|---|
+| Are the 19 links the graph claims real? | **19 of 19 correct**: each class or function does refer to `Card`, at the lines the script listed |
+| Does the graph miss any real uses of `Card`? | **Yes, 2**: `CardAdmin` and the `Review` model |
+| Why? | Two blind spots in how graphify reads Python, both confirmed on other models: a reference **inside a decorator** is never linked (all four admin classes, such as `@admin.register(Card)`), and a reference to a class **in the same file** is never linked (`Card` to `CardSet` and `Review` to `Card`, all in `cards/models.py`). A reference from another file through an import, such as `CollectionEntry` to `Card`, is always linked |
+
+So its links about the code are trustworthy, but a missing link does
+not prove two things are unconnected: within one file, or through a
+decorator, the code must be read directly.
+
 Screenshots, icons and the font licence are left out of the graph
 (see `.graphifyignore`): they are evidence or brand assets, not
 project structure. To refresh it after new work, run
@@ -926,6 +942,7 @@ section credible to an assessor.
 | 2026-10-29 | Automated tests | Ran Lighthouse on My Cards with Claude, which needs a logged-in user. Claude's first script registered a throwaway account but failed to delete it afterwards (it looked for the delete form by an `action` attribute the form does not have), and the random password was lost with the browser, so the leftover account had to be deleted by hand in the Django admin, by me as the site owner. Claude fixed the script to save the password until the account was gone, use the real delete button, and prove the deletion by trying to log in again. My Cards then scored 100 in every category on mobile and desktop. |
 | 2026-10-29 | Code quality | Asked Claude to bring the code commenting up to the standard assessors look for. Claude audited every Python file with a script and found 99 modules, classes and functions without docstrings, then added PEP 257 docstrings, each describing what that particular override does rather than repeating the code. Its first pass put two docstrings between a decorator and its function, a syntax error flake8 caught at once, so it rolled back and fixed the script. A second check then found its own blank lines above class docstrings and some awkwardly wrapped lines, which it also fixed. Every template gained a `{# #}` header comment, checked not to reach the browser. |
 | 2026-10-29 | Planning (mind map) | Refreshed the knowledge graph with Claude for the end of the sprints (#38). Claude recovered the 12 and 14 October graphs from the git history to screenshot them, so the README shows how the map grew. To save tokens it left icons and the font licence out of the graph, and had two helpers read the 39 changed documents in parallel (134,463 tokens). Before committing it checked the three output files contain no local file paths, email addresses, secrets or admin usernames, and recorded where the graph's inferred links are wrong. |
+| 2026-10-29 | Planning (mind map) | Asked Claude to check whether the mind map can be trusted, starting with the 19 links it guessed for the `Card` model. Claude wrote a script that reads every class and function in the code for a reference to `Card`, and compared the two: all 19 claimed links were correct, but the graph missed 2 real uses. Rather than stop there, it formed two explanations and tested them on the other models: graphify never links a reference inside a decorator (none of the four admin classes) or to a class in the same file (`Card` to `CardSet`), but always links one made through an import. Recorded in the mind map section. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |
