@@ -286,6 +286,10 @@ same accessibility engine Lighthouse uses; it was run with every WCAG
 | axe (WCAG 2.2 AA), light and dark, 26 October 2026 | My Cards with totals and Got it! buttons (1440 and 375px), the Got it! page | 0 violations |
 | Sound | Whole site | No audio or video; every message is on-screen text |
 
+**Skip link, after the fix for bug #71** (the first Tab on any page):
+
+![The yellow Skip to main content link shown after pressing Tab](./docs/images/screenshots/skip-link.png)
+
 **Still to do by hand:** a pass with VoiceOver (the Mac's built-in
 screen reader) (US32).
 
@@ -316,6 +320,17 @@ page moves while it loads (layout shift 0 everywhere).
   <img src="./docs/images/screenshots/lighthouse-home-mobile.png" alt="Lighthouse, home page, mobile: 97, 100, 96, 100" width="420">
   <img src="./docs/images/screenshots/lighthouse-home-desktop.png" alt="Lighthouse, home page, desktop: 98, 100, 100, 100" width="420">
 </p>
+
+**Jamie's own run in Chrome DevTools** (29 October 2026, home page,
+mobile) scored Accessibility 100, Best Practices 96 and SEO 100, the
+same as above. Performance could not be scored: every timing showed
+"Something went wrong with recording the trace (NO_NAVSTART)", an
+error in Lighthouse's recording, not in the page. The report's
+treemap showed why: three-quarters of the JavaScript on the page came
+from a Chrome extension, not CardVault (whose own scripts total about
+2.3 KB), and DevTools' device toolbar was switched on at the same
+time. Lighthouse should be run in an Incognito window, where
+extensions are off, with the device toolbar closed.
 
 **Best Practices 96 on three mobile pages: a deliberate trade-off.**
 The only point lost is "Serves images with low resolution" on the
@@ -553,6 +568,7 @@ privately, as described in [SECURITY.md](./SECURITY.md).
 | [#66](https://github.com/J-Codes-Walkz/CardVault/issues/66) | Log in limits were shared by every visitor on Heroku: django-allauth saw only the router's address, so 10 wrong passwords a minute from anyone could pause logging in for everyone | `ALLAUTH_TRUSTED_PROXY_COUNT = 1`, so the visitor's real address (added last by Heroku's router) is used; tests prove a faked header does not help | Fixed |
 | [#67](https://github.com/J-Codes-Walkz/CardVault/issues/67) | A search with thousands of words built one huge, slow database query | Searches cut to 100 characters and 5 words; Postgres stops any query after 10 seconds | Fixed |
 | [#69](https://github.com/J-Codes-Walkz/CardVault/issues/69) | Crashes on the live site left no trace in the logs: with `DEBUG` off, Django printed nothing | A `LOGGING` setting sends warnings and errors, with tracebacks, to the console that Heroku collects; tested | Fixed |
+| [#71](https://github.com/J-Codes-Walkz/CardVault/issues/71) | The "Skip to main content" link was hard to see when it appeared: white on navy, on top of the navy header (Jamie's manual keyboard test) | Shown in the brand's yellow with dark text (9.98:1 and 11.27:1), a white focus outline and a shadow; re-tested with real Tab presses, light and dark | Fixed |
 
 Found and fixed while building, before they reached the live site:
 

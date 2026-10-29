@@ -248,18 +248,29 @@ input[type="date"]:focus-within {
 }
 
 /* Skip link: hidden until it receives keyboard focus. */
+/* Hidden until a keyboard user presses Tab, then shown in the brand's
+   yellow so it stands out clearly against the navy header (dark text
+   on yellow: 9.98:1 in light mode, 11.27:1 in dark mode). */
 .skip-link {
     position: absolute;
     left: -999px;
-    top: 0;
+    top: 0.5rem;
     z-index: 10;
-    padding: 0.5rem 1rem;
-    color: #ffffff;
-    background-color: var(--navy);
+    padding: 0.625rem 1rem;
+    font-weight: 700;
+    color: #162034;
+    background-color: var(--yellow);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
 .skip-link:focus {
-    left: 0;
+    left: 0.5rem;
+}
+
+.skip-link:focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: 2px;
 }
 
 /* ---- Header --------------------------------------------------------
