@@ -356,8 +356,9 @@ this is the right balance; a bank would add a second factor instead
 **Load test, 19 October 2026:** 2,000 page visits to the live site,
 25 at a time, spread across the home page, Browse cards, a search and
 a card page: **all 2,000 succeeded, about 112 pages a second, median
-0.21 seconds, 95% within 0.33 seconds**. Details in
-[TESTING.md](./TESTING.md#load-testing).
+0.21 seconds, 95% within 0.33 seconds**. At 50 at a time, 50 of
+3,000 requests timed out, so about 25 at once is this single dyno's
+comfortable limit. Details in [TESTING.md](./TESTING.md#load-testing).
 
 **To grow further**, Heroku can run more dynos (`heroku ps:scale
 web=2`) or bigger ones, and the database plan can be upgraded, without
@@ -740,6 +741,20 @@ board, with one GitHub issue per user story, development task and bug.
 
 ![The project board on 26 October 2026: To do, In progress and Done](./docs/images/screenshots/project-board.png)
 
+**The board over time.** Jamie's own screenshots show it moving: on
+14 October most stories were still in Backlog, with the assessor's
+bugs in progress; by 19 October the Sprint 2 work had moved across.
+The milestones page on 19 October shows Sprint 1 a few days overdue
+(one hand-taken screenshot task left), which is recorded honestly in
+the sprints table below.
+
+<p>
+  <img src="./docs/images/screenshots/project-board-2026-10-14.png" alt="The project board on 14 October 2026" width="400">
+  <img src="./docs/images/screenshots/project-board-2026-10-19.png" alt="The project board on 19 October 2026" width="400">
+</p>
+
+![The milestones page on 19 October 2026: Sprint 1 at 92%, Sprint 2 at 97%, Sprint 3 at 43%](./docs/images/screenshots/milestones-2026-10-19.png)
+
 **How the board was set up**
 
 - **Four columns:** `Backlog` (planned for a later sprint), `To do`
@@ -823,6 +838,8 @@ The workflow uses a throwaway `SECRET_KEY` and database written into
 the file itself: they protect nothing real, so no repository secrets
 are needed. Heroku's **Wait for CI to pass before deploy** setting is
 on, so a push only reaches the live site once both jobs pass.
+
+![Heroku's Deploy tab: automatic deploys from main, waiting for GitHub checks to pass](./docs/images/screenshots/heroku-wait-for-ci.png)
 
 Bandit skips the test files, whose made-up passwords it would flag.
 Every other line it flags but that is safe carries a `# nosec` marker
@@ -1012,7 +1029,11 @@ cd <your-repo>
 
 AI (Claude, via Claude.ai for planning and Claude Code for building) was used throughout this project as a
 collaborator for planning, debugging, and reviewing &mdash; not as a
-replacement for understanding the code. The log below covers the
+replacement for understanding the code. Screenshots of the conversations themselves, 50 of them in date order
+with what each one shows, are in
+**[docs/AI_CONVERSATIONS.md](./docs/AI_CONVERSATIONS.md)**.
+
+The log below covers the
 three areas the checklist asks about, **debugging**, **developing
 features** and **automated tests**, plus planning, design, security
 and code quality. Each entry names the actual problem, what the AI
@@ -1040,7 +1061,7 @@ the AI's own mistakes.
 | 2026-10-15 | Debugging | A keyboard-only test of the new Poké Ball picker found that Tab landed on the 5th ball and the left arrow moved right, a side effect of the CSS trick first used to fill the balls. Rebuilt with the CSS `:has()` selector in natural 1 to 5 order (after checking the CSS validator accepts it), then re-tested with real key presses and mouse clicks. |
 | 2026-10-16 | Design | Asked Claude to make the rarity symbols in the home page banner float rather than sit still. Claude pointed out that endless movement needs a way to pause it (WCAG 2.2.2) and that the Accessibility page promised movement "never loops", so it added a "Pause animation" button, updated that page, and checked that the button never covers the banner's text from 320px up, that pausing really stops the symbols, and that reduced motion still switches everything off. |
 | 2026-10-16 | Developing features | Asked Claude for a Home link and a Contact page (name, email, message, and a thank-you banner telling people to check their junk folder), and whether an automatic no-reply email was worth it. Claude advised against the email for now: anyone can type any address, so the form could be used to send mail to strangers, new senders often land in junk, and it would mean keeping a mail password on Heroku. I agreed to save messages for the admin instead and reply by hand from a dedicated mailbox. Claude built a `contact` app with a hidden bot trap and a 5-an-hour limit (storing a hash of the IP address, not the address), 19 tests, and updated the Privacy page, which had said we never ask for an email address. A browser check found the extra links pushed the logged-in header onto two rows at tablet widths, so the Menu button now appears below 1024px. |
-| 2026-10-19 | Security | Asked Claude to harden the site against password guessing and heavy traffic, cut log in tries to 3, and manage the database properly. Claude found that the existing per-IP limits never saw real visitors on Heroku: every request arrives from Heroku's router, so all visitors shared one count and 10 wrong passwords could pause logging in for everyone (bug #66). It set `ALLAUTH_TRUSTED_PROXY_COUNT`, wrote tests proving a faked `X-Forwarded-For` does not help, capped searches that could build huge queries (bug #67), added a 10-second query limit, threaded gunicorn workers and a branded 429 page, and found the live database had no backups, so scheduled daily ones and checked the first contained every table. It load tested the live site and, when a heavier run stalled, checked Heroku's router logs before blaming the site: the stalled requests never reached Heroku. |
+| 2026-10-19 | Security | Asked Claude to harden the site against password guessing and heavy traffic, cut log in tries to 3, and manage the database properly. Claude found that the existing per-IP limits never saw real visitors on Heroku: every request arrives from Heroku's router, so all visitors shared one count and 10 wrong passwords could pause logging in for everyone (bug #66). It set `ALLAUTH_TRUSTED_PROXY_COUNT`, wrote tests proving a faked `X-Forwarded-For` does not help, capped searches that could build huge queries (bug #67), added a 10-second query limit, threaded gunicorn workers and a branded 429 page, and found the live database had no backups, so scheduled daily ones and checked the first contained every table. It load tested the live site and, when a heavier run stalled, checked Heroku's router logs and concluded the stalled requests never reached Heroku. That turned out to be wrong (see the 29 October entry on the conversation screenshots). |
 | 2026-10-19 | Developing features | Built the custom error pages (US25) with Claude. Claude made the 500 page plain HTML because Django renders it without context, and noticed while writing it that the page's promise ("the problem has been recorded") was untrue: with `DEBUG` off, Django logged nothing, so live crashes left no trace (bug #69). It added logging, then ran the site locally in production mode, starting a second copy pointed at a database that does not exist to cause a real 500. A first run showed every page failing; rather than change the site, Claude traced it to its own mistake (static files collected with `DEBUG` on) and redid the check properly. |
 | 2026-10-19 | Automated tests | Asked Claude to set up the CI workflow (#39), adding free security scans because CodeQL stops while the repo is private. Before writing the workflow, Claude ran Bandit and pip-audit locally and went through all 21 Bandit findings: 12 were made-up passwords in tests (tests excluded from the scan), and the other 9 were checked line by line and each marked `# nosec` with the reason it is safe. When Bandit said one marker was unnecessary, Claude removed it, saw the finding come back, and restored it rather than trusting the warning. The workflow passed first time: 191 tests in 40 seconds. |
 | 2026-10-26 | Developing features | Built US15 to US17 (My Cards totals, sort and filter, Got it!) with Claude, following the acceptance criteria already in the user stories. Claude worked out the database cost first (an existing test fixes how many queries My Cards makes) and kept it fixed, with the totals in one query. Its browser check measured every Got it! button against its table cell and found the button spilling into the Quantity column on wide screens, which the tests could not see; it moved the button onto its own line and re-measured at five widths. A first HTML check validated an error page by mistake (the test client was refused by the host check); Claude noticed the expected content was missing and redid it. |
@@ -1052,3 +1073,4 @@ the AI's own mistakes.
 | 2026-10-29 | Planning (mind map) | Asked Claude to check whether the mind map can be trusted, starting with the 19 links it guessed for the `Card` model. Claude wrote a script that reads every class and function in the code for a reference to `Card`, and compared the two: all 19 claimed links were correct, but the graph missed 2 real uses. Rather than stop there, it formed two explanations and tested them on the other models: graphify never links a reference inside a decorator (none of the four admin classes) or to a class in the same file (`Card` to `CardSet`), but always links one made through an import. Recorded in the mind map section. |
 | 2026-10-29 | Automated tests | Finished the testing write-up (#36) with Claude. It ran a coverage report for the first time (99% of the site's code; the rest is production-only settings) and found three small untested paths, which it covered with new tests. It added a table giving every user story's manual test and result, and re-checked three stories with fresh evidence: reviews on the live site (US21), loading the catalogue twice into a brand-new database with no duplicates (US27), and a full secret scan of all 60 commits (US26). A link check then exposed a mistake from its own earlier edit: adding the Load testing section had deleted the Validators heading, which it restored. |
 | 2026-10-29 | Documentation | Asked Claude for an architecture diagram and a tidy of the Agile section for the submission checklist (#70). Claude first read which apps actually import from which, then drew three Mermaid diagrams (the whole system, how the code is organised, and one request from start to finish) and rendered all five diagrams in the README in Chrome with the same Mermaid library GitHub uses, to prove they draw. It rewrote the Agile section from setup instructions into an account of what was done, with the real issue and milestone counts from GitHub; checking those against GitHub caught one error before it was committed (the error pages were in Sprint 3, not Sprint 2). |
+| 2026-10-29 | Documentation | Gave Claude my folders of screenshots from the project to sort for the submission. Claude read all 56 conversation screenshots one by one, kept 50 with a description of each in docs/AI_CONVERSATIONS.md, and chose 10 of my 44 manual-test screenshots for TESTING.md. It covered personal details with a script using the Mac's own text recognition (my email, the Mac's username, a one-time login code), then scanned every image again, including the 90 already in the repo, and found the Mac's username in two terminal screenshots committed earlier, which it replaced. Reading Heroku's metrics from that week, it noticed they contradict its own 19 October conclusion about the load test: the 50 stalled requests most likely did reach Heroku and timed out. It corrected TESTING.md and the README rather than leave the earlier claim. |

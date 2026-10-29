@@ -222,6 +222,39 @@ these screenshots: the repository is public, and keeping the
 superuser's name out of view is part of the
 [security design](./README.md#running-the-site-the-django-admin).
 
+### Jamie's own hand-run tests
+
+Alongside the scripted browser runs, Jamie tested the site by hand on
+the live site as each part was built, taking 44 screenshots between
+13 and 16 October 2026. Ten of them are below; his email address
+(his username at the time) is covered over. Two of these tests found
+real bugs that the automated tests had not.
+
+| Date | What Jamie did | What it showed |
+|---|---|---|
+| 13 Oct | Registered and logged in | "Success: Welcome back" and the empty My Cards page (also issue #40) |
+| 14 Oct | Added the tester cards AAA, BBB and CCC | Each listed, with "Success: CCC was added to your cards." |
+| 14 Oct | Wrote a review, then started to delete it | The review with Edit and Delete buttons, then a confirmation page before anything was deleted (the email cover also hides the rating next to it) |
+| 15 Oct | Opened Register after the age check was added | The date of birth field, with "Used only to check your age. It is not stored." |
+| 15 Oct | Searched for "Holo" | **Found 0 cards: a bug.** Search only matched card names; it now matches name, set or rarity (fixed the same day, US09) |
+| 15 Oct | Used My Cards with long notes | **Two bugs:** the card name ran into the Set column (#57), and his own note recorded that submitting a review wiped unsaved notes on the same page (#58). Both fixed that afternoon |
+| 15 Oct | Logged in with a wrong password | "Error: Invalid username or password. Please try again." |
+| 15 Oct | Opened Delete my account | What would be deleted (3 cards, 2 reviews) and a password check |
+| 16 Oct | Sent a Contact message | The form, with his username filled in as his name |
+
+<p>
+  <img src="./docs/images/manual-tests/2026-10-13-login-welcome-back.png" alt="Jamie logged in: Welcome back and an empty My Cards" width="400">
+  <img src="./docs/images/manual-tests/2026-10-14-add-tester-cards.png" alt="Jamie's My Cards with the tester cards AAA, BBB and CCC" width="400">
+  <img src="./docs/images/manual-tests/2026-10-14-review-submitted.png" alt="Jamie's review with Edit and Delete buttons" width="400">
+  <img src="./docs/images/manual-tests/2026-10-14-review-delete-confirm.png" alt="The confirmation page before deleting a review" width="400">
+  <img src="./docs/images/manual-tests/2026-10-15-register-age-check.png" alt="Register with the date of birth field" width="400">
+  <img src="./docs/images/manual-tests/2026-10-15-search-holo-found-nothing.png" alt="Searching Holo found nothing, before the search fix" width="400">
+  <img src="./docs/images/manual-tests/2026-10-15-my-cards-layout-and-note.png" alt="My Cards with the layout bug and Jamie's note about lost text" width="400">
+  <img src="./docs/images/manual-tests/2026-10-15-login-wrong-password.png" alt="Log in with a wrong password" width="400">
+  <img src="./docs/images/manual-tests/2026-10-15-delete-account.png" alt="Delete my account, listing what will be deleted" width="400">
+  <img src="./docs/images/manual-tests/2026-10-16-contact-form.png" alt="The Contact form with the username filled in" width="400">
+</p>
+
 ### User testing by others
 
 On 29 October 2026 two of Jamie's friends, `charliebiggin` and
@@ -584,16 +617,29 @@ was created or changed.
 | 2 | 3,000 | 50 | 2,950 succeeded; 50 timed out on the test computer | 53 | 0.45s | 0.91s | 30s (the timeouts) |
 | 3 | 1,000 | 25 | All 1,000 succeeded | 119 | 0.17s | 0.42s | 0.59s |
 
-**What the 50 timeouts were:** Heroku's router logs every request it
-receives. For run 2 they showed only successful responses (status
-200), the slowest taking 0.66 seconds, with no errors. The 50 stalled
-requests, exactly one per simultaneous connection, never reached
-Heroku: they were stuck on the test computer opening 50 secure
-connections at once. A repeat of run 2 stalled on the test computer
-before sending anything (Heroku's logs showed no requests and the live
-site kept answering in 0.16 seconds), so it was stopped, and run 3
-confirmed the earlier result. The site's limit was not reached; 50 at
-a time is the test computer's limit.
+![Heroku's metrics after the load test: 50 critical errors in the last 24 hours](./docs/images/screenshots/heroku-metrics-load-test.png)
+
+**What the 50 timeouts were, corrected on 29 October 2026.** On the
+day, the router log lines checked showed only successful responses
+(status 200, the slowest 0.66 seconds), and the conclusion recorded
+was that the 50 stalled requests never reached Heroku. That was too
+confident: only the last 1,500 log lines were read, about 737 router
+entries, a quarter of run 2's 3,000 requests. Heroku's own metrics,
+screenshotted by Jamie later that morning (above), counted **50
+request timeouts** in the last 24 hours, exactly the number of
+requests that stalled, one for each of the 50 simultaneous
+connections. So those 50 requests most likely did reach Heroku and
+were not answered within Heroku's 30-second limit. The exact cause
+cannot now be confirmed, as the full logs from that hour are no
+longer kept.
+
+What can be said: with 25 visitors at a time (runs 1 and 3) every
+request succeeded, quickly; at 50 at a time, 1 request in 60 timed
+out on one Basic dyno. Handling more than about 25 at once would need
+more dynos (`heroku ps:scale web=2`) or a bigger one, as the README's
+"Handling heavy traffic" section says. A repeat of run 2 stalled on
+the test computer before sending anything and was stopped; the live
+site kept answering in 0.16 seconds throughout.
 
 ## Validators
 

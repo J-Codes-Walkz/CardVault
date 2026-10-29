@@ -131,6 +131,8 @@ explains this for users.
   push.
 - The `main` branch cannot be force-pushed or deleted.
 
+![GitHub's security overview for the repository: every feature enabled](./docs/images/screenshots/github-security-overview.png)
+
 ## Reporting a vulnerability
 
 Please report security problems **privately**, not in a public issue:
