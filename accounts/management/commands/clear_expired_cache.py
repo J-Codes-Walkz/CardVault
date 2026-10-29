@@ -12,9 +12,12 @@ from django.utils import timezone
 
 
 class Command(BaseCommand):
+    """The `python manage.py clear_expired_cache` command."""
+
     help = "Delete expired rows from the database cache table."
 
     def handle(self, *args, **options):
+        """Delete every cache row whose expiry time has passed."""
         name = settings.CACHES["default"]["LOCATION"]
         table = connection.ops.quote_name(name)
         now = connection.ops.adapt_datetimefield_value(timezone.now())

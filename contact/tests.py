@@ -21,6 +21,7 @@ def message_texts(response):
 
 
 class ContactMessageModelTests(TestCase):
+    """The ContactMessage model."""
 
     def test_str_and_defaults(self):
         message = ContactMessage.objects.create(**VALID)
@@ -34,6 +35,7 @@ class ContactMessageModelTests(TestCase):
 
 
 class ContactPageTests(TestCase):
+    """US34: sending a message, its checks and its limits."""
 
     def setUp(self):
         cache.clear()
@@ -106,6 +108,7 @@ class ContactPageTests(TestCase):
 
 
 class VisitorKeyTests(TestCase):
+    """The rate limit key: the real visitor address, hashed."""
 
     def test_uses_the_address_heroku_added_last(self):
         factory = RequestFactory()
@@ -120,6 +123,7 @@ class VisitorKeyTests(TestCase):
 
 
 class ContactAdminTests(TestCase):
+    """Contact messages in the Django admin."""
 
     def test_registered_with_message_read_only(self):
         model_admin = admin.site._registry[ContactMessage]
@@ -135,6 +139,7 @@ class ContactAdminTests(TestCase):
 
 
 class NavigationTests(TestCase):
+    """US33: Home and Contact links, and the Privacy page's Contact section."""
 
     def test_home_and_contact_links_on_every_page(self):
         for url in (reverse("home"), reverse("cards:card_list"), CONTACT_URL):

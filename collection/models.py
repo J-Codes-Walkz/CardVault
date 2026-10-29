@@ -10,6 +10,8 @@ class CollectionEntry(models.Model):
     """One card on one user's list, either owned or wanted."""
 
     class Status(models.TextChoices):
+        """Whether a card is in the collection or on the wanted list."""
+
         OWNED = "OWNED", "Owned"
         WANTED = "WANTED", "Wanted"
 
@@ -48,5 +50,6 @@ class CollectionEntry(models.Model):
         ]
 
     def __str__(self):
+        """Whose entry it is, for example "ash: 2 x Charizard (Owned)"."""
         status = self.get_status_display()
         return f"{self.user}: {self.quantity} x {self.card.name} ({status})"

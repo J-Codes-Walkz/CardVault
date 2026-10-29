@@ -6,6 +6,8 @@ from .models import ContactMessage
 
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
+    """Contact messages in the admin, read-only apart from the Handled tick."""
+
     list_display = ("name", "email", "created_at", "handled")
     list_filter = ("handled",)
     list_editable = ("handled",)

@@ -27,9 +27,11 @@ class SecurityHeadersMiddleware:
     """Add the Content Security Policy and Permissions Policy headers."""
 
     def __init__(self, get_response):
+        """Keep the next step in Django's request handling."""
         self.get_response = get_response
 
     def __call__(self, request):
+        """Let the view respond, then add any header it did not set itself."""
         response = self.get_response(request)
         csp = "Content-Security-Policy"
         response.headers.setdefault(csp, CONTENT_SECURITY_POLICY)

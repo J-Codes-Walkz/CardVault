@@ -1,5 +1,8 @@
-"""Tests for accounts: register, log in and out, age check, deleting
-an account, the information pages and security."""
+"""Tests for accounts and site-wide security.
+
+Registration, log in and out, the age check, deleting an account, the
+information pages, security headers, rate limits and the Django admin.
+"""
 from datetime import timedelta
 from io import StringIO
 from unittest import mock
@@ -36,6 +39,7 @@ class RegisterTests(TestCase):
     """US01: register an account."""
 
     def register(self, username, password1, password2=None):
+        """Post the registration form; password2 defaults to password1."""
         if password2 is None:
             password2 = password1
         data = {
@@ -113,6 +117,7 @@ class LoginTests(TestCase):
         cls.user = User.objects.create_user("misty", password=STRONG_PASSWORD)
 
     def log_in(self, username, password, **extra):
+        """Post the log in form."""
         return self.client.post(
             reverse("account_login"),
             {"login": username, "password": password, **extra},
@@ -239,8 +244,11 @@ class LoginRateLimitTests(TestCase):
         User.objects.create_user("misty", password=STRONG_PASSWORD)
 
     def guess(self, data, address="203.0.113.1"):
-        """Post a log in from one visitor's IP address, as Heroku's
-        router reports it: the last entry of X-Forwarded-For."""
+        """Post a log in from one visitor's IP address.
+
+        The address goes last in X-Forwarded-For, where Heroku's router puts
+        it.
+        """
         forwarded = f"198.51.100.7, {address}"
         return self.client.post(self.url, data, HTTP_X_FORWARDED_FOR=forwarded)
 
@@ -486,6 +494,7 @@ class AgeCheckTests(TestCase):
     """US29: you must be 13 or older to register."""
 
     def register(self, date_of_birth, username="newbie"):
+        """Post the registration form with the given date of birth."""
         data = {
             "username": username,
             "date_of_birth": date_of_birth,

@@ -173,16 +173,17 @@ administration" and the Email addresses section is gone.
   <img src="./docs/images/screenshots/admin-users-live.png" alt="The live admin's Users list on 29 October 2026, after US28" width="420">
 </p>
 
-Superuser usernames, Jamie's email address and the friends'
-usernames are covered over in these screenshots: the repository is
-public, and keeping the superuser's name out of view is part of the
+Superuser usernames and Jamie's email address are covered over in
+these screenshots: the repository is public, and keeping the
+superuser's name out of view is part of the
 [security design](./README.md#running-the-site-the-django-admin).
 
 ### User testing by others
 
-On 29 October 2026 two of Jamie's friends registered their own
-accounts on the live site and used it without help. Their accounts
-appear in the admin's Users list above (names covered).
+On 29 October 2026 two of Jamie's friends, `charliebiggin` and
+`TestyMcTestFace`, registered their own accounts on the live site and
+used it without help, having agreed beforehand that it was for
+testing. Their accounts appear in the admin's Users list above.
 
 ### Error pages (US25)
 
@@ -586,6 +587,20 @@ Run by Jamie on 26 October 2026 (the `echo` only prints if flake8
 found nothing):
 
 ![flake8 . reports no problems](./docs/images/screenshots/flake8-clean.png)
+
+### Comments and docstrings
+
+Checked on 29 October 2026 with a script that reads every Python file
+with Python's own parser and lists anything without a docstring.
+
+| Language | Convention | Where it stands |
+|---|---|---|
+| Python | [PEP 257](https://peps.python.org/pep-0257/) docstrings: a one-line summary in triple quotes for every module, class and function; longer ones add a blank line, then detail. `#` comments explain why, not what | Every module, class and function has one, including each view method saying what that override does. Two deliberate exceptions, both common Django practice: `Meta` inner classes (settings only), and test methods, whose names are written as sentences (`test_fourth_wrong_password_is_blocked`); every test class has a docstring |
+| JavaScript | A `/* */` block at the top of each file saying what it does and why | All four files |
+| CSS | A `/* ---- Section ---- */` heading for each part of the stylesheet, and a comment on any rule whose reason is not obvious | 20 sections |
+| Django templates | A `{# #}` comment at the top of each template saying what the page is for and which user story it serves. Django strips these, so visitors never see them (checked) | All 32 templates |
+
+There is no commented-out code and no leftover TODO in the project.
 
 ### Deployment settings
 

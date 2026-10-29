@@ -15,4 +15,5 @@ class ContactMessage(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
+        """The sender and date, for example "Ash (29 Oct 2026)"."""
         return f"{self.name} ({self.created_at:%d %b %Y})"

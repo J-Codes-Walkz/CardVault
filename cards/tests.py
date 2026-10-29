@@ -24,6 +24,7 @@ def message_texts(response):
 
 
 def make_card(card_set, number=4, name="Charizard"):
+    """Create a Rare Holo card in the given set."""
     return Card.objects.create(
         name=name,
         card_set=card_set,
@@ -33,6 +34,7 @@ def make_card(card_set, number=4, name="Charizard"):
 
 
 class CardSetTests(TestCase):
+    """CardSet: its name and the unique set name rule."""
 
     def test_str_is_the_set_name(self):
         card_set = CardSet.objects.create(name="Base Set", quantity=102)
@@ -45,6 +47,7 @@ class CardSetTests(TestCase):
 
 
 class CardTests(TestCase):
+    """Card: its name, picture, rarity and one number per set."""
 
     @classmethod
     def setUpTestData(cls):
@@ -78,6 +81,7 @@ class CardTests(TestCase):
 
 
 class ReviewTests(TestCase):
+    """Review: one per user per card, ratings 1 to 5, deleted with its user."""
 
     @classmethod
     def setUpTestData(cls):
@@ -86,6 +90,7 @@ class ReviewTests(TestCase):
         cls.card = make_card(base_set)
 
     def review(self, rating=5, user=None):
+        """An unsaved review of the test card."""
         return Review(
             user=user or self.user, card=self.card, rating=rating,
             body="A classic.",
@@ -143,6 +148,7 @@ class PokeBallRatingTests(TestCase):
     """Ratings are drawn as five Poké Balls, full or empty."""
 
     def count(self, rating):
+        """How many full and empty balls a rating is drawn with."""
         html = str(balls(rating))
         return html.count("ball-full"), html.count("ball-empty")
 
@@ -216,6 +222,7 @@ class TesterFixtureTests(TestCase):
 
 
 class ReviewEditedTests(TestCase):
+    """The "edited" marker shown on reviews changed after writing."""
 
     def test_new_review_is_not_marked_edited(self):
         user = User.objects.create_user("ash", password=PASSWORD)
@@ -357,6 +364,7 @@ class ReviewCrudTests(TestCase):
         self.client.force_login(self.ash)
 
     def make_review(self, user=None):
+        """Save a 3-ball review of the test card."""
         return Review.objects.create(
             user=user or self.ash, card=self.card, rating=3, body="Original"
         )
@@ -464,6 +472,7 @@ class BaseSetCardsFixtureTests(TestCase):
     """US27: the 102 Base Set cards built once from the Pokémon TCG API."""
 
     def load(self):
+        """Load the Base Set fixtures, as on a new database."""
         call_command("loaddata", "pokemon_cardsets", verbosity=0)
         call_command("loaddata", "base_set_cards", verbosity=0)
 
@@ -536,6 +545,7 @@ class SearchAndFilterTests(TestCase):
             )
 
     def names(self, query_string):
+        """The card names the catalogue shows for an address."""
         url = reverse("cards:card_list") + query_string
         response = self.client.get(url)
         return sorted(card.name for card in response.context["cards"])

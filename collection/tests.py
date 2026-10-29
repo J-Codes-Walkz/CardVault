@@ -25,6 +25,7 @@ def message_texts(response):
 
 
 def make_card(name="Blastoise", number=2):
+    """Create a Rare Holo card in a shared test set."""
     card_set, _ = CardSet.objects.get_or_create(name="Set", quantity=102)
     rarity = Card.Rarity.RARE_HOLO
     return Card.objects.create(
@@ -33,6 +34,7 @@ def make_card(name="Blastoise", number=2):
 
 
 class CollectionEntryTests(TestCase):
+    """CollectionEntry: its defaults and database rules."""
 
     @classmethod
     def setUpTestData(cls):
@@ -427,6 +429,7 @@ class SortAndFilterTests(TestCase):
         self.client.force_login(self.ash)
 
     def names(self, query=""):
+        """The card names My Cards shows for an address, in order."""
         response = self.client.get(self.url + query)
         return [entry.card.name for entry in response.context["entries"]]
 

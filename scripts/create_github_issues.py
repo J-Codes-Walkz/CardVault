@@ -44,6 +44,7 @@ def epic_label(epic_name: str) -> str:
 
 
 def main():
+    """Create a GitHub issue per story in the CSV (or preview: --dry-run)."""
     parser = argparse.ArgumentParser(description=__doc__)
     dry_run_help = "Print what would be created; create nothing."
     only_help = "Only create these story IDs, e.g. US01 US02."

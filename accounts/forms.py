@@ -31,6 +31,7 @@ class LoginForm(AllauthLoginForm):
     """
 
     def __init__(self, *args, **kwargs):
+        """Remove the password help text, which links to password reset."""
         super().__init__(*args, **kwargs)
         self.fields["password"].help_text = ""
 
@@ -50,18 +51,25 @@ class SignupForm(AllauthSignupForm):
     )
 
     def __init__(self, *args, **kwargs):
+        """Start with no age failure and put the fields in a sensible order."""
         super().__init__(*args, **kwargs)
         self.too_young = False
         order = ["username", "date_of_birth", "password1", "password2"]
         self.order_fields(order)
 
     def clean_username(self):
+        """Refuse email addresses, as usernames are shown publicly."""
         username = super().clean_username()
         if "@" in username:
             raise forms.ValidationError(NO_EMAIL_USERNAME)
         return username
 
     def clean_date_of_birth(self):
+        """Reject impossible dates and refuse anyone under 13.
+
+        Sets `too_young`, so the view can close registration for the rest of
+        the session.
+        """
         born = self.cleaned_data["date_of_birth"]
         today = timezone.localdate()
         if born > today or age_on(born, today) > 120:
@@ -81,10 +89,12 @@ class DeleteAccountForm(forms.Form):
     )
 
     def __init__(self, *args, user=None, **kwargs):
+        """Keep the user whose password is being checked."""
         super().__init__(*args, **kwargs)
         self.user = user
 
     def clean_password(self):
+        """Accept only the logged-in user's current password."""
         password = self.cleaned_data["password"]
         if not self.user.check_password(password):
             raise forms.ValidationError(WRONG_PASSWORD)

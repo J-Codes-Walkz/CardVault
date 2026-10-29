@@ -108,6 +108,7 @@ def to_fixture(cards):
 
 
 def main():
+    """Download the set, check it and write the fixture file."""
     fixture = to_fixture(fetch_cards())
     text = json.dumps(fixture, indent=2, ensure_ascii=False)
     OUTPUT.write_text(text + "\n", encoding="utf-8")

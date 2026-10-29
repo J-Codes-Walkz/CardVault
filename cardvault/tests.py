@@ -12,6 +12,7 @@ HOME_VIEW = "cards.views.HomeView.get_context_data"
 
 
 class NotFoundPageTests(TestCase):
+    """The 404 page (US25)."""
 
     def test_unknown_address_shows_the_404_page(self):
         response = self.client.get("/no-such-page/")
@@ -44,6 +45,7 @@ class NotFoundPageTests(TestCase):
 
 
 class PermissionDeniedPageTests(TestCase):
+    """The 403 page (US25)."""
 
     def test_non_staff_user_opening_the_admin_sees_the_403_page(self):
         User.objects.create_user("ash", password=PASSWORD)
@@ -56,6 +58,7 @@ class PermissionDeniedPageTests(TestCase):
 
 
 class FormExpiredPageTests(TestCase):
+    """The "This form has expired" page shown when a CSRF check fails."""
 
     def test_form_sent_without_a_valid_csrf_token(self):
         client = Client(enforce_csrf_checks=True)
@@ -67,6 +70,7 @@ class FormExpiredPageTests(TestCase):
 
 
 class BadRequestPageTests(TestCase):
+    """The 400 page (US25)."""
 
     def test_unknown_host_shows_the_400_page(self):
         response = self.client.get("/", HTTP_HOST="evil.example")
@@ -75,6 +79,7 @@ class BadRequestPageTests(TestCase):
 
 
 class ServerErrorPageTests(TestCase):
+    """The 500 page, and that crashes are logged with their traceback."""
 
     def setUp(self):
         self.client.raise_request_exception = False

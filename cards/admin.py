@@ -9,12 +9,16 @@ PREVIEW = '<img src="{}" alt="" width="120" height="167">'
 
 @admin.register(CardSet)
 class CardSetAdmin(admin.ModelAdmin):
+    """Card sets in the admin, searchable by name."""
+
     list_display = ("name", "quantity")
     search_fields = ("name",)
 
 
 @admin.register(Card)
 class CardAdmin(admin.ModelAdmin):
+    """Cards in the admin, searchable by name or set, with a preview."""
+
     list_display = ("name", "card_set", "number", "rarity")
     list_filter = ("card_set", "rarity")
     search_fields = ("name", "card_set__name")
@@ -32,6 +36,8 @@ class CardAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
+    """Reviews in the admin, filtered by rating, searchable by text."""
+
     list_display = ("card", "user", "rating", "created_at")
     list_filter = ("rating",)
     search_fields = ("card__name", "user__username", "body")

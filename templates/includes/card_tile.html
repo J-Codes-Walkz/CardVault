@@ -1,4 +1,5 @@
 {% load static %}
+{# One card in a grid: picture, name, set and number, and rarity. #}
 <article class="card-tile{% if card.is_holo %} is-holo{% endif %}">
     <a class="card-tile-link" href="{% url 'cards:card_detail' card.pk %}">
         <span class="card-art">

@@ -16,8 +16,11 @@ ACCOUNT_DELETED = "Your account, cards and reviews have been deleted."
 
 
 def admin_allowed(request):
-    """Only active superusers may use the Django admin (US28), not
-    every "staff" account, as Django allows by default."""
+    """Return True only for active superusers (US28).
+
+    Django lets any "staff" account use the admin by default; CardVault narrows
+    that to superusers.
+    """
     return request.user.is_active and request.user.is_superuser
 
 
@@ -43,11 +46,14 @@ def admin_login(request, extra_context=None):
 
 
 class SignupView(AllauthSignupView):
-    """allauth's registration page, closed for the rest of the session
-    to anyone who gives an age under 13, so they cannot simply go back
-    and enter a different date."""
+    """allauth's registration page, closed after an under-13 attempt.
+
+    It stays closed for the rest of the browser session, so nobody can simply
+    go back and enter a different date.
+    """
 
     def form_invalid(self, form):
+        """Close registration for the session after an under-13 attempt."""
         if getattr(form, "too_young", False):
             self.request.session[UNDER_AGE_SESSION_KEY] = True
             return redirect("account_signup")
@@ -61,11 +67,13 @@ class DeleteAccountView(LoginMessageMixin, FormErrorMixin, FormView):
     template_name = "accounts/delete_account.html"
 
     def get_form_kwargs(self):
+        """Give the form the user, so it can check their password."""
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
         return kwargs
 
     def get_context_data(self, **kwargs):
+        """Add how many entries and reviews will be deleted."""
         context = super().get_context_data(**kwargs)
         user = self.request.user
         context["entry_count"] = user.collection_entries.count()
@@ -73,6 +81,7 @@ class DeleteAccountView(LoginMessageMixin, FormErrorMixin, FormView):
         return context
 
     def form_valid(self, form):
+        """Log out, delete the account and everything in it, and say so."""
         user = self.request.user
         logout(self.request)
         user.delete()

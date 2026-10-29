@@ -30,6 +30,7 @@ class HomeView(TemplateView):
     template_name = "home.html"
 
     def get_context_data(self, **kwargs):
+        """Add the first four cards in the catalogue as featured cards."""
         context = super().get_context_data(**kwargs)
         cards = Card.objects.select_related("card_set")
         context["featured_cards"] = cards[:4]
@@ -70,6 +71,10 @@ class CardListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
+        """The cards matching the search, rarity and set in the address.
+
+        Values that are not a real rarity or set are ignored.
+        """
         cards = Card.objects.select_related("card_set")
         query = self.request.GET.get("q", "").strip()
         self.query = query[:MAX_QUERY_LENGTH]
@@ -88,6 +93,7 @@ class CardListView(ListView):
         return cards
 
     def get_context_data(self, **kwargs):
+        """Add the current choices, so the form and page links keep them."""
         context = super().get_context_data(**kwargs)
         chosen = {"q": self.query, "rarity": self.rarity, "set": self.set_id}
         chosen = {key: value for key, value in chosen.items() if value}
@@ -102,15 +108,17 @@ class CardListView(ListView):
 
 
 class CardDetailView(DetailView):
-    """One card, its reviews, and the add and review forms."""
+    """One card, its reviews, and the form to add it to My Cards."""
 
     template_name = "cards/card_detail.html"
     context_object_name = "card"
 
     def get_queryset(self):
+        """Fetch each card's set in the same query."""
         return Card.objects.select_related("card_set")
 
     def get_context_data(self, **kwargs):
+        """Add the reviews, average rating, and the user's entry and review."""
         context = super().get_context_data(**kwargs)
         reviews = self.object.reviews.select_related("user")
         summary = reviews.aggregate(average=Avg("rating"), count=Count("id"))
@@ -137,9 +145,11 @@ class ReviewCreate(LoginMessageMixin, FormErrorMixin, CreateView):
         return get_object_or_404(Card, pk=self.kwargs["card_pk"])
 
     def get(self, request, *args, **kwargs):
+        """Show the form, unless the user has already reviewed this card."""
         return self.edit_if_reviewed() or super().get(request)
 
     def post(self, request, *args, **kwargs):
+        """Save the review, unless the user has already reviewed this card."""
         return self.edit_if_reviewed() or super().post(request)
 
     def edit_if_reviewed(self):
@@ -153,11 +163,13 @@ class ReviewCreate(LoginMessageMixin, FormErrorMixin, CreateView):
         return redirect("cards:edit_review", pk=review.pk)
 
     def get_context_data(self, **kwargs):
+        """Add the card being reviewed."""
         context = super().get_context_data(**kwargs)
         context["card"] = self.card
         return context
 
     def form_valid(self, form):
+        """Save the review for this user and card, and thank them."""
         form.instance.user = self.request.user
         form.instance.card = self.card
         response = super().form_valid(form)
@@ -165,6 +177,7 @@ class ReviewCreate(LoginMessageMixin, FormErrorMixin, CreateView):
         return response
 
     def get_success_url(self):
+        """Back to the card's page."""
         return reverse("cards:card_detail", args=[self.card.pk])
 
 
@@ -172,9 +185,11 @@ class OwnReviewMixin(LoginMessageMixin):
     """Limit a view to the logged-in user's reviews; others get a 404."""
 
     def get_queryset(self):
+        """Only the logged-in user's own reviews."""
         return self.request.user.reviews.select_related("card")
 
     def get_success_url(self):
+        """Back to the reviewed card's page."""
         return reverse("cards:card_detail", args=[self.object.card_id])
 
 
@@ -185,11 +200,13 @@ class ReviewEdit(OwnReviewMixin, FormErrorMixin, UpdateView):
     template_name = "cards/review_form.html"
 
     def get_context_data(self, **kwargs):
+        """Add the card being reviewed."""
         context = super().get_context_data(**kwargs)
         context["card"] = self.object.card
         return context
 
     def form_valid(self, form):
+        """Save the change and confirm it."""
         response = super().form_valid(form)
         messages.success(self.request, REVIEW_UPDATED)
         return response
@@ -202,6 +219,7 @@ class ReviewDelete(OwnReviewMixin, DeleteView):
     context_object_name = "review"
 
     def form_valid(self, form):
+        """Delete the review and confirm it."""
         response = super().form_valid(form)
         messages.success(self.request, REVIEW_DELETED)
         return response

@@ -27,6 +27,7 @@ class ContactForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        """Keep the trap field out of autofill and the Tab order."""
         super().__init__(*args, **kwargs)
         trap = self.fields["website"].widget.attrs
         trap.update({"autocomplete": "off", "tabindex": "-1"})

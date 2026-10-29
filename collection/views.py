@@ -43,6 +43,7 @@ class MyCardsView(LoginMessageMixin, ListView):
     context_object_name = "entries"
 
     def get_queryset(self):
+        """The user's entries and ratings for the chosen tab, set and sort."""
         entries = self.request.user.collection_entries
         entries = entries.select_related("card", "card__card_set")
         # The user's own star rating for each card, if they have
@@ -68,6 +69,7 @@ class MyCardsView(LoginMessageMixin, ListView):
         return entries.order_by(*SORTS[self.sort][1])
 
     def get_context_data(self, **kwargs):
+        """Add the totals, the filter choices and the tab links."""
         context = super().get_context_data(**kwargs)
         user = self.request.user
         totals = self.totals(user)
@@ -83,8 +85,10 @@ class MyCardsView(LoginMessageMixin, ListView):
         return context
 
     def totals(self, user):
-        """US15: copies owned, different cards owned and cards wanted,
-        counted in one query. Wanted cards are not in the owned totals."""
+        """US15: copies owned, different cards owned and cards wanted.
+
+        Counted in one query. Wanted cards are not in the owned totals.
+        """
         owned = Q(status=OWNED)
         return user.collection_entries.aggregate(
             owned_total=Sum("quantity", filter=owned, default=0),
@@ -93,8 +97,7 @@ class MyCardsView(LoginMessageMixin, ListView):
         )
 
     def tab_links(self):
-        """The All, Owned and Wanted tabs, each keeping the chosen sort
-        and set, so switching tab does not undo them."""
+        """The All, Owned and Wanted tabs, keeping the chosen sort and set."""
         keep = {}
         if self.sort != DEFAULT_SORT:
             keep["sort"] = self.sort
@@ -114,9 +117,11 @@ class OwnEntryMixin(LoginMessageMixin):
     """Limit a view to the logged-in user's entries; others get a 404."""
 
     def get_queryset(self):
+        """Only the logged-in user's own entries."""
         return self.request.user.collection_entries.select_related("card")
 
     def get_success_url(self):
+        """Back to My Cards."""
         return reverse("collection:my_cards")
 
 
@@ -132,9 +137,11 @@ class EntryCreate(LoginMessageMixin, FormErrorMixin, CreateView):
         return get_object_or_404(Card, pk=self.kwargs["card_pk"])
 
     def get(self, request, *args, **kwargs):
+        """Show the form, unless the card is already on the user's list."""
         return self.edit_if_listed() or super().get(request)
 
     def post(self, request, *args, **kwargs):
+        """Save the entry, unless the card is already on the user's list."""
         return self.edit_if_listed() or super().post(request)
 
     def edit_if_listed(self):
@@ -147,11 +154,13 @@ class EntryCreate(LoginMessageMixin, FormErrorMixin, CreateView):
         return redirect("collection:edit_entry", pk=entry.pk)
 
     def get_context_data(self, **kwargs):
+        """Add the card being added."""
         context = super().get_context_data(**kwargs)
         context["card"] = self.card
         return context
 
     def form_valid(self, form):
+        """Save the entry for this user and card, and confirm it."""
         form.instance.user = self.request.user
         form.instance.card = self.card
         response = super().form_valid(form)
@@ -159,6 +168,7 @@ class EntryCreate(LoginMessageMixin, FormErrorMixin, CreateView):
         return response
 
     def get_success_url(self):
+        """Back to My Cards."""
         return reverse("collection:my_cards")
 
 
@@ -170,11 +180,13 @@ class EntryEdit(OwnEntryMixin, FormErrorMixin, UpdateView):
     context_object_name = "entry"
 
     def get_context_data(self, **kwargs):
+        """Add the entry's card."""
         context = super().get_context_data(**kwargs)
         context["card"] = self.object.card
         return context
 
     def form_valid(self, form):
+        """Save the change and confirm it."""
         response = super().form_valid(form)
         card = self.object.card.name
         messages.success(self.request, ENTRY_UPDATED.format(card=card))
@@ -182,17 +194,21 @@ class EntryEdit(OwnEntryMixin, FormErrorMixin, UpdateView):
 
 
 class EntryGotIt(OwnEntryMixin, FormErrorMixin, UpdateView):
-    """US17: move one of your Wanted cards to Owned, confirming how
-    many you got. Owned entries, and other users' entries, are 404."""
+    """US17: move one of your Wanted cards to Owned.
+
+    It asks how many you got. Owned entries, and other users' entries, are 404.
+    """
 
     form_class = GotItForm
     template_name = "collection/got_it.html"
     context_object_name = "entry"
 
     def get_queryset(self):
+        """Only the user's own Wanted entries."""
         return super().get_queryset().filter(status=WANTED)
 
     def form_valid(self, form):
+        """Mark the entry as owned with the new quantity, and confirm it."""
         form.instance.status = OWNED
         response = super().form_valid(form)
         card = self.object.card.name
@@ -200,6 +216,7 @@ class EntryGotIt(OwnEntryMixin, FormErrorMixin, UpdateView):
         return response
 
     def get_success_url(self):
+        """The Owned tab, where the card now appears."""
         return reverse("collection:my_cards") + "?status=owned"
 
 
@@ -210,6 +227,7 @@ class EntryDelete(OwnEntryMixin, DeleteView):
     context_object_name = "entry"
 
     def form_valid(self, form):
+        """Remove the entry and confirm it; the card stays in the catalogue."""
         card = self.object.card.name
         response = super().form_valid(form)
         messages.success(self.request, ENTRY_REMOVED.format(card=card))

@@ -19,6 +19,7 @@ class CardSet(models.Model):
         ordering = ["name"]
 
     def __str__(self):
+        """The set's name, for example "Base Set"."""
         return self.name
 
 
@@ -34,6 +35,8 @@ class Card(models.Model):
     """One card in the shared catalogue. The same rows for every user."""
 
     class Rarity(models.TextChoices):
+        """The four rarities printed on Base Set cards."""
+
         COMMON = "COMMON", "Common"
         UNCOMMON = "UNCOMMON", "Uncommon"
         RARE = "RARE", "Rare"
@@ -59,9 +62,11 @@ class Card(models.Model):
         ]
 
     def __str__(self):
+        """Name, set and number, for example "Charizard (Base Set #4)"."""
         return f"{self.name} ({self.card_set} #{self.number})"
 
     def get_absolute_url(self):
+        """The address of the card's own page."""
         return reverse("cards:card_detail", args=[self.pk])
 
     @property
@@ -71,6 +76,7 @@ class Card(models.Model):
 
     @property
     def is_holo(self):
+        """True for Rare Holo cards, which shimmer in the catalogue."""
         return self.rarity == self.Rarity.RARE_HOLO
 
 
@@ -107,6 +113,7 @@ class Review(models.Model):
         ]
 
     def __str__(self):
+        """Who rated which card, for example "ash rated Charizard 5/5"."""
         return f"{self.user} rated {self.card.name} {self.rating}/5"
 
     @property

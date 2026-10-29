@@ -21,9 +21,11 @@ LIMIT_SECONDS = 60 * 60
 
 
 def visitor_key(request):
-    """A cache key for the visitor's IP address, hashed so the address
-    itself is never stored. The address is found the same way as for
-    the log in limits (see ALLAUTH_TRUSTED_PROXY_COUNT in settings)."""
+    """A cache key for the visitor's IP address, hashed.
+
+    The address itself is never stored. It is found the same way as for the log
+    in limits (see ALLAUTH_TRUSTED_PROXY_COUNT in settings).
+    """
     address = get_adapter(request).get_client_ip(request)
     digest = hashlib.sha256(address.encode()).hexdigest()
     return f"contact-sent:{digest}"
@@ -36,12 +38,14 @@ class ContactView(FormErrorMixin, FormView):
     template_name = "contact/contact.html"
 
     def get_initial(self):
+        """Fill in the name with a logged-in user's username."""
         initial = super().get_initial()
         if self.request.user.is_authenticated:
             initial["name"] = self.request.user.username
         return initial
 
     def form_valid(self, form):
+        """Apply the hourly limit, save unless spam, and say thank you."""
         key = visitor_key(self.request)
         sent = cache.get(key, 0)
         if sent >= MESSAGE_LIMIT:
