@@ -288,23 +288,54 @@ connect to each other, and which parts everything else depends on.
 | [graphify-out/GRAPH_REPORT.md](./graphify-out/GRAPH_REPORT.md) | A plain-language report: the most connected nodes, surprising connections and questions worth asking. |
 | [graphify-out/graph.json](./graphify-out/graph.json) | The raw graph data. |
 
-First built on 12 October 2026 from 56 files (336 nodes, 578 links,
-19 clusters) and updated on 14 October 2026 after the front-end CRUD
-work: it now has 597 nodes, 1,120 links and 48 clusters. The most
-connected nodes are the README, the user stories, TESTING.md and the
-`Card`, `CollectionEntry`, `CardSet` and `Review` models, which
-matches the design: the CRUD stories are built on those tables. Links
-the report marks as "inferred" were reasoned by the AI rather than
-read directly from a file, so treat the graph as a guide, not a
-complete map. Screenshots are left out of the graph (see
-`.graphifyignore`), because they are test evidence rather than
-project structure.
+**How it grew**, refreshed at the end of each stage of the project:
 
-To refresh it after new work, run `/graphify . --update` in Claude
-Code. Only the three files above are committed; the cache stays local
-(see `.gitignore`).
+| Date | Stage | Nodes | Links | Clusters |
+|---|---|---|---|---|
+| 12 October 2026 | Sprint 1: models, accounts, planning docs | 336 | 578 | 19 |
+| 14 October 2026 | After the front-end CRUD | 597 | 1,120 | 48 |
+| 29 October 2026 | Sprints 2 and 3 complete: every story built | 1,052 | 1,614 | 99 |
 
-*Add a screenshot of the graph here.*
+<p>
+  <img src="./docs/images/screenshots/mind-map-2026-10-12.png" alt="The mind map on 12 October 2026: 336 nodes in 19 clusters" width="270">
+  <img src="./docs/images/screenshots/mind-map-2026-10-14.png" alt="The mind map on 14 October 2026: 597 nodes in 48 clusters" width="270">
+  <img src="./docs/images/screenshots/mind-map-2026-10-29.png" alt="The mind map on 29 October 2026: 1,052 nodes in 99 clusters" width="270">
+</p>
+
+The 29 October refresh read 86 changed files: the 47 code files by
+parsing them directly (free), and 39 documents and templates with AI.
+It added 582 nodes and removed 127 that no longer exist, such as the
+card price fields dropped in issue #48. Many of the 99 clusters are a
+single file, for example each `__init__.py` package marker and each
+package in `requirements.txt`; about 50 are real features.
+
+**How it was used.** The most connected nodes are the user stories
+and the `Card`, `CardSet`, `CollectionEntry` and `Review` models,
+which confirmed early on that everything rests on those four tables,
+so they were designed and tested first. The clusters line up with the
+features (accounts, the catalogue, My Cards, reviews, Contact, CI and
+security), and each test class sits in its feature's cluster, which
+made gaps in testing easy to spot. Its "surprising connections" were
+mostly right: for example, it found that the card page's My Cards
+panel shares data with `CollectionEntryForm` and `CollectionEntry`,
+which is exactly how adding a card from its page works.
+
+**Where it was wrong.** Links the report marks as "inferred" are the
+AI's reasoning, not read from a file. It linked the Log in template
+to `LoginForm` as "shares data", which is right in spirit, but the
+real connection runs through django-allauth's view, not the template.
+A few nodes from the 14 October reading of the templates (such as
+"Card list pagination") survived the merge as separate single-node
+clusters, though they describe parts of the pages that do still
+exist. The planning-stage ERD image still shows the `market_price`
+field removed later; the graph faithfully records the old picture.
+So the graph is a guide, not a complete or perfectly current map.
+
+Screenshots, icons and the font licence are left out of the graph
+(see `.graphifyignore`): they are evidence or brand assets, not
+project structure. To refresh it after new work, run
+`/graphify . --update` in Claude Code. Only the three files above are
+committed; the cache stays local (see `.gitignore`).
 
 ## Features
 
@@ -894,6 +925,7 @@ section credible to an assessor.
 | 2026-10-28 | Debugging | Ran Lighthouse on every public page with Claude. Google's PageSpeed service had run out of its shared daily allowance, so Claude installed Node and Lighthouse into the test folder (checksum-verified, nothing installed system-wide). The batch runs then failed twice with "command not found". Claude first blamed the background shell's environment, then traced the real cause: the script used a variable called `path`, which zsh ties to the command search path, so every run wiped it. Renaming the variable fixed it. Lighthouse asked for higher-resolution card images; Claude measured them (845 KB against 161 KB) and advised keeping the small ones, recording the 96 Best Practices score as a trade-off. WAVE flagged one contrast error, which Claude proved was the intro button being measured while still invisible. |
 | 2026-10-29 | Automated tests | Ran Lighthouse on My Cards with Claude, which needs a logged-in user. Claude's first script registered a throwaway account but failed to delete it afterwards (it looked for the delete form by an `action` attribute the form does not have), and the random password was lost with the browser, so the leftover account had to be deleted by hand in the Django admin, by me as the site owner. Claude fixed the script to save the password until the account was gone, use the real delete button, and prove the deletion by trying to log in again. My Cards then scored 100 in every category on mobile and desktop. |
 | 2026-10-29 | Code quality | Asked Claude to bring the code commenting up to the standard assessors look for. Claude audited every Python file with a script and found 99 modules, classes and functions without docstrings, then added PEP 257 docstrings, each describing what that particular override does rather than repeating the code. Its first pass put two docstrings between a decorator and its function, a syntax error flake8 caught at once, so it rolled back and fixed the script. A second check then found its own blank lines above class docstrings and some awkwardly wrapped lines, which it also fixed. Every template gained a `{# #}` header comment, checked not to reach the browser. |
+| 2026-10-29 | Planning (mind map) | Refreshed the knowledge graph with Claude for the end of the sprints (#38). Claude recovered the 12 and 14 October graphs from the git history to screenshot them, so the README shows how the map grew. To save tokens it left icons and the font licence out of the graph, and had two helpers read the 39 changed documents in parallel (134,463 tokens). Before committing it checked the three output files contain no local file paths, email addresses, secrets or admin usernames, and recorded where the graph's inferred links are wrong. |
 | | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
 | | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
 | | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |

@@ -1,3 +1,7 @@
 # Screenshots are test evidence for TESTING.md, not project structure,
 # so they are left out of the knowledge graph (mind map).
 docs/images/screenshots/
+# Icons, the emblem and the font licence are brand assets, not project
+# structure, so they are left out too (saves AI reading on each refresh).
+static/images/
+static/fonts/
