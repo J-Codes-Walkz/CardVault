@@ -400,6 +400,13 @@ class AdminLoginTests(TestCase):
         response = self.client.get(url)
         self.assertRedirects(response, reverse("admin:index"))
 
+    def test_safe_next_address_is_followed(self):
+        boss = User.objects.create_superuser("boss", password=STRONG_PASSWORD)
+        self.client.force_login(boss)
+        cards = reverse("admin:cards_card_changelist")
+        response = self.client.get(reverse("admin:login") + "?next=" + cards)
+        self.assertRedirects(response, cards)
+
 
 class AdminSiteTests(TestCase):
     """US28: the admin is CardVault's own, with the right models."""
@@ -458,6 +465,10 @@ class AdminSiteTests(TestCase):
         url = reverse("admin:cards_card_change", args=[self.card.pk])
         response = self.client.get(url)
         self.assertContains(response, 'src="https://images.pokemontcg.io/')
+
+    def test_card_without_a_picture_says_so(self):
+        url = reverse("admin:cards_card_change", args=[self.card.pk])
+        self.assertContains(self.client.get(url), "No picture link")
 
 
 class AdminLinkTests(TestCase):

@@ -164,6 +164,12 @@ class EntryCreateTests(TestCase):
     def setUp(self):
         self.client.force_login(self.ash)
 
+    def test_add_page_shows_the_form_for_the_card(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "collection/entry_form.html")
+        self.assertEqual(response.context["card"], self.card)
+
     def test_add_card_as_owned_with_quantity(self):
         data = {"status": OWNED, "quantity": 2, "notes": "Shadowless"}
         response = self.client.post(self.url, data)

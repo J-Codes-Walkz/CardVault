@@ -504,6 +504,8 @@ On top of the CRUD, My Cards helps with a growing collection:
   was considered and left out on purpose; see
   [POTENTIAL_UPSCALE.md](./docs/POTENTIAL_UPSCALE.md).
 
+![The Contact page, with Contact underlined in the header as the current page](./docs/images/screenshots/contact-page.png)
+
 ### Quality and security
 
 - **Responsive** (US22): mobile first, no sideways scrolling from
@@ -866,9 +868,35 @@ cd <your-repo>
   for static files and [Gunicorn](https://gunicorn.org/) as the
   application server, following
   [Heroku's Python support docs](https://devcenter.heroku.com/categories/python-support).
-- *(Add any tutorial, Stack Overflow answer, or snippet you lean on
-  directly, with a link, as you build &mdash; the checklist wants
-  externally used code credited specifically, not just frameworks.)*
+- The sticky-footer CSS (`html, body` at full height, with the main
+  content growing to push the footer down) came from Jamie's Code
+  Institute mentor; one selector in it was corrected from `.html,
+  body` to `html, body`.
+- Patterns followed from the official documentation rather than
+  copied snippets: Django's class-based views and `get_queryset()`
+  for limiting every page to the logged-in user's own records
+  ([Django docs](https://docs.djangoproject.com/en/5.2/topics/class-based-views/)),
+  django-allauth's rate limits and `ALLAUTH_TRUSTED_PROXY_COUNT`
+  ([allauth docs](https://docs.allauth.org/en/latest/account/rate_limits.html)),
+  and the CSS `:has()` selector and `prefers-reduced-motion`,
+  `prefers-contrast` and `prefers-color-scheme` media queries
+  ([MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/CSS)).
+- Colour contrast was calculated with the WCAG 2.2 formula for
+  relative luminance ([W3C](https://www.w3.org/TR/WCAG22/#dfn-contrast-ratio)).
+
+### Tools used for testing
+
+- [axe-core](https://github.com/dequelabs/axe-core),
+  [Lighthouse](https://developer.chrome.com/docs/lighthouse) and
+  [WAVE](https://wave.webaim.org/) for accessibility and performance;
+  the [W3C Nu HTML Checker](https://validator.w3.org/nu/) and
+  [Jigsaw CSS validator](https://jigsaw.w3.org/css-validator/).
+- [flake8](https://flake8.pycqa.org/),
+  [Bandit](https://bandit.readthedocs.io/),
+  [pip-audit](https://pypi.org/project/pip-audit/) and
+  [coverage.py](https://coverage.readthedocs.io/) for the Python code.
+- [graphify](https://github.com/Graphify-Labs/graphify) for the
+  project mind map.
 
 ### Content
 
@@ -906,11 +934,12 @@ cd <your-repo>
 
 AI (Claude, via Claude.ai for planning and Claude Code for building) was used throughout this project as a
 collaborator for planning, debugging, and reviewing &mdash; not as a
-replacement for understanding the code. Keep adding to this log as
-you build, covering all three areas the checklist asks about:
-**debugging**, **developing features**, and **automated tests**. A
-short line per session is enough; specificity is what makes this
-section credible to an assessor.
+replacement for understanding the code. The log below covers the
+three areas the checklist asks about, **debugging**, **developing
+features** and **automated tests**, plus planning, design, security
+and code quality. Each entry names the actual problem, what the AI
+suggested, and what was checked or changed as a result, including
+the AI's own mistakes.
 
 | Date | Used for | What happened |
 |---|---|---|
@@ -943,14 +972,4 @@ section credible to an assessor.
 | 2026-10-29 | Code quality | Asked Claude to bring the code commenting up to the standard assessors look for. Claude audited every Python file with a script and found 99 modules, classes and functions without docstrings, then added PEP 257 docstrings, each describing what that particular override does rather than repeating the code. Its first pass put two docstrings between a decorator and its function, a syntax error flake8 caught at once, so it rolled back and fixed the script. A second check then found its own blank lines above class docstrings and some awkwardly wrapped lines, which it also fixed. Every template gained a `{# #}` header comment, checked not to reach the browser. |
 | 2026-10-29 | Planning (mind map) | Refreshed the knowledge graph with Claude for the end of the sprints (#38). Claude recovered the 12 and 14 October graphs from the git history to screenshot them, so the README shows how the map grew. To save tokens it left icons and the font licence out of the graph, and had two helpers read the 39 changed documents in parallel (134,463 tokens). Before committing it checked the three output files contain no local file paths, email addresses, secrets or admin usernames, and recorded where the graph's inferred links are wrong. |
 | 2026-10-29 | Planning (mind map) | Asked Claude to check whether the mind map can be trusted, starting with the 19 links it guessed for the `Card` model. Claude wrote a script that reads every class and function in the code for a reference to `Card`, and compared the two: all 19 claimed links were correct, but the graph missed 2 real uses. Rather than stop there, it formed two explanations and tested them on the other models: graphify never links a reference inside a decorator (none of the four admin classes) or to a class in the same file (`Card` to `CardSet`), but always links one made through an import. Recorded in the mind map section. |
-| | Debugging | *(log each real debugging session: what broke, what you asked AI, what the actual fix was and why &mdash; "AI suggested X, but the real cause was Y" is a stronger log entry than "AI fixed it")* |
-| | Developing features | *(log which views/templates/models you built with AI assistance, and what you changed or rejected from its suggestions)* |
-| | Automated tests | *(log where AI helped write or review test cases, and how you verified the tests actually test the right thing)* |
-
-A good entry names the actual prompt or problem, not just "used AI
-for X" &mdash; for example: *"Asked Claude to review the ownership
-check in `CollectionEntryUpdateView`; it pointed out the original
-`get_queryset` didn't filter by `request.user`, which would have let
-any logged-in user edit any other user's entries by guessing the ID.
-Fixed by adding `.filter(user=self.request.user)` and added US05's
-two-user test to catch a regression."*
+| 2026-10-29 | Automated tests | Finished the testing write-up (#36) with Claude. It ran a coverage report for the first time (99% of the site's code; the rest is production-only settings) and found three small untested paths, which it covered with new tests. It added a table giving every user story's manual test and result, and re-checked three stories with fresh evidence: reviews on the live site (US21), loading the catalogue twice into a brand-new database with no duplicates (US27), and a full secret scan of all 60 commits (US26). A link check then exposed a mistake from its own earlier edit: adding the Load testing section had deleted the Validators heading, which it restored. |

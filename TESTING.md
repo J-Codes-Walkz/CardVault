@@ -9,7 +9,7 @@ CardVault is tested in these ways:
 |---|---|---|
 | [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 57 of 57 checks passed |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
-| [Automated testing](#automated-testing) | 221 Django tests, including two-user ownership and security tests | 221 passed |
+| [Automated testing](#automated-testing) | 224 Django tests, including two-user ownership and security tests; 99% code coverage | 224 passed |
 | [Continuous integration](#continuous-integration) | flake8, Django checks, the tests, Bandit and pip-audit on every push, on GitHub Actions | Passing since 19 October 2026 |
 | [Load testing](#load-testing) | 2,000 visits to the live site, 25 at a time | All succeeded; median 0.21 seconds |
 | [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only, Lighthouse and WAVE | No violations (one keyboard bug found and fixed); Lighthouse Accessibility 100 on every page |
@@ -41,6 +41,50 @@ The run added the first card in the catalogue, Alakazam.
 Jamie also registered, logged out and logged in by hand on the live
 site on 12 October 2026, with the expected message at each step
 ([issue #40](https://github.com/J-Codes-Walkz/CardVault/issues/40)).
+
+### Every user story at a glance
+
+Each story's own manual test, from
+[docs/USER_STORIES.md](./docs/USER_STORIES.md), and where the evidence
+is. Every one passes; the detail and screenshots are in the sections
+linked.
+
+| Story | Manual test | Result | Evidence |
+|---|---|---|---|
+| US01 Register an account | Register with a new username and strong password; then a taken username, a short password and mismatched passwords | Pass | [Accounts](#accounts-us01-to-us05) |
+| US02 Log in | Log in with valid, then invalid details | Pass | [Accounts](#accounts-us01-to-us05) |
+| US03 Log out | Log out, then try to open My Cards | Pass | [Accounts](#accounts-us01-to-us05) |
+| US04 See whether I am logged in | Compare the navigation logged out and in, desktop and phone | Pass | [Accounts](#accounts-us01-to-us05), [Responsive](#responsive-testing) |
+| US05 Keep my data private | Open My Cards logged out; open another user's entry | Pass | [Accounts](#accounts-us01-to-us05), [Security checks](#security-checks-us05) |
+| US06 Understand the site's purpose | Open the home page logged out and in | Pass | [Browsing cards](#browsing-cards-us06-to-us10) |
+| US07 Browse the catalogue | Open Browse cards and move between pages | Pass | [Browsing cards](#browsing-cards-us06-to-us10) |
+| US08 Search by name | Search "char", then a nonsense term | Pass | [Browsing cards](#browsing-cards-us06-to-us10) |
+| US09 Filter by set and rarity | Choose a set and rarity, then add a search | Pass | [Browsing cards](#browsing-cards-us06-to-us10) |
+| US10 View a card | View a card logged in and out | Pass | [Browsing cards](#browsing-cards-us06-to-us10) |
+| US11 Add a card | Add as Owned with quantity 2; add again; try quantity 0 | Pass | [My Cards CRUD](#my-cards-create-read-update-delete-us11-to-us14) |
+| US12 View my cards | Two users; switch between the All, Owned and Wanted tabs | Pass | [My Cards CRUD](#my-cards-create-read-update-delete-us11-to-us14) |
+| US13 Edit an entry | Change quantity and status; try quantity 0 | Pass | [My Cards CRUD](#my-cards-create-read-update-delete-us11-to-us14) |
+| US14 Remove an entry | Remove and confirm; remove and cancel | Pass | [My Cards CRUD](#my-cards-create-read-update-delete-us11-to-us14) |
+| US15 Collection summary | Known owned quantities and one wanted card | Pass | [Summary, sorting and Got it!](#my-cards-summary-sorting-and-got-it-us15-to-us17) |
+| US16 Sort and filter my cards | Sort by name; filter by set; switch tabs | Pass | [Summary, sorting and Got it!](#my-cards-summary-sorting-and-got-it-us15-to-us17) |
+| US17 Got it! | Press Got it! on a wanted card and confirm the quantity | Pass | [Summary, sorting and Got it!](#my-cards-summary-sorting-and-got-it-us15-to-us17) |
+| US18 Submit a review | Review a card; try to review it again | Pass | [Reviews](#reviews-comment-and-star-rating-us18-to-us21) |
+| US19 Edit my review | Edit and save | Pass | [Reviews](#reviews-comment-and-star-rating-us18-to-us21) |
+| US20 Delete my review | Delete and confirm; delete and cancel | Pass | [Reviews](#reviews-comment-and-star-rating-us18-to-us21) |
+| US21 Read reviews | A card with reviews, then one with none. Checked again on the live site on 29 October 2026: Alakazam and Charizard show their reviews and average; Diglett shows "No reviews yet. Be the first to review this card." | Pass | [Reviews](#reviews-comment-and-star-rating-us18-to-us21) |
+| US22 Any device | Every page at 320 to 1440px, and on a real phone | Pass | [Responsive](#responsive-testing), [Real phone](#on-a-real-phone-us22), [Lighthouse](#lighthouse) |
+| US23 Read and use the site easily | Keyboard only; Lighthouse and WAVE on each page | Pass | [Accessibility](#accessibility-testing), [Lighthouse](#lighthouse), [WAVE](#wave) |
+| US24 Feedback on every action | Register, log in, log out, create, edit, delete | Pass: every row in the tables above records the message shown, with "Success:" or "Error:" as well as colour | [Notification messages](./docs/NOTIFICATION_MESSAGES.md) |
+| US25 Helpful error pages | A made-up address with `DEBUG` off | Pass | [Error pages](#error-pages-us25) |
+| US26 Secrets and debug safe | Search the whole history for secrets; a made-up address on the live site | Pass | [Security testing](#security-testing), [Error pages](#error-pages-us25) |
+| US27 Populate the catalogue | A brand-new database: migrate, then load the fixtures twice. Run on 29 October 2026: 0 cards before; 2 sets and 105 cards (102 in the Base Set, plus the 3 tester cards) after the first load; still exactly 105 after the second, so no duplicates | Pass | [Database schema](./docs/DATABASE_SCHEMA.md#populating-the-catalogue) |
+| US28 Manage data in the admin | Open the admin as a superuser and as an ordinary user | Pass | [Django admin](#django-admin-us28) |
+| US29 Age check | A date of birth 10 years ago; then an adult date | Pass | [Privacy, safety and accessibility](#privacy-safety-and-accessibility-us29-to-us32) |
+| US30 Delete my account | Wrong password, right password, then log in again | Pass | [Privacy, safety and accessibility](#privacy-safety-and-accessibility-us29-to-us32) |
+| US31 Data and cookies | Open Privacy and cookies; check the stored cookies | Pass | [Privacy, safety and accessibility](#privacy-safety-and-accessibility-us29-to-us32) |
+| US32 Low vision, hearing, keyboard | 200% zoom, high contrast, keyboard only | Pass | [Accessibility](#accessibility-testing) |
+| US33 Home link | Press Home from a card page; open the Menu at tablet width | Pass | [Navigation and contact](#navigation-and-contact-us33-us34) |
+| US34 Contact | A bad email address, then a correct one | Pass | [Navigation and contact](#navigation-and-contact-us33-us34) |
 
 ### Accounts (US01 to US05)
 
@@ -248,9 +292,9 @@ Run with:
 python manage.py test
 ```
 
-221 tests, all passing on 28 October 2026. Jamie ran the suite in his
-own terminal on 26 October 2026, before US15 to US17 and US28 added
-30 more:
+224 tests, all passing on 29 October 2026. Jamie ran the suite in his
+own terminal on 26 October 2026, before US15 to US17, US28 and the
+coverage gaps added 33 more:
 
 ![python manage.py test: Ran 191 tests, OK](./docs/images/screenshots/tests-passing.png)
 
@@ -261,9 +305,9 @@ on Heroku, which does not exist on a development machine.
 
 | File | Tests | What they check |
 |---|---|---|
-| `accounts/tests.py` | 65 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (a third wrong password is an ordinary error, the fourth is blocked, even a correct one while locked; the lock follows the username across addresses; one address cannot guess across many usernames; other visitors can still log in; a faked first `X-Forwarded-For` entry does not help), the eleventh registration in an hour gets the 429 page, expired cache rows are deleted, the 10-second query limit, and the admin log in going through django-allauth (superusers in; ordinary users and staff who are not superusers refused; unsafe `next` addresses ignored), the admin itself (titled for CardVault, every model listed and no Email addresses, cards searchable by set, a wrong card name corrected through the admin, a picture preview), the Admin header link (superusers only); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie, and an email address refused as a username, the privacy page's browser-storage section, and `/favicon.ico` |
+| `accounts/tests.py` | 67 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (a third wrong password is an ordinary error, the fourth is blocked, even a correct one while locked; the lock follows the username across addresses; one address cannot guess across many usernames; other visitors can still log in; a faked first `X-Forwarded-For` entry does not help), the eleventh registration in an hour gets the 429 page, expired cache rows are deleted, the 10-second query limit, and the admin log in going through django-allauth (superusers in; ordinary users and staff who are not superusers refused; unsafe `next` addresses ignored and safe ones followed), the admin itself (titled for CardVault, every model listed and no Email addresses, cards searchable by set, a wrong card name corrected through the admin, a picture preview, and "No picture link" without one), the Admin header link (superusers only); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie, and an email address refused as a username, the privacy page's browser-storage section, and `/favicon.ico` |
 | `cards/tests.py` | 69 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404; search across name, set and rarity in any order ("holo rare", "rare holo", "holos"; "common" not matching Uncommon), the Rarity and Set filters alone and combined, unknown filter values ignored, filters kept in page links; Poké Ball ratings (full, empty, rounded averages, hidden from screen readers), the five-ball picker on the review form, the 1999 rarity symbols and which cards shimmer, and searches cut to 100 characters and 5 words |
-| `collection/tests.py` | 55 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged; My Cards shows my own rating (not other people's) or a Rate it link, the notes preview, and a fixed number of database queries however long the list; the collection totals (owned copies, different cards, wanted not counted, unaffected by tab or filters, hidden when empty), sorting (newest, oldest, name, set and number; unknown sorts ignored), the set filter (only my sets offered; unknown values ignored; an empty set says so), choices kept in the tabs, and Got it! (button only on wanted entries, quantity filled in, moves to owned keeping notes, quantity below 1 refused, owned and other users' entries 404, logged out sent to log in) |
+| `collection/tests.py` | 56 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (the form opens for the card; owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged; My Cards shows my own rating (not other people's) or a Rate it link, the notes preview, and a fixed number of database queries however long the list; the collection totals (owned copies, different cards, wanted not counted, unaffected by tab or filters, hidden when empty), sorting (newest, oldest, name, set and number; unknown sorts ignored), the set filter (only my sets offered; unknown values ignored; an empty set says so), choices kept in the tabs, and Got it! (button only on wanted entries, quantity filled in, moves to owned keeping notes, quantity below 1 refused, owned and other users' entries 404, logged out sent to log in) |
 | `contact/tests.py` | 20 | The Contact page for anyone, every field required, a bad email address and a message over 2,000 characters refused, a valid message saved with the thank you message, the username filled in when logged in, the bot trap (thanked but not saved), the 5-an-hour limit and that it is per visitor, the IP address hashed and taken from the address Heroku adds, the admin (message read-only, only "handled" editable, no adding messages), Home and Contact links on every page with `aria-current="page"` on the current one, and the Privacy page's Contact section |
 | `cardvault/tests.py` | 12 | The error pages (US25): an unknown address and an unknown card show the 404 page, which links home, offers a card search, keeps the logged-in header and shows no technical detail; an ordinary user opening the admin gets the 403 page; a form sent without a valid CSRF token gets the "This form has expired" page; an unknown host gets the 400 page; a forced crash gets the 500 page with no technical detail, is logged with its traceback, and the 500 page uses no template tags |
 
@@ -303,13 +347,32 @@ possible problems, none high severity. Each was checked:
 | SQL built from a string | `clear_expired_cache` | Table name from settings, time passed as a parameter: `# nosec` |
 | `urlopen` and `subprocess` (3) | The one-off scripts in `scripts/` | A fixed `https` address, and the GitHub CLI run with no shell: `# nosec` |
 
-For a coverage report:
+### Coverage
+
+Run on 29 October 2026 with [coverage.py](https://coverage.readthedocs.io/)
+7.17 (installed for development only, not in `requirements.txt`):
 
 ```bash
 pip install coverage
-coverage run --source='.' manage.py test
-coverage report -m
+coverage run --source=accounts,cards,collection,contact,cardvault manage.py test
+coverage report -m --omit='*/migrations/*,*/tests.py,cardvault/asgi.py,cardvault/wsgi.py'
 ```
+
+**775 of 783 lines of the site's code run during the tests (99%).**
+Every app, model, form, view, admin class, template tag, middleware
+and management command is at 100%. The only lines not run are the 8
+production-only security settings at the end of
+`cardvault/settings.py` (HTTPS redirect, secure cookies, HSTS), which
+switch on only when `DEBUG` is off outside the test runner; they are
+checked on the live site instead (see
+[Security testing](#security-testing) and
+[Deployment settings](#deployment-settings)).
+
+The first coverage run found three small gaps, each closed with a
+test: following a safe `next` address after the admin log in, the
+admin's "No picture link" message for a card without an image, and
+simply opening the Add to My Cards page (every other test submitted
+the form).
 
 ## Accessibility testing
 
@@ -333,8 +396,12 @@ same accessibility engine Lighthouse uses; it was run with every WCAG
 
 ![The yellow Skip to main content link shown after pressing Tab](./docs/images/screenshots/skip-link.png)
 
-**Still to do by hand:** a pass with VoiceOver (the Mac's built-in
-screen reader) (US32).
+**Still to do by hand:** a recorded pass with VoiceOver, the Mac's
+built-in screen reader (US32). Jamie tried on 29 October 2026, but
+VoiceOver did not start in the recording. The page structure it
+relies on (landmarks, a logical heading order, labelled fields, alt
+text on every card picture) passes axe, Lighthouse (Accessibility 100
+on every page) and WAVE.
 
 ### Lighthouse
 
@@ -487,6 +554,7 @@ what each protection does is explained in [SECURITY.md](./SECURITY.md).
 | Check | How | Result |
 |---|---|---|
 | Secrets in the repository | Every commit in the git history searched for the real `SECRET_KEY`, GitHub and AWS tokens, private keys and database URLs with passwords | None found (only the placeholder URL in `.env.example`) |
+| Final secret scan (29 October 2026) | All 60 commits' full history searched for the real local `SECRET_KEY`, GitHub, AWS, Google, Heroku and Slack tokens, private keys and database addresses with passwords, and for any `.env` file ever committed | None found. Two database addresses match, both deliberate: the `YOUR_USER:YOUR_PASSWORD` placeholder in `.env.example` and the throwaway `cardvault:cardvault` database that exists only during a CI run |
 | Secret scanning | GitHub secret scanning with push protection | On; 0 alerts |
 | Dependencies | `pip-audit -r requirements.txt` and Dependabot alerts | No known vulnerabilities; 0 alerts |
 | Code scanning | GitHub CodeQL on the Python and JavaScript | 0 results |
@@ -527,6 +595,7 @@ site kept answering in 0.16 seconds), so it was stopped, and run 3
 confirmed the earlier result. The site's limit was not reached; 50 at
 a time is the test computer's limit.
 
+## Validators
 
 ### HTML: W3C Nu validator
 
@@ -606,12 +675,6 @@ There is no commented-out code and no leftover TODO in the project.
 
 `python manage.py check --deploy` with production settings: no
 issues.
-
-### Still to do
-
-Lighthouse (performance, accessibility, best practices, SEO) on
-each main page, mobile and desktop, is still to be run and recorded
-(US22, US23).
 
 ## Bugs
 
