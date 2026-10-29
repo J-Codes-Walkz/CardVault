@@ -312,25 +312,35 @@ visitor, so the home page includes the welcome intro.
 | Contact | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
 | Privacy and cookies | 99 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
 | Accessibility | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| My Cards, logged in, with 4 entries (29 October 2026) | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+
+My Cards needs a logged-in user, so it was run on 29 October 2026
+with a throwaway account registered on the live site, given four
+cards, and deleted afterwards (logging in as it then fails, as
+expected). Lighthouse was pointed at that logged-in browser, and its
+report finished on `/cards/mine/`, not the Log in page.
 
 Accessibility and SEO score 100 on every page, mobile and desktop. No
 page moves while it loads (layout shift 0 everywhere).
 
 <p>
+  <img src="./docs/images/screenshots/lighthouse-my-cards-mobile.png" alt="Lighthouse, My Cards, mobile: 100, 100, 100, 100" width="420">
   <img src="./docs/images/screenshots/lighthouse-home-mobile.png" alt="Lighthouse, home page, mobile: 97, 100, 96, 100" width="420">
   <img src="./docs/images/screenshots/lighthouse-home-desktop.png" alt="Lighthouse, home page, desktop: 98, 100, 100, 100" width="420">
 </p>
 
-**Jamie's own run in Chrome DevTools** (29 October 2026, home page,
-mobile) scored Accessibility 100, Best Practices 96 and SEO 100, the
-same as above. Performance could not be scored: every timing showed
+**Jamie's own runs in Chrome DevTools** (29 October 2026, home page)
+scored Accessibility 100, Best Practices 96 to 100 and SEO 100, in
+line with the results above. Performance could not be scored: every timing showed
 "Something went wrong with recording the trace (NO_NAVSTART)", an
 error in Lighthouse's recording, not in the page. The report's
 treemap showed why: three-quarters of the JavaScript on the page came
 from a Chrome extension, not CardVault (whose own scripts total about
 2.3 KB), and DevTools' device toolbar was switched on at the same
-time. Lighthouse should be run in an Incognito window, where
-extensions are off, with the device toolbar closed.
+time. A second run in an Incognito window, with no extension, gave
+the same recording error, so Performance figures come from the
+Lighthouse command-line runs above, which recorded normally in the
+same version of Chrome.
 
 **Best Practices 96 on three mobile pages: a deliberate trade-off.**
 The only point lost is "Serves images with low resolution" on the
