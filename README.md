@@ -170,6 +170,116 @@ user model, and owned/wanted as two tables instead of one), and why
 `CardSet` was cut and then brought back, is explained in
 [Why simplify](./docs/DATABASE_SCHEMA.md#why-simplify).
 
+## Architecture
+
+How CardVault fits together, in three views: the whole system, how
+the Django code is organised, and one request from start to finish.
+The [Security architecture](#security-architecture) section below
+shows the protections a request passes through, and the
+[database design](#database-design) above shows the tables.
+
+### The whole system
+
+```mermaid
+flowchart LR
+    subgraph Visitor
+        B[Browser]
+    end
+    subgraph Heroku["Heroku, EU region"]
+        R[Router: HTTPS] --> G["gunicorn: 2 workers x 4 threads"]
+        G --> D["Django app, with Whitenoise serving CSS, JavaScript, fonts and icons"]
+        D --> P[("Heroku Postgres: data, sessions, rate limit cache; daily backups")]
+    end
+    I["images.pokemontcg.io: card pictures"]
+    B --> R
+    B -. card pictures .-> I
+    subgraph Delivery["From code to the live site"]
+        Dev[Code on main] --> GH[GitHub]
+        GH --> CI["GitHub Actions CI: lint and test, security scans"]
+        CI -->|only when both jobs pass| H[Heroku build]
+        H --> Rel["Release: migrate, create the cache table, clear expired cache rows"]
+    end
+    Rel --> D
+```
+
+The live site never calls the Pokémon TCG API: the card data was
+fetched once into a fixture. Only the card pictures come from the
+API's image server, straight to the visitor's browser.
+
+### How the code is organised
+
+One Django project, `cardvault`, and four apps. Each arrow means
+"uses code from".
+
+```mermaid
+flowchart TB
+    subgraph project["cardvault (project)"]
+        S["settings.py: database, rate limits, logging, security"]
+        U["urls.py: every address, and the admin set-up"]
+        M["middleware.py: Content Security Policy and Permissions Policy"]
+    end
+    subgraph accounts["accounts"]
+        AF["Register with age check, Log in, Delete my account"]
+        AM["Shared mixins: log in required, form error message"]
+    end
+    subgraph cards["cards"]
+        CM[("CardSet, Card, Review")]
+        CV["Home, Browse cards, card page, reviews, Poké Ball tags"]
+    end
+    subgraph collection["collection"]
+        EM[("CollectionEntry")]
+        EV["My Cards: totals, sort, filter, add, edit, Got it!, remove"]
+    end
+    subgraph contact["contact"]
+        KM[("ContactMessage")]
+        KV["Contact page, bot trap, hourly limit"]
+    end
+    AL["django-allauth: log in, log out, rate limits"]
+    U --> accounts & cards & collection & contact
+    accounts --> AL
+    CV -->|log in required| AM
+    EV -->|log in required| AM
+    KV -->|form errors| AM
+    KV -->|visitor's IP address| AL
+    CV -->|Add to My Cards form| EV
+    EM -->|each entry is one card| CM
+    EV -->|cards and my ratings| CM
+```
+
+| App | Responsible for | Main files |
+|---|---|---|
+| `cardvault` | Settings, URLs, security headers, error pages, logging | `settings.py`, `urls.py`, `middleware.py`, `templates/` |
+| `accounts` | Registration with the age check, log in through django-allauth, deleting an account, the admin log in, the cache clean-up command | `forms.py`, `views.py`, `adapter.py`, `mixins.py` |
+| `cards` | The catalogue, the card page, reviews and the Poké Ball rating | `models.py`, `views.py`, `templatetags/card_extras.py` |
+| `collection` | My Cards: owned and wanted cards, totals, sorting, Got it! | `models.py`, `views.py`, `forms.py` |
+| `contact` | The Contact page and its spam protection | `models.py`, `views.py`, `forms.py` |
+
+### One request: adding a card to My Cards
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant H as Heroku router and gunicorn
+    participant MW as Django middleware
+    participant V as EntryCreate view
+    participant DB as Postgres
+    B->>H: POST /cards/mine/add/7/ (status, quantity, notes, CSRF token)
+    H->>MW: request, with the visitor's real IP address added
+    MW->>MW: HTTPS, session, CSRF check, who is logged in
+    MW->>V: request for card 7
+    V->>V: logged in? if not, go to Log in with a message
+    V->>DB: is card 7 already on this user's list?
+    alt already listed
+        V-->>B: redirect to that entry's edit page, with an error message
+    else form has errors, such as a quantity of 0
+        V-->>B: the form again, with "Please correct the errors below and try again."
+    else form is valid
+        V->>DB: INSERT the entry (the database refuses a duplicate or a quantity below 1)
+        V-->>MW: redirect to My Cards, with "Charizard was added to your cards."
+        MW-->>B: response, with the Content Security Policy headers added
+    end
+```
+
 ## Security architecture
 
 CardVault is built in layers, so that if one protection fails another
@@ -622,103 +732,71 @@ so the UI text stays consistent across views as it's built.
 
 ## Agile methodology
 
-This project is tracked with a public **GitHub Projects** board and
-GitHub Issues, one issue per user story.
+CardVault was planned and tracked on a public **GitHub Projects**
+board, with one GitHub issue per user story, development task and bug.
 
 **Project board:
 [github.com/users/J-Codes-Walkz/projects/5](https://github.com/users/J-Codes-Walkz/projects/5)**
-&mdash; four columns (`Backlog`, `To do`, `In progress`, `Done`), with
-every user story and development task as an
-[issue](https://github.com/J-Codes-Walkz/CardVault/issues), labelled by
-MoSCoW priority and epic, and grouped into
-[milestones](https://github.com/J-Codes-Walkz/CardVault/milestones):
-three sprints, plus a final "Day of Submission Check List" milestone
-for the last checks before submitting.
 
 ![The project board on 26 October 2026: To do, In progress and Done](./docs/images/screenshots/project-board.png)
 
-1. **Create the board.** On the repository, go to the Projects tab
-   and create a new board. Set its visibility to **public** (Settings
-   on the board &rarr; Visibility) &mdash; the checklist specifically
-   asks for this.
-2. **Give it at least three columns.** `Backlog`, `In progress` and
-   `Done` is the minimum; `To do` as a fourth (between Backlog and In
-   progress) makes sprint planning easier.
-3. **Create one issue per user story.** Each issue title starts with
-   the story ID, e.g. `US01: Register an account`, with the
-   acceptance criteria and tasks from `docs/USER_STORIES.md` pasted
-   into the issue body as a checklist. **[docs/github-issues.csv](./docs/github-issues.csv)**
-   has every story pre-formatted (title, epic, priority, body), and
-   **[scripts/create_github_issues.py](./scripts/create_github_issues.py)**
-   creates them all with the GitHub CLI instead of typing 28 issues
-   by hand. Create the labels it expects first, preview with
-   `--dry-run`, then run it for real:
+**How the board was set up**
 
-   ```bash
-   gh auth login        # once, if you haven't already
+- **Four columns:** `Backlog` (planned for a later sprint), `To do`
+  (in the current sprint), `In progress` and `Done` (built, and its
+  manual test passed). Cards moved across as the work did.
+- **71 issues:** 34 user stories, 21 development tasks and 14 bugs,
+  plus Jamie's own testing note (#40) and the submission checklist
+  (#70). Each story's issue title starts with its ID (for example
+  `US01: Register an account`) and holds its acceptance criteria and
+  tasks as a checklist, ticked as they were done.
+- **Labels** show the MoSCoW priority (`priority:must`, `should`,
+  `could`) and the epic (`epic:accounts-and-authentication` and six
+  more), so the board can be grouped or filtered by either.
+- **Milestones** group the issues into the three sprints, plus a final
+  "Day of Submission Check List" milestone for the last checks.
 
-   # Create the labels the script applies (one-off, per repo):
-   for lbl in priority:must priority:should priority:could \
-              epic:accounts-and-authentication epic:browsing-cards \
-              epic:my-cards-owned-and-wanted \
-              epic:card-reviews epic:quality-security-and-content; do
-     gh label create "$lbl" --color "ededed" 2>/dev/null || true
-   done
+**How the issues were created.** The first 28 stories were written in
+[docs/USER_STORIES.md](./docs/USER_STORIES.md), exported to
+[docs/github-issues.csv](./docs/github-issues.csv) and created in one
+go on 12 October 2026 by
+[scripts/create_github_issues.py](./scripts/create_github_issues.py),
+using the GitHub CLI (it has a `--dry-run` preview). New stories were
+added as the project grew: US29 to US32 (age check, delete my
+account, privacy, accessibility) on 15 October, and US33 and US34
+(Home link and Contact page) on 16 October, each in a new epic.
 
-   python scripts/create_github_issues.py --dry-run   # preview, creates nothing
-   python scripts/create_github_issues.py              # actually create all 28
-   ```
-
-   Add `--only US01 US02` to create just specific stories.
-
-   **Done on 12 October 2026:** all 28 stories now exist as issues
-   #1 to #28 (issue #1 is US01, and so on), followed by eight
-   development-task issues, #29 to #36, each naming the stories it
-   supports. Running the script again would create duplicates. The
-   issues were added to the board with the GitHub CLI
-   (`gh project item-add`).
-
-   **Added on 15 October 2026:** four more stories, US29 to US32
-   (age check, delete my account, privacy and cookies, accessibility),
-   in a sixth epic, "Privacy, safety and accessibility". They are
-   issues #52 to #55, so from here on the issue number and the story
-   number differ; each issue title still starts with its story ID.
-
-   **Added on 16 October 2026:** US33 (a Home link) and US34 (a
-   Contact page), in a seventh epic, "Navigation and contact", as
-   issues #64 and #65.
-4. **Move cards as you work**: `Backlog` &rarr; `To do` when you
-   start a sprint/session, `In progress` while coding, `Done` once
-   its manual test passes. The `priority:*` and `epic:*` labels from
-   step 3 make the MoSCoW breakdown visible directly on the board,
-   not just in the docs &mdash; group or filter the board by label.
-5. **Link this README** to the board once it exists, and update the
-   "GitHub Projects board" link near the top of
-   `docs/USER_STORIES.md`.
+**Bugs as issues.** Every bug found, by testing, by the assessor's
+masterclass feedback or by Jamie's own use of the site, was logged as
+an issue labelled `bug`, fixed, and closed by the commit that fixed
+it; [TESTING.md](./TESTING.md#bugs) lists all of them.
 
 ### Sprints
 
 Three sprints, tracked as GitHub milestones, ending before the
 submission deadline of Monday 2 November 2026, 12:00 midday:
 
-| Sprint | Due | Goal |
-|---|---|---|
-| 1: Foundations | Wed 14 Oct | Project scaffold, early Heroku deploy, register / log in / log out on the live site, data models, Base Set fixture |
-| 2: Core features | Fri 23 Oct | Browse the catalogue, My Cards CRUD, brand and favicon |
-| 3: Reviews, polish and testing | Fri 30 Oct | Reviews, should/could-haves, accessibility, validation, testing write-up |
+| Sprint | Due | Goal | Outcome |
+|---|---|---|---|
+| 1: Foundations | Wed 14 Oct | Project scaffold, early Heroku deploy, register / log in / log out on the live site, data models, Base Set fixture | All built on time and live on 14 October. The milestone closed on 26 October, when the last hand-taken screenshots (#37) were added |
+| 2: Core features | Fri 23 Oct | Browse the catalogue, My Cards CRUD, brand and favicon | 39 issues closed, including the security hardening, the Home link and Contact page, and CI, added along the way. US15 to US17 (My Cards totals, sorting, Got it!) were moved into Sprint 3 |
+| 3: Reviews, polish and testing | Fri 30 Oct | Reviews, should/could-haves, accessibility, validation, testing write-up | All 17 issues closed on 29 October, a day early |
 
 Work runs roughly in epic order, since later epics depend on earlier ones
 (you need accounts before My Cards CRUD means anything, and cards
 in the catalogue before reviews mean anything):
 
 1. Accounts and authentication (US01&ndash;US05)
-2. Browsing cards (US06&ndash;US10) &mdash; needs the catalogue
-   seeded first (US27)
+2. Browsing cards (US06&ndash;US10), after seeding the catalogue
+   (US27)
 3. My Cards (US11&ndash;US17)
 4. Reviews (US18&ndash;US21)
-5. Quality, security and content polish (US22&ndash;US28) &mdash;
-   some of this (US24, US26) is really ongoing throughout, not a
-   final step; treat it as a checklist you run against every PR.
+5. Quality, security and content (US22&ndash;US28): partly ongoing
+   throughout (feedback messages and keeping secrets safe were
+   checked on every change, and CI checks every push since 19
+   October), partly finished at the end (Lighthouse, the admin)
+6. Privacy, safety and accessibility (US29&ndash;US32), and
+   navigation and contact (US33, US34), added mid-project
 
 ## Testing
 
@@ -973,3 +1051,4 @@ the AI's own mistakes.
 | 2026-10-29 | Planning (mind map) | Refreshed the knowledge graph with Claude for the end of the sprints (#38). Claude recovered the 12 and 14 October graphs from the git history to screenshot them, so the README shows how the map grew. To save tokens it left icons and the font licence out of the graph, and had two helpers read the 39 changed documents in parallel (134,463 tokens). Before committing it checked the three output files contain no local file paths, email addresses, secrets or admin usernames, and recorded where the graph's inferred links are wrong. |
 | 2026-10-29 | Planning (mind map) | Asked Claude to check whether the mind map can be trusted, starting with the 19 links it guessed for the `Card` model. Claude wrote a script that reads every class and function in the code for a reference to `Card`, and compared the two: all 19 claimed links were correct, but the graph missed 2 real uses. Rather than stop there, it formed two explanations and tested them on the other models: graphify never links a reference inside a decorator (none of the four admin classes) or to a class in the same file (`Card` to `CardSet`), but always links one made through an import. Recorded in the mind map section. |
 | 2026-10-29 | Automated tests | Finished the testing write-up (#36) with Claude. It ran a coverage report for the first time (99% of the site's code; the rest is production-only settings) and found three small untested paths, which it covered with new tests. It added a table giving every user story's manual test and result, and re-checked three stories with fresh evidence: reviews on the live site (US21), loading the catalogue twice into a brand-new database with no duplicates (US27), and a full secret scan of all 60 commits (US26). A link check then exposed a mistake from its own earlier edit: adding the Load testing section had deleted the Validators heading, which it restored. |
+| 2026-10-29 | Documentation | Asked Claude for an architecture diagram and a tidy of the Agile section for the submission checklist (#70). Claude first read which apps actually import from which, then drew three Mermaid diagrams (the whole system, how the code is organised, and one request from start to finish) and rendered all five diagrams in the README in Chrome with the same Mermaid library GitHub uses, to prove they draw. It rewrote the Agile section from setup instructions into an account of what was done, with the real issue and milestone counts from GitHub; checking those against GitHub caught one error before it was committed (the error pages were in Sprint 3, not Sprint 2). |
