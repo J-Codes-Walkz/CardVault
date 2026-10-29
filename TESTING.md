@@ -160,6 +160,29 @@ logged out and logged in.
 | Search Cards for `charizard`, open it | The card, with a working picture preview | Pass | [admin-card-edit](./docs/images/screenshots/admin-card-edit.png) |
 | Open Contact messages | Messages with a Handled tick box and no Add button | Pass | [admin-contact](./docs/images/screenshots/admin-contact.png) |
 | Log in as an ordinary user and open `/admin/` | The 403 page, and no Admin link in the header | Pass | |
+| On the live site, Jamie's superuser opens Users (29 October 2026) | Every account listed, with filters for staff and superuser status; two friends' test accounts among them | Pass | [admin-users-live](./docs/images/screenshots/admin-users-live.png) |
+| On the live site, Jamie deletes the leftover test account `lh-check-fad1d0` (29 October 2026) | A confirmation page listing exactly what goes with it (the user and its 4 My Cards entries) before anything is deleted | Pass | [admin-delete-test-account-live](./docs/images/screenshots/admin-delete-test-account-live.png) |
+
+**Before and after US28, on the live site:** on 26 October the admin
+was still Django's default, titled "Django administration", with an
+always-empty Email addresses section. After US28 it is "CardVault
+administration" and the Email addresses section is gone.
+
+<p>
+  <img src="./docs/images/screenshots/admin-before-us28-live.png" alt="The live admin on 26 October 2026, before US28" width="420">
+  <img src="./docs/images/screenshots/admin-users-live.png" alt="The live admin's Users list on 29 October 2026, after US28" width="420">
+</p>
+
+Superuser usernames, Jamie's email address and the friends'
+usernames are covered over in these screenshots: the repository is
+public, and keeping the superuser's name out of view is part of the
+[security design](./README.md#running-the-site-the-django-admin).
+
+### User testing by others
+
+On 29 October 2026 two of Jamie's friends registered their own
+accounts on the live site and used it without help. Their accounts
+appear in the admin's Users list above (names covered).
 
 ### Error pages (US25)
 
