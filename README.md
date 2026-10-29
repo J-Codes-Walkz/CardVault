@@ -563,8 +563,8 @@ CardVault never collects email addresses.
 
 ### Still to build
 
-- Every feature is built. What remains is a check on a real phone
-  (US22), the final testing write-up and the submission checks.
+- Every feature is built and tested, including on a real phone. What
+  remains is the final testing write-up and the submission checks.
 
 Every notification message the app shows (login success, duplicate
 username, "thank you for your review", and so on) is written out

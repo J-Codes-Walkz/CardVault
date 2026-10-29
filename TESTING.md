@@ -195,7 +195,26 @@ Run in the same live browser session (US22):
 | Phone width: press Menu | Links appear; the button reports `aria-expanded="true"` | Pass | [mobile-menu-open](./docs/images/screenshots/mobile-menu-open.png) |
 | Header logged in and out at 768, 900, 1024 and 1440px (US33) | One row at every width: Menu button below 1024px, every link in a line from 1024px | Pass (header 68 to 69px tall at each) | |
 | Phone and tablet width: Menu open, logged in | Home, Browse cards, My Cards, Contact, then Log out | Pass | |
+| On a real phone: Jamie's iPhone, Safari in private browsing, live site (29 October 2026) | Home with the first-visit intro, the Menu, Browse cards, a card page, Privacy, Accessibility and Contact all readable, with no sideways scrolling; a Contact message sends and the Success message shows | Pass | [phone-menu-open](./docs/images/screenshots/phone-menu-open.png) |
 | Short page (Log out) at 1440 x 900 | Footer's bottom edge at the bottom of the window (900px) | Pass | [logout-success](./docs/images/screenshots/logout-success.png) |
+
+### On a real phone (US22)
+
+Jamie opened the live site on his iPhone in Safari's private browsing
+on 29 October 2026, recorded the screen, and went through the home
+page and its welcome intro, the Menu, Browse cards, a card page, the
+Privacy and Accessibility pages, and sent a Contact message. Every
+page fitted the screen with no sideways scrolling, the buttons were
+easy to tap, and the Contact form showed its Success message. (The
+recording itself is not in the repository, as it shows a personal
+email address being typed.)
+
+<p>
+  <img src="./docs/images/screenshots/phone-intro.png" alt="The welcome intro on an iPhone" width="200">
+  <img src="./docs/images/screenshots/phone-menu-open.png" alt="The Menu opened on an iPhone" width="200">
+  <img src="./docs/images/screenshots/phone-featured-card.png" alt="A featured card on an iPhone" width="200">
+  <img src="./docs/images/screenshots/phone-card-page.png" alt="A card page with its rating and reviews on an iPhone" width="200">
+</p>
 
 ## Automated testing
 
