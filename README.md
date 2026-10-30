@@ -56,19 +56,33 @@ Low-fidelity wireframes for the core screens, covering desktop and
 mobile layouts, logged-in and logged-out states, and the success/error
 messages from each user story:
 
-| # | Screen | |
-|---|---|---|
-| 1 | Home (logged out) | [docs/wireframes/01-home.svg](./docs/wireframes/01-home.svg) |
-| 2 | Register and log in | [docs/wireframes/02-register-login.svg](./docs/wireframes/02-register-login.svg) |
-| 3 | Browse cards (catalogue, search, filters) | [docs/wireframes/03-catalogue.svg](./docs/wireframes/03-catalogue.svg) |
-| 4 | Card detail (add to My Cards, reviews) | [docs/wireframes/04-card-detail.svg](./docs/wireframes/04-card-detail.svg) |
-| 5 | My Cards (Owned/Wanted tabs, summary, table, CRUD) | [docs/wireframes/05-my-cards.svg](./docs/wireframes/05-my-cards.svg) |
-| 6 | Edit/delete forms and message banners | [docs/wireframes/06-forms-confirmations.svg](./docs/wireframes/06-forms-confirmations.svg) |
-| 7 | Mobile layouts (nav menu, stacked My Cards) | [docs/wireframes/07-mobile.svg](./docs/wireframes/07-mobile.svg) |
+**1. Home (logged out)**
 
-Home page, as an example:
+![Wireframe: Home (logged out)](./docs/wireframes/01-home.svg)
 
-![Wireframe of the CardVault home page, showing the navigation bar, a hero section with Create account and Browse cards buttons, three feature blocks and a row of featured card tiles](./docs/wireframes/01-home.svg)
+**2. Register and log in**
+
+![Wireframe: Register and log in](./docs/wireframes/02-register-login.svg)
+
+**3. Browse cards (catalogue, search, filters)**
+
+![Wireframe: Browse cards (catalogue, search, filters)](./docs/wireframes/03-catalogue.svg)
+
+**4. Card detail (add to My Cards, reviews)**
+
+![Wireframe: Card detail (add to My Cards, reviews)](./docs/wireframes/04-card-detail.svg)
+
+**5. My Cards (Owned/Wanted tabs, summary, table, CRUD)**
+
+![Wireframe: My Cards (Owned/Wanted tabs, summary, table, CRUD)](./docs/wireframes/05-my-cards.svg)
+
+**6. Edit/delete forms and message banners**
+
+![Wireframe: Edit/delete forms and message banners](./docs/wireframes/06-forms-confirmations.svg)
+
+**7. Mobile layouts (nav menu, stacked My Cards)**
+
+![Wireframe: Mobile layouts (nav menu, stacked My Cards)](./docs/wireframes/07-mobile.svg)
 
 Blue tags on every wireframe (e.g. `US11`) link that part of the
 screen back to its user story in `docs/USER_STORIES.md`.
@@ -758,7 +772,7 @@ the sprints table below.
 - **Four columns:** `Backlog` (planned for a later sprint), `To do`
   (in the current sprint), `In progress` and `Done` (built, and its
   manual test passed). Cards moved across as the work did.
-- **72 issues:** 34 user stories, 21 development tasks and 15 bugs,
+- **75 issues:** 34 user stories, 22 development tasks and 17 bugs,
   plus Jamie's own testing note (#40) and the submission checklist
   (#70). Each story's issue title starts with its ID (for example
   `US01: Register an account`) and holds its acceptance criteria and
@@ -1087,5 +1101,6 @@ the AI's own mistakes.
 | 2026-10-29 | Automated tests | Finished the testing write-up (#36) with Claude. It ran a coverage report for the first time (99% of the site's code; the rest is production-only settings) and found three small untested paths, which it covered with new tests. It added a table giving every user story's manual test and result, and re-checked three stories with fresh evidence: reviews on the live site (US21), loading the catalogue twice into a brand-new database with no duplicates (US27), and a full secret scan of all 60 commits (US26). A link check then exposed a mistake from its own earlier edit: adding the Load testing section had deleted the Validators heading, which it restored. |
 | 2026-10-29 | Documentation | Asked Claude for an architecture diagram and a tidy of the Agile section for the submission checklist (#70). Claude first read which apps actually import from which, then drew three Mermaid diagrams (the whole system, how the code is organised, and one request from start to finish) and rendered all five diagrams in the README in Chrome with the same Mermaid library GitHub uses, to prove they draw. It rewrote the Agile section from setup instructions into an account of what was done, with the real issue and milestone counts from GitHub; checking those against GitHub caught one error before it was committed (the error pages were in Sprint 3, not Sprint 2). |
 | 2026-10-30 | Debugging | Final review before submission with Claude. It re-ran every check (229 tests, flake8, the W3C validators on nine live pages, every link and image in the docs, the live security headers and backups) and found the docs out of date in places: USER_STORIES.md had every acceptance criterion unticked although each was ticked on its GitHub issue (Claude compared all 267 one by one before ticking 266; the VoiceOver check stays unticked, as it was not done), and some pages still described ratings as stars. While validating, it noticed allauth's password reset page still answered, although bug #42 had removed its link. Testing it locally showed that sending the form crashes (the site has no mail server), and that a logged-in user could add an email address at `/accounts/email/`, against the Privacy page. Logged as bug #72; those pages now show the 404 page, the site cannot send email at all, and 5 new tests failed before the fix and pass after it. |
+| 2026-10-30 | Debugging | An assessor gave two more points: external links must open in a new tab, and screenshots should display rather than be links. I logged them with Claude as #74 and #75. Claude searched every template and found five external links, not only the two on the Privacy page, and added `target="_blank"`, `rel="noopener noreferrer"` and visible "(opens in a new tab)" wording, with a test that failed before the fix and now covers any future link. Before converting the 55 screenshot links it rendered a trial with GitHub's own Markdown renderer, to check that images inside table cells stayed readable. It also applied the same change to the 7 wireframe links. |
 | 2026-10-30 | Security | An assessor advised removing `.env.example` from the public repository, even though it held only blank values and placeholders. Claude logged it as issue #73, stopped tracking the file (keeping my local copy, now ignored by git), removed the `.gitignore` exception so no `.env` file of any kind can be committed, and moved the variable names into a table in Local setup so the setup steps still work. It pointed out that the file stays in the git history, holding no secrets, and advised against rewriting the history so close to the deadline: that would need a force push past the branch rule and would break the commit links in these docs. |
 | 2026-10-29 | Documentation | Gave Claude my folders of screenshots from the project to sort for the submission. Claude read all 56 conversation screenshots one by one, kept 50 with a description of each in docs/AI_CONVERSATIONS.md, and chose 10 of my 44 manual-test screenshots for TESTING.md. It covered personal details with a script using the Mac's own text recognition (my email, the Mac's username, a one-time login code), then scanned every image again, including the 90 already in the repo, and found the Mac's username in two terminal screenshots committed earlier, which it replaced. Reading Heroku's metrics from that week, it noticed they contradict its own 19 October conclusion about the load test: the 50 stalled requests most likely did reach Heroku and timed out. It corrected TESTING.md and the README rather than leave the earlier claim. |

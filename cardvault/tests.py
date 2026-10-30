@@ -1,4 +1,5 @@
 """Tests for the site-wide error pages (US25) and error logging."""
+import re
 from unittest import mock
 
 from django.conf import settings
@@ -114,3 +115,31 @@ class ServerErrorPageTests(TestCase):
             source = page.read()
         self.assertNotIn("{%", source)
         self.assertNotIn("{{", source)
+
+
+class ExternalLinkTests(TestCase):
+    """Links to other sites open in a new tab, and say so."""
+
+    FOLDERS = ["templates", "accounts", "cards", "collection", "contact"]
+    EXTERNAL = re.compile(r'<a\s[^>]*href="https?://[^>]*>.*?</a>', re.S)
+
+    def external_links(self):
+        """Yield every external link in every template's source."""
+        for folder in self.FOLDERS:
+            for path in (settings.BASE_DIR / folder).rglob("*.html"):
+                source = path.read_text(encoding="utf-8")
+                for link in self.EXTERNAL.findall(source):
+                    yield path.name, link
+
+    def test_template_links_open_safely_in_a_new_tab_and_say_so(self):
+        links = list(self.external_links())
+        self.assertEqual(len(links), 5)
+        for name, link in links:
+            with self.subTest(name, link=link):
+                self.assertIn('target="_blank"', link)
+                self.assertIn('rel="noopener noreferrer"', link)
+                self.assertIn("(opens in a new tab)", link)
+
+    def test_privacy_page_shows_the_new_tab_links(self):
+        response = self.client.get(reverse("privacy"))
+        self.assertContains(response, 'target="_blank"', count=2)

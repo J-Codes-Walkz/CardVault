@@ -9,7 +9,7 @@ CardVault is tested in these ways:
 |---|---|---|
 | [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site or a local copy | 71 of 71 checks passed |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
-| [Automated testing](#automated-testing) | 229 Django tests, including two-user ownership and security tests; 99% code coverage | 229 passed |
+| [Automated testing](#automated-testing) | 231 Django tests, including two-user ownership and security tests; 99% code coverage | 231 passed |
 | [Continuous integration](#continuous-integration) | flake8, Django checks, the tests, Bandit and pip-audit on every push, on GitHub Actions | Passing since 19 October 2026 |
 | [Load testing](#load-testing) | 2,000 visits to the live site, 25 at a time | All succeeded; median 0.21 seconds |
 | [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only, Lighthouse and WAVE | No violations (two keyboard bugs found and fixed, #56 and #71); Lighthouse Accessibility 100 on every page |
@@ -29,7 +29,7 @@ end (no Django admin). The tests were run on the live Heroku site on
 15 October 2026 (first run 14 October) by driving a real Chrome browser with a script: it
 typed into the same fields and pressed the same buttons a person
 would, checked what the page showed afterwards, and took the
-screenshots linked below. A throwaway account, `cardvault_tester`,
+screenshots shown below. A throwaway account, `cardvault_tester`,
 was registered for the run and deleted afterwards.
 
 Catalogue: the 102 Base Set cards from `cards/fixtures/base_set_cards.json`
@@ -90,44 +90,44 @@ linked.
 
 | Story | Test | Expected | Result | Screenshot |
 |---|---|---|---|---|
-| US05 | Open My Cards while logged out | Sent to Log in with "Please log in to view that page." | Pass | [login-required-message](./docs/images/screenshots/login-required-message.png) |
-| US01 | Open Register | Username, date of birth and two password fields, with the password rules listed | Pass | [register-form](./docs/images/screenshots/register-form.png) |
-| US01 | Register with a username that is already taken (live site, 26 October 2026) | No account; "That username is already taken. Please choose another." under the username | Pass | [register-username-taken](./docs/images/screenshots/register-username-taken.png) |
-| US01 | Register with the password `abc12` | No account; error names the rule broken ("too short") | Pass | [register-weak-password](./docs/images/screenshots/register-weak-password.png) |
-| US01 | Register with two different passwords | No account; "You must type the same password each time." | Pass | [register-password-mismatch](./docs/images/screenshots/register-password-mismatch.png) |
-| US01 | Register with a new username and a strong password | Logged in, "Your account has been created. Welcome to CardVault, cardvault_tester!" | Pass | [register-success](./docs/images/screenshots/register-success.png) |
-| US04 | Look at the navigation after registering | "Logged in as cardvault_tester", My Cards and Log out | Pass | [register-success](./docs/images/screenshots/register-success.png) |
-| US03 | Log out | "You have been logged out. See you soon!" | Pass | [logout-success](./docs/images/screenshots/logout-success.png) |
-| US02 | Open Log in (live site, 26 October 2026) | Username and password fields, and a link to register; no password reset link | Pass | [login-form](./docs/images/screenshots/login-form.png) |
-| US02 | Log in with a wrong password | "Invalid username or password. Please try again." | Pass | [login-invalid](./docs/images/screenshots/login-invalid.png) |
-| US02 | Log in with the right password | "Welcome back, cardvault_tester!" and My Cards | Pass | [login-success](./docs/images/screenshots/login-success.png) |
+| US05 | Open My Cards while logged out | Sent to Log in with "Please log in to view that page." | Pass | ![Login required message](./docs/images/screenshots/login-required-message.png) |
+| US01 | Open Register | Username, date of birth and two password fields, with the password rules listed | Pass | ![Register form](./docs/images/screenshots/register-form.png) |
+| US01 | Register with a username that is already taken (live site, 26 October 2026) | No account; "That username is already taken. Please choose another." under the username | Pass | ![Register username taken](./docs/images/screenshots/register-username-taken.png) |
+| US01 | Register with the password `abc12` | No account; error names the rule broken ("too short") | Pass | ![Register weak password](./docs/images/screenshots/register-weak-password.png) |
+| US01 | Register with two different passwords | No account; "You must type the same password each time." | Pass | ![Register password mismatch](./docs/images/screenshots/register-password-mismatch.png) |
+| US01 | Register with a new username and a strong password | Logged in, "Your account has been created. Welcome to CardVault, cardvault_tester!" | Pass | ![Register success](./docs/images/screenshots/register-success.png) |
+| US04 | Look at the navigation after registering | "Logged in as cardvault_tester", My Cards and Log out | Pass | ![Register success](./docs/images/screenshots/register-success.png) |
+| US03 | Log out | "You have been logged out. See you soon!" | Pass | ![Logout success](./docs/images/screenshots/logout-success.png) |
+| US02 | Open Log in (live site, 26 October 2026) | Username and password fields, and a link to register; no password reset link | Pass | ![Login form](./docs/images/screenshots/login-form.png) |
+| US02 | Log in with a wrong password | "Invalid username or password. Please try again." | Pass | ![Login invalid](./docs/images/screenshots/login-invalid.png) |
+| US02 | Log in with the right password | "Welcome back, cardvault_tester!" and My Cards | Pass | ![Login success](./docs/images/screenshots/login-success.png) |
 
 ### Browsing cards (US06 to US10)
 
 | Story | Test | Expected | Result | Screenshot |
 |---|---|---|---|---|
-| US06 | Open the home page logged out | Headline says what the site is for; Create account and Browse cards buttons; featured cards | Pass | [home-logged-out](./docs/images/screenshots/home-logged-out.png) |
-| US07 | Open Browse cards | 12 Base Set cards on page 1 (Alakazam first), each with its picture, set, number and rarity; all 12 pictures load | Pass | [catalogue](./docs/images/screenshots/catalogue.png) |
+| US06 | Open the home page logged out | Headline says what the site is for; Create account and Browse cards buttons; featured cards | Pass | ![Home logged out](./docs/images/screenshots/home-logged-out.png) |
+| US07 | Open Browse cards | 12 Base Set cards on page 1 (Alakazam first), each with its picture, set, number and rarity; all 12 pictures load | Pass | ![Catalogue](./docs/images/screenshots/catalogue.png) |
 | US08 | Search for `aaa` | Only the tester card AAA, which shows the placeholder image | Pass | |
-| US08 | Search for `bb` | Only BBB, with "1 card found" | Pass | [search-result](./docs/images/screenshots/search-result.png) |
+| US08 | Search for `bb` | Only BBB, with "1 card found" | Pass | ![Search result](./docs/images/screenshots/search-result.png) |
 | US08 | Search for `zzz` | 'No cards match "zzz". Try a different name, set or rarity.' | Pass | |
-| US08 | Search for `Holo`, then `Holo Rare` (Jamie's manual test, 15 October) | Before the fix: 0 results, because only names were searched. After: the 16 Base Set holos plus tester card CCC | Pass after fix | [search-1440](./docs/images/screenshots/search-1440.png) |
+| US08 | Search for `Holo`, then `Holo Rare` (Jamie's manual test, 15 October) | Before the fix: 0 results, because only names were searched. After: the 16 Base Set holos plus tester card CCC | Pass after fix | ![Search 1440](./docs/images/screenshots/search-1440.png) |
 | US09 | Search `holo rare` with Set: Base Set | "16 cards found", Rarity and Set dropdowns keep their choices, no sideways scrolling at 375px | Pass | |
-| US10 | Open a card | Image, set, number, rarity, rating summary, add and review forms | Pass | [card-detail](./docs/images/screenshots/card-detail.png) |
+| US10 | Open a card | Image, set, number, rarity, rating summary, add and review forms | Pass | ![Card detail](./docs/images/screenshots/card-detail.png) |
 
 ### My Cards: create, read, update, delete (US11 to US14)
 
 | Story | Test | Expected | Result | Screenshot |
 |---|---|---|---|---|
-| US11 | Add a card with quantity 0 | Not saved; "Please correct the errors below and try again." | Pass | [add-card-invalid-quantity](./docs/images/screenshots/add-card-invalid-quantity.png) |
-| US11 | Add a card as Owned, quantity 2, with a note | "Alakazam was added to your cards." and it is listed in My Cards | Pass | [add-card-success](./docs/images/screenshots/add-card-success.png) |
-| US12 | View My Cards with a long note at 320, 375, 768, 900, 1024 and 1440px | No sideways scrolling; below 900px each entry stacks as a labelled card; from 900px the card name never overlaps the Set column, Edit and Remove sit side by side inside the table (notes were later moved to a one-line preview; see the next row) | Pass after fix (bug #57) | [my-cards-mobile](./docs/images/screenshots/my-cards-mobile.png) |
+| US11 | Add a card with quantity 0 | Not saved; "Please correct the errors below and try again." | Pass | ![Add card invalid quantity](./docs/images/screenshots/add-card-invalid-quantity.png) |
+| US11 | Add a card as Owned, quantity 2, with a note | "Alakazam was added to your cards." and it is listed in My Cards | Pass | ![Add card success](./docs/images/screenshots/add-card-success.png) |
+| US12 | View My Cards with a long note at 320, 375, 768, 900, 1024 and 1440px | No sideways scrolling; below 900px each entry stacks as a labelled card; from 900px the card name never overlaps the Set column, Edit and Remove sit side by side inside the table (notes were later moved to a one-line preview; see the next row) | Pass after fix (bug #57) | ![My cards mobile](./docs/images/screenshots/my-cards-mobile.png) |
 | US12 | View My Cards after reviewing one card but not another (Jamie asked to replace the large notes box with stars, 15 October) | A My rating column with my Poké Ball rating, or a Rate it link; notes as a one-line preview under the card name (full note on hover, on the Edit page and on phones); rows about 100px tall instead of about 260px | Pass | |
 | US11 | Open the same card again | Card page says "On your list" instead of showing the add form | Pass | |
 | US11 | Try to add the same card again | Sent to that entry's edit page with "You already have Alakazam on your list. Edit that entry to change it." | Pass | |
-| US13 | Edit the entry to Wanted, quantity 3 | "Your entry for Alakazam was updated." and the list shows Wanted, 3 | Pass | [edit-card-form](./docs/images/screenshots/edit-card-form.png), [edit-card-success](./docs/images/screenshots/edit-card-success.png) |
+| US13 | Edit the entry to Wanted, quantity 3 | "Your entry for Alakazam was updated." and the list shows Wanted, 3 | Pass | ![Edit card form](./docs/images/screenshots/edit-card-form.png), ![Edit card success](./docs/images/screenshots/edit-card-success.png) |
 | US12 | Open the Owned tab | "You have no owned cards yet." | Pass | |
-| US14 | Remove the entry | Confirmation page names the card; then "Alakazam was removed from your cards." and the list is empty | Pass | [remove-card-confirm](./docs/images/screenshots/remove-card-confirm.png), [remove-card-success](./docs/images/screenshots/remove-card-success.png) |
+| US14 | Remove the entry | Confirmation page names the card; then "Alakazam was removed from your cards." and the list is empty | Pass | ![Remove card confirm](./docs/images/screenshots/remove-card-confirm.png), ![Remove card success](./docs/images/screenshots/remove-card-success.png) |
 
 ### My Cards: summary, sorting and Got it! (US15 to US17)
 
@@ -137,14 +137,14 @@ wanted cards, from two sets.
 
 | Story | Test | Expected | Result | Screenshot |
 |---|---|---|---|---|
-| US15 | Open My Cards | "Cards owned 7", "Different cards 4", "On my wanted list 2" | Pass | [my-cards-summary](./docs/images/screenshots/my-cards-summary.png) |
+| US15 | Open My Cards | "Cards owned 7", "Different cards 4", "On my wanted list 2" | Pass | ![My cards summary](./docs/images/screenshots/my-cards-summary.png) |
 | US15 | Switch to the Wanted tab | The totals stay the same; only the list changes | Pass | |
-| US16 | Sort by Name, A to Z, choose Base Set, press Apply | Only Base Set cards, in name order; the address shows `?sort=name&set=1` | Pass | [my-cards-sorted](./docs/images/screenshots/my-cards-sorted.png) |
+| US16 | Sort by Name, A to Z, choose Base Set, press Apply | Only Base Set cards, in name order; the address shows `?sort=name&set=1` | Pass | ![My cards sorted](./docs/images/screenshots/my-cards-sorted.png) |
 | US16 | Look at the tab links after sorting | Each tab keeps `sort=name&set=1` | Pass | |
 | US16 | Choose a set with none of my cards (typed into the address) | "None of your cards are from that set." and a link to show all | Pass | |
-| US17 | Press Got it! on a wanted card | "You got Venusaur!" with "How many did you get?" filled in with 2 | Pass | [got-it-form](./docs/images/screenshots/got-it-form.png) |
-| US17 | Press Move to my collection | The Owned tab, with "Success: Venusaur moved to your collection." | Pass | [got-it-success](./docs/images/screenshots/got-it-success.png) |
-| US15 to US17 | My Cards at 375, 768, 900, 1024 and 1440px, light and dark | No sideways scrolling; no button outside its table cell | Pass after fix (see below) | [my-cards-wanted-mobile](./docs/images/screenshots/my-cards-wanted-mobile.png) |
+| US17 | Press Got it! on a wanted card | "You got Venusaur!" with "How many did you get?" filled in with 2 | Pass | ![Got it form](./docs/images/screenshots/got-it-form.png) |
+| US17 | Press Move to my collection | The Owned tab, with "Success: Venusaur moved to your collection." | Pass | ![Got it success](./docs/images/screenshots/got-it-success.png) |
+| US15 to US17 | My Cards at 375, 768, 900, 1024 and 1440px, light and dark | No sideways scrolling; no button outside its table cell | Pass after fix (see below) | ![My cards wanted mobile](./docs/images/screenshots/my-cards-wanted-mobile.png) |
 
 **Found and fixed during this run:** from 900px up, the Got it!
 button sat beside "Wanted" and spilled into the Quantity column, as
@@ -157,22 +157,22 @@ under "Wanted", and the check passed at all five widths.
 | Story | Test | Expected | Result | Screenshot |
 |---|---|---|---|---|
 | US18 | Open a card's page | At most one form on the page (Add to My Cards), plus a Write a review button, so nothing typed can be lost by submitting another form | Pass after fix (bug #58) | |
-| US18 | Press Write a review, then submit it empty | The review page opens; the browser blocks the empty form (rating and comment are required) | Pass | [review-form](./docs/images/screenshots/review-form.png) |
-| US18 | Give 4 Poké Balls with a comment | "Thank you for submitting your review!"; the review shows 4 full Poké Balls and 1 empty, and the comment; the average updates | Pass | [review-success](./docs/images/screenshots/review-success.png) |
-| US19 | Edit the review to 5 Poké Balls | "Your review was updated successfully." and 5 full Poké Balls | Pass | [review-edit-form](./docs/images/screenshots/review-edit-form.png) |
-| US20 | Delete the review | Confirmation page; then "Your review was deleted." and "No reviews yet" | Pass | [review-delete-confirm](./docs/images/screenshots/review-delete-confirm.png) |
+| US18 | Press Write a review, then submit it empty | The review page opens; the browser blocks the empty form (rating and comment are required) | Pass | ![Review form](./docs/images/screenshots/review-form.png) |
+| US18 | Give 4 Poké Balls with a comment | "Thank you for submitting your review!"; the review shows 4 full Poké Balls and 1 empty, and the comment; the average updates | Pass | ![Review success](./docs/images/screenshots/review-success.png) |
+| US19 | Edit the review to 5 Poké Balls | "Your review was updated successfully." and 5 full Poké Balls | Pass | ![Review edit form](./docs/images/screenshots/review-edit-form.png) |
+| US20 | Delete the review | Confirmation page; then "Your review was deleted." and "No reviews yet" | Pass | ![Review delete confirm](./docs/images/screenshots/review-delete-confirm.png) |
 
 ### Privacy, safety and accessibility (US29 to US32)
 
 | Story | Test | Expected | Result | Screenshot |
 |---|---|---|---|---|
 | US29 | Register with a date of birth in 2020 | "Sorry, you need to be 13 or older to create a CardVault account." and no account | Pass | |
-| US29 | Open Register again in the same browser | The registration-closed page, with no form | Pass | [signup-under-13](./docs/images/screenshots/signup-under-13.png) |
-| US30 | Delete my account with a wrong password | "That password is not correct." and nothing deleted | Pass | [delete-account](./docs/images/screenshots/delete-account.png) |
-| US30 | Delete my account with the right password | "Your account, cards and reviews have been deleted.", logged out | Pass | [delete-account-success](./docs/images/screenshots/delete-account-success.png) |
+| US29 | Open Register again in the same browser | The registration-closed page, with no form | Pass | ![Signup under 13](./docs/images/screenshots/signup-under-13.png) |
+| US30 | Delete my account with a wrong password | "That password is not correct." and nothing deleted | Pass | ![Delete account](./docs/images/screenshots/delete-account.png) |
+| US30 | Delete my account with the right password | "Your account, cards and reviews have been deleted.", logged out | Pass | ![Delete account success](./docs/images/screenshots/delete-account-success.png) |
 | US30 | Log in again with the deleted account | "Invalid username or password." | Pass | |
-| US31 | Open Privacy and cookies from the footer | Lists what is stored and the two cookies, `sessionid` and `csrftoken` | Pass | [privacy](./docs/images/screenshots/privacy.png) |
-| US32 | Open Accessibility from the footer | The accessibility statement (WCAG 2.2 AA) | Pass | [accessibility](./docs/images/screenshots/accessibility.png) |
+| US31 | Open Privacy and cookies from the footer | Lists what is stored and the two cookies, `sessionid` and `csrftoken` | Pass | ![Privacy](./docs/images/screenshots/privacy.png) |
+| US32 | Open Accessibility from the footer | The accessibility statement (WCAG 2.2 AA) | Pass | ![Accessibility](./docs/images/screenshots/accessibility.png) |
 
 The account used for the live run was deleted by the run itself,
 through Delete my account.
@@ -198,14 +198,14 @@ logged out and logged in.
 | Test | Expected | Result | Screenshot |
 |---|---|---|---|
 | On the live site, Jamie's superuser opens `/admin/` (26 October 2026) | The admin, with every CardVault model | Pass | |
-| On the live site, Jamie's everyday account `Jay-Codes` opens `/admin/` (26 October 2026) | The 403 "You don't have permission to see this page" page | Pass | [admin-refused-live](./docs/images/screenshots/admin-refused-live.png) |
-| Locally, a superuser looks at the header at 1024, 1280 and 1440px (28 October 2026) | An Admin link, with the header still on one line | Pass | [admin-link](./docs/images/screenshots/admin-link.png) |
-| Open the admin home page | "CardVault administration"; Card sets, Cards, Reviews, Collection entries, Contact messages, Users; no Email addresses | Pass | [admin-models](./docs/images/screenshots/admin-models.png) |
-| Search Cards for `charizard`, open it | The card, with a working picture preview | Pass | [admin-card-edit](./docs/images/screenshots/admin-card-edit.png) |
-| Open Contact messages | Messages with a Handled tick box and no Add button | Pass | [admin-contact](./docs/images/screenshots/admin-contact.png) |
+| On the live site, Jamie's everyday account `Jay-Codes` opens `/admin/` (26 October 2026) | The 403 "You don't have permission to see this page" page | Pass | ![Admin refused live](./docs/images/screenshots/admin-refused-live.png) |
+| Locally, a superuser looks at the header at 1024, 1280 and 1440px (28 October 2026) | An Admin link, with the header still on one line | Pass | ![Admin link](./docs/images/screenshots/admin-link.png) |
+| Open the admin home page | "CardVault administration"; Card sets, Cards, Reviews, Collection entries, Contact messages, Users; no Email addresses | Pass | ![Admin models](./docs/images/screenshots/admin-models.png) |
+| Search Cards for `charizard`, open it | The card, with a working picture preview | Pass | ![Admin card edit](./docs/images/screenshots/admin-card-edit.png) |
+| Open Contact messages | Messages with a Handled tick box and no Add button | Pass | ![Admin contact](./docs/images/screenshots/admin-contact.png) |
 | Log in as an ordinary user and open `/admin/` | The 403 page, and no Admin link in the header | Pass | |
-| On the live site, Jamie's superuser opens Users (29 October 2026) | Every account listed, with filters for staff and superuser status; two friends' test accounts among them | Pass | [admin-users-live](./docs/images/screenshots/admin-users-live.png) |
-| On the live site, Jamie deletes the leftover test account `lh-check-fad1d0` (29 October 2026) | A confirmation page listing exactly what goes with it (the user and its 4 My Cards entries) before anything is deleted | Pass | [admin-delete-test-account-live](./docs/images/screenshots/admin-delete-test-account-live.png) |
+| On the live site, Jamie's superuser opens Users (29 October 2026) | Every account listed, with filters for staff and superuser status; two friends' test accounts among them | Pass | ![Admin users live](./docs/images/screenshots/admin-users-live.png) |
+| On the live site, Jamie deletes the leftover test account `lh-check-fad1d0` (29 October 2026) | A confirmation page listing exactly what goes with it (the user and its 4 My Cards entries) before anything is deleted | Pass | ![Admin delete test account live](./docs/images/screenshots/admin-delete-test-account-live.png) |
 
 **Before and after US28, on the live site:** on 26 October the admin
 was still Django's default, titled "Django administration", with an
@@ -270,11 +270,11 @@ database that does not exist, to cause a real server error.
 
 | Test | Expected | Result | Screenshot |
 |---|---|---|---|
-| Open an address that does not exist | The 404 page (status 404), with a card search and links home | Pass | [error-404](./docs/images/screenshots/error-404.png) |
-| Send a form with no CSRF token (a form built in the browser and posted to Log in) | "This form has expired" (status 403) | Pass | [error-form-expired](./docs/images/screenshots/error-form-expired.png) |
+| Open an address that does not exist | The 404 page (status 404), with a card search and links home | Pass | ![Error 404](./docs/images/screenshots/error-404.png) |
+| Send a form with no CSRF token (a form built in the browser and posted to Log in) | "This form has expired" (status 403) | Pass | ![Error form expired](./docs/images/screenshots/error-form-expired.png) |
 | Request the site under an unknown host name | The 400 page (status 400) | Pass | |
-| Open a made-up address on the live site (26 October 2026) | The branded 404 page, not Django's debug page, so `DEBUG` is off | Pass | [test-404-no-debug](./docs/images/screenshots/test-404-no-debug.png) |
-| Load the home page with the database unreachable | The 500 page (status 500), styled, with no technical detail; the full traceback in the server log | Pass | [error-500-mobile](./docs/images/screenshots/error-500-mobile.png) |
+| Open a made-up address on the live site (26 October 2026) | The branded 404 page, not Django's debug page, so `DEBUG` is off | Pass | ![Test 404 no debug](./docs/images/screenshots/test-404-no-debug.png) |
+| Load the home page with the database unreachable | The 500 page (status 500), styled, with no technical detail; the full traceback in the server log | Pass | ![Error 500 mobile](./docs/images/screenshots/error-500-mobile.png) |
 | Each page at 375 and 1280px, light and dark | No sideways scrolling | Pass | |
 
 ### Security checks (US05)
@@ -291,13 +291,13 @@ Run in the same live browser session (US22):
 | Check | Expected | Result | Screenshot |
 |---|---|---|---|
 | Browse cards at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width | Pass (0px overflow at each) | |
-| My Cards at 320 and 375px | No sideways scrolling | Pass | [my-cards-mobile](./docs/images/screenshots/my-cards-mobile.png) |
-| Phone width: navigation | Links hidden behind a Menu button | Pass | [mobile-menu-closed](./docs/images/screenshots/mobile-menu-closed.png) |
-| Phone width: press Menu | Links appear; the button reports `aria-expanded="true"` | Pass | [mobile-menu-open](./docs/images/screenshots/mobile-menu-open.png) |
+| My Cards at 320 and 375px | No sideways scrolling | Pass | ![My cards mobile](./docs/images/screenshots/my-cards-mobile.png) |
+| Phone width: navigation | Links hidden behind a Menu button | Pass | ![Mobile menu closed](./docs/images/screenshots/mobile-menu-closed.png) |
+| Phone width: press Menu | Links appear; the button reports `aria-expanded="true"` | Pass | ![Mobile menu open](./docs/images/screenshots/mobile-menu-open.png) |
 | Header logged in and out at 768, 900, 1024 and 1440px (US33) | One row at every width: Menu button below 1024px, every link in a line from 1024px | Pass (header 68 to 69px tall at each) | |
 | Phone and tablet width: Menu open, logged in | Home, Browse cards, My Cards, Contact, then Log out | Pass | |
-| On a real phone: Jamie's iPhone, Safari in private browsing, live site (29 October 2026) | Home with the first-visit intro, the Menu, Browse cards, a card page, Privacy, Accessibility and Contact all readable, with no sideways scrolling; a Contact message sends and the Success message shows | Pass | [phone-menu-open](./docs/images/screenshots/phone-menu-open.png) |
-| Short page (Log out) at 1440 x 900 | Footer's bottom edge at the bottom of the window (900px) | Pass | [logout-success](./docs/images/screenshots/logout-success.png) |
+| On a real phone: Jamie's iPhone, Safari in private browsing, live site (29 October 2026) | Home with the first-visit intro, the Menu, Browse cards, a card page, Privacy, Accessibility and Contact all readable, with no sideways scrolling; a Contact message sends and the Success message shows | Pass | ![Phone menu open](./docs/images/screenshots/phone-menu-open.png) |
+| Short page (Log out) at 1440 x 900 | Footer's bottom edge at the bottom of the window (900px) | Pass | ![Logout success](./docs/images/screenshots/logout-success.png) |
 
 ### On a real phone (US22)
 
@@ -325,9 +325,9 @@ Run with:
 python manage.py test
 ```
 
-229 tests, all passing in the final check on 30 October 2026. Jamie
+231 tests, all passing in the final check on 30 October 2026. Jamie
 ran the suite in his own terminal on 26 October 2026, before US15 to
-US17, US28, the coverage gaps and bug #72 added 38 more:
+US17, US28, the coverage gaps and bugs #72 and #74 added 40 more:
 
 ![python manage.py test: Ran 191 tests, OK](./docs/images/screenshots/tests-passing.png)
 
@@ -342,7 +342,7 @@ on Heroku, which does not exist on a development machine.
 | `cards/tests.py` | 69 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404; search across name, set and rarity in any order ("holo rare", "rare holo", "holos"; "common" not matching Uncommon), the Rarity and Set filters alone and combined, unknown filter values ignored, filters kept in page links; Poké Ball ratings (full, empty, rounded averages, hidden from screen readers), the five-ball picker on the review form, the 1999 rarity symbols and which cards shimmer, and searches cut to 100 characters and 5 words |
 | `collection/tests.py` | 56 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (the form opens for the card; owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged; My Cards shows my own rating (not other people's) or a Rate it link, the notes preview, and a fixed number of database queries however long the list; the collection totals (owned copies, different cards, wanted not counted, unaffected by tab or filters, hidden when empty), sorting (newest, oldest, name, set and number; unknown sorts ignored), the set filter (only my sets offered; unknown values ignored; an empty set says so), choices kept in the tabs, and Got it! (button only on wanted entries, quantity filled in, moves to owned keeping notes, quantity below 1 refused, owned and other users' entries 404, logged out sent to log in) |
 | `contact/tests.py` | 20 | The Contact page for anyone, every field required, a bad email address and a message over 2,000 characters refused, a valid message saved with the thank you message, the username filled in when logged in, the bot trap (thanked but not saved), the 5-an-hour limit and that it is per visitor, the IP address hashed and taken from the address Heroku adds, the admin (message read-only, only "handled" editable, no adding messages), Home and Contact links on every page with `aria-current="page"` on the current one, and the Privacy page's Contact section |
-| `cardvault/tests.py` | 12 | The error pages (US25): an unknown address and an unknown card show the 404 page, which links home, offers a card search, keeps the logged-in header and shows no technical detail; an ordinary user opening the admin gets the 403 page; a form sent without a valid CSRF token gets the "This form has expired" page; an unknown host gets the 400 page; a forced crash gets the 500 page with no technical detail, is logged with its traceback, and the 500 page uses no template tags |
+| `cardvault/tests.py` | 14 | Every external link in every template opens in a new tab with `rel="noopener noreferrer"` and says so; the error pages (US25): an unknown address and an unknown card show the 404 page, which links home, offers a card search, keeps the logged-in header and shows no technical detail; an ordinary user opening the admin gets the 403 page; a form sent without a valid CSRF token gets the "This form has expired" page; an unknown host gets the 400 page; a forced crash gets the 500 page with no technical detail, is logged with its traceback, and the 500 page uses no template tags |
 
 The two-user tests are the most important: they prove one user
 cannot view, change or delete another user's records by guessing an
@@ -598,8 +598,8 @@ what each protection does is explained in [SECURITY.md](./SECURITY.md).
 | Content Security Policy breaks nothing | Every public, logged-in and admin page loaded in Chrome, watching the console | No violations; the only console error was the missing favicon (#35) |
 | Card picture server unreachable | Locally pointed one card at an unreachable host and another at a missing file, then loaded the catalogue and card pages in Chrome | Unreachable host: CardVault's placeholder shown. Missing file: the image server sends its own "not found" picture, which the browser shows. Other pictures unaffected |
 | Admin log in | Open `/admin/login/` on the live site while logged out | Redirected to the rate-limited Log in page |
-| Password guessing | Automated tests (see above), and on the live site on 19 October 2026: 4 wrong passwords for a made-up username | Attempts 1 to 3: "Invalid username or password." Attempt 4: "Too many failed log in attempts. For your safety, logging in is paused for up to 15 minutes." [login-locked](./docs/images/screenshots/login-locked.png) |
-| Registration limit | Locally, 11 registrations from one address in a minute | The 11th gets the branded "Too many attempts" page, HTTP 429. [too-many-attempts](./docs/images/screenshots/too-many-attempts.png) |
+| Password guessing | Automated tests (see above), and on the live site on 19 October 2026: 4 wrong passwords for a made-up username | Attempts 1 to 3: "Invalid username or password." Attempt 4: "Too many failed log in attempts. For your safety, logging in is paused for up to 15 minutes." ![Login locked](./docs/images/screenshots/login-locked.png) |
+| Registration limit | Locally, 11 registrations from one address in a minute | The 11th gets the branded "Too many attempts" page, HTTP 429. ![Too many attempts](./docs/images/screenshots/too-many-attempts.png) |
 | Real IP address behind Heroku | Automated tests sending `X-Forwarded-For` as Heroku's router does | Each visitor is counted separately; changing the first entry does not escape a limit (bug #66, fixed) |
 | Database backups | `heroku pg:backups:capture`, then `heroku pg:backups:info b001` | Completed; the backup log lists all 18 tables. Daily schedule at 03:00 UK time confirmed with `heroku pg:backups:schedules` |
 | Query time limit | `SHOW statement_timeout` through Django, locally and in an automated test | `10s` |
@@ -758,6 +758,8 @@ privately, as described in [SECURITY.md](./SECURITY.md).
 | [#69](https://github.com/J-Codes-Walkz/CardVault/issues/69) | Crashes on the live site left no trace in the logs: with `DEBUG` off, Django printed nothing | A `LOGGING` setting sends warnings and errors, with tracebacks, to the console that Heroku collects; tested | Fixed |
 | [#71](https://github.com/J-Codes-Walkz/CardVault/issues/71) | The "Skip to main content" link was hard to see when it appeared: white on navy, on top of the navy header (Jamie's manual keyboard test) | Shown in the brand's yellow with dark text (9.98:1 and 11.27:1), a white focus outline and a shadow; re-tested with real Tab presses, light and dark | Fixed |
 | [#72](https://github.com/J-Codes-Walkz/CardVault/issues/72) | django-allauth's email pages still answered (found in the final review): sending the password reset form crashed with a 500, as the site has no mail server, and a logged-in user could add an email address at `/accounts/email/`, against the Privacy page | Those pages show the 404 page, and Django's email sending is switched off (`EMAIL_BACKEND` set to the dummy backend); 5 tests, which failed before the fix | Fixed |
+| [#74](https://github.com/J-Codes-Walkz/CardVault/issues/74) | External links on Privacy, Accessibility and Contact opened in the same tab (assessor feedback) | All five open in a new tab with `rel="noopener noreferrer"` and say "(opens in a new tab)"; a test checks every template and failed before the fix | Fixed |
+| [#75](https://github.com/J-Codes-Walkz/CardVault/issues/75) | Testing screenshots and README wireframes were links, so each had to be opened to see it or to prove the path worked (assessor feedback) | All 55 screenshots and 7 wireframes now display as images; every image path checked by script | Fixed |
 
 Found and fixed while building, before they reached the live site:
 
