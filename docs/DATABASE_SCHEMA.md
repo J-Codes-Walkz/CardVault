@@ -193,7 +193,7 @@ card = models.ForeignKey(
 
 `flake8 .` (see [TESTING.md](../TESTING.md)) is run regularly
 while building, not just at the end. Generated migration files are
-excluded in `.flake8`.
+excluded by the `--exclude` option in the CI workflow.
 
 ## Keeping this in sync
 

@@ -19,6 +19,7 @@ venv/
 htmlcov/
 
 # Editors and operating systems
+.flake8
 .vscode/
 .idea/
 .DS_Store

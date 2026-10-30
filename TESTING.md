@@ -705,8 +705,8 @@ page's global scope.
 
 ### Python: PEP8
 
-`flake8 .` reports nothing. Generated migrations are excluded in
-`.flake8`. Statements are written on single lines where they fit;
+`flake8 .` reports nothing. Generated migrations are excluded by the
+`--exclude` option in the CI workflow. Statements are written on single lines where they fit;
 lists and calls laid out one item per line use PEP8's standard
 hanging indent (see [issue #44](https://github.com/J-Codes-Walkz/CardVault/issues/44)).
 

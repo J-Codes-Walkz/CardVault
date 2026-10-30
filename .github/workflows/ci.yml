@@ -58,7 +58,7 @@ jobs:
         run: pip install -r requirements.txt flake8
 
       - name: PEP8 (flake8)
-        run: flake8 .
+        run: flake8 --exclude=".venv,*/migrations/*,staticfiles" .
 
       - name: Django system check
         run: python manage.py check
