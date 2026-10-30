@@ -25,8 +25,9 @@ if DEBUG:
   code" item is checking for.
 - **`DEBUG` defaults to `False`**, so forgetting to set it on Heroku
   fails safe rather than fails open.
-- **`.env` is local only.** It is listed in `.gitignore`;
-  `.env.example` lists the variable names with no real values. On
+- **`.env` is local only.** It is listed in `.gitignore`,
+  and no `.env` file of any kind is committed; the README's
+  [Local setup](../README.md#local-setup) lists the variable names. On
   Heroku the same variables are config vars.
 
 ## Database

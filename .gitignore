@@ -1,8 +1,7 @@
 # Secrets: real values live only in .env locally and in Heroku config
-# vars. .env.example lists the variable names with no values.
+# vars. No .env file of any kind is committed.
 .env
 .env.*
-!.env.example
 
 # Python
 __pycache__/

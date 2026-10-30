@@ -695,7 +695,7 @@ A ticked box means the criterion or task is done and was ticked on its GitHub Is
 
 - [x] No SECRET_KEY, database password or API key is in the repository or its history.
 - [x] Settings read secrets from environment variables, and DEBUG is False unless explicitly set to True.
-- [x] .env is listed in .gitignore and a .env.example file lists the variable names without values.
+- [x] .env is listed in .gitignore and a .env.example file lists the variable names without values. (Done; on 30 October 2026 `.env.example` was removed on an assessor's advice and the names moved to the README's Local setup, issue #73.)
 - [x] The live Heroku app holds its secrets as config vars and shows no debug pages.
 
 **Development tasks**

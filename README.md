@@ -854,7 +854,7 @@ python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 createdb cardvault                 # a local PostgreSQL database
-cp .env.example .env               # then fill in SECRET_KEY and DATABASE_URL
+# create .env with the four variables below
 python manage.py migrate
 python manage.py loaddata pokemon_cardsets
 python manage.py loaddata base_set_cards
@@ -864,9 +864,23 @@ python manage.py test
 python manage.py runserver
 ```
 
-`.env` is never committed (see `.gitignore`); `.env.example` lists
-the variable names only. The settings that read these variables are
-in **[docs/SETTINGS_SNIPPET.md](./docs/SETTINGS_SNIPPET.md)**.
+The `.env` file holds four variables, one per line in the form
+`NAME=value`:
+
+| Variable | Locally | On Heroku |
+|---|---|---|
+| `SECRET_KEY` | A new random key (see step 3 of the Heroku steps below for the command) | A config var |
+| `DEBUG` | `True` | `False`, or not set |
+| `DATABASE_URL` | The address of your local PostgreSQL database, with your own database username and password | Set by Heroku Postgres itself |
+| `ALLOWED_HOSTS` | Not needed while `DEBUG` is `True` | The app's address, for example `your-app-name.herokuapp.com` |
+
+`.env` is never committed: `.gitignore` ignores every `.env` file.
+(An example file with blank values, `.env.example`, was removed on
+30 October 2026 on an assessor's advice, so that no file named like
+an environment file is in the public repository; see
+[issue #73](https://github.com/J-Codes-Walkz/CardVault/issues/73).)
+The settings that read these variables are in
+**[docs/SETTINGS_SNIPPET.md](./docs/SETTINGS_SNIPPET.md)**.
 
 ### Heroku
 
@@ -1073,4 +1087,5 @@ the AI's own mistakes.
 | 2026-10-29 | Automated tests | Finished the testing write-up (#36) with Claude. It ran a coverage report for the first time (99% of the site's code; the rest is production-only settings) and found three small untested paths, which it covered with new tests. It added a table giving every user story's manual test and result, and re-checked three stories with fresh evidence: reviews on the live site (US21), loading the catalogue twice into a brand-new database with no duplicates (US27), and a full secret scan of all 60 commits (US26). A link check then exposed a mistake from its own earlier edit: adding the Load testing section had deleted the Validators heading, which it restored. |
 | 2026-10-29 | Documentation | Asked Claude for an architecture diagram and a tidy of the Agile section for the submission checklist (#70). Claude first read which apps actually import from which, then drew three Mermaid diagrams (the whole system, how the code is organised, and one request from start to finish) and rendered all five diagrams in the README in Chrome with the same Mermaid library GitHub uses, to prove they draw. It rewrote the Agile section from setup instructions into an account of what was done, with the real issue and milestone counts from GitHub; checking those against GitHub caught one error before it was committed (the error pages were in Sprint 3, not Sprint 2). |
 | 2026-10-30 | Debugging | Final review before submission with Claude. It re-ran every check (229 tests, flake8, the W3C validators on nine live pages, every link and image in the docs, the live security headers and backups) and found the docs out of date in places: USER_STORIES.md had every acceptance criterion unticked although each was ticked on its GitHub issue (Claude compared all 267 one by one before ticking 266; the VoiceOver check stays unticked, as it was not done), and some pages still described ratings as stars. While validating, it noticed allauth's password reset page still answered, although bug #42 had removed its link. Testing it locally showed that sending the form crashes (the site has no mail server), and that a logged-in user could add an email address at `/accounts/email/`, against the Privacy page. Logged as bug #72; those pages now show the 404 page, the site cannot send email at all, and 5 new tests failed before the fix and pass after it. |
+| 2026-10-30 | Security | An assessor advised removing `.env.example` from the public repository, even though it held only blank values and placeholders. Claude logged it as issue #73, stopped tracking the file (keeping my local copy, now ignored by git), removed the `.gitignore` exception so no `.env` file of any kind can be committed, and moved the variable names into a table in Local setup so the setup steps still work. It pointed out that the file stays in the git history, holding no secrets, and advised against rewriting the history so close to the deadline: that would need a force push past the branch rule and would break the commit links in these docs. |
 | 2026-10-29 | Documentation | Gave Claude my folders of screenshots from the project to sort for the submission. Claude read all 56 conversation screenshots one by one, kept 50 with a description of each in docs/AI_CONVERSATIONS.md, and chose 10 of my 44 manual-test screenshots for TESTING.md. It covered personal details with a script using the Mac's own text recognition (my email, the Mac's username, a one-time login code), then scanned every image again, including the 90 already in the repo, and found the Mac's username in two terminal screenshots committed earlier, which it replaced. Reading Heroku's metrics from that week, it noticed they contradict its own 19 October conclusion about the load test: the 50 stalled requests most likely did reach Heroku and timed out. It corrected TESTING.md and the README rather than leave the earlier claim. |

@@ -587,8 +587,8 @@ what each protection does is explained in [SECURITY.md](./SECURITY.md).
 
 | Check | How | Result |
 |---|---|---|
-| Secrets in the repository | Every commit in the git history searched for the real `SECRET_KEY`, GitHub and AWS tokens, private keys and database URLs with passwords | None found (only the placeholder URL in `.env.example`) |
-| Final secret scan (29 October 2026) | All 60 commits' full history searched for the real local `SECRET_KEY`, GitHub, AWS, Google, Heroku and Slack tokens, private keys and database addresses with passwords, and for any `.env` file ever committed | None found. Two database addresses match, both deliberate: the `YOUR_USER:YOUR_PASSWORD` placeholder in `.env.example` and the throwaway `cardvault:cardvault` database that exists only during a CI run |
+| Secrets in the repository | Every commit in the git history searched for the real `SECRET_KEY`, GitHub and AWS tokens, private keys and database URLs with passwords | None found (only the placeholder URL in `.env.example`, a template with blank values, removed on 30 October 2026, issue #73) |
+| Final secret scan (29 October 2026) | All 60 commits' full history searched for the real local `SECRET_KEY`, GitHub, AWS, Google, Heroku and Slack tokens, private keys and database addresses with passwords, and for any `.env` file ever committed | None found. Two database addresses match, both deliberate: the `YOUR_USER:YOUR_PASSWORD` placeholder in `.env.example` (since removed, issue #73) and the throwaway `cardvault:cardvault` database that exists only during a CI run |
 | Secret scanning | GitHub secret scanning with push protection | On; 0 alerts |
 | Dependencies | `pip-audit -r requirements.txt` and Dependabot alerts | No known vulnerabilities; 0 alerts |
 | Code scanning | GitHub CodeQL on the Python and JavaScript | 0 results |
