@@ -79,11 +79,6 @@ Prices were dropped on 15 October 2026
 so the built pages differ there; the wireframes are kept as the
 record of the original plan.
 
-*Replace the wireframes above with real screenshots here as each
-screen is built, and keep the wireframes in `docs/wireframes/` for
-the record of how the design evolved &mdash; the checklist's Features
-section asks for screenshots of the finished site, not the plan.*
-
 ### Brand and design
 
 Agreed with Jamie in a design session on 15 October 2026 (issues
@@ -292,7 +287,7 @@ flowchart TD
     C --> D[Django security middleware<br>HTTPS redirect, CSP, Permissions Policy,<br>no framing, CSRF check, secure cookies]
     D --> E[Rate limits<br>log in, registration, Contact,<br>kept in the shared database cache]
     E --> F[Views<br>log in required, every query filtered<br>to the logged-in user, 404 otherwise]
-    F --> G[Django ORM<br>no hand-written SQL]
+    F --> G[Django ORM<br>no SQL built from user input]
     G -->|TLS, 10-second query limit| H[(Heroku Postgres<br>encrypted at rest, daily backups)]
 ```
 
@@ -374,7 +369,7 @@ changing any code.
 | Queries | Only through Django's ORM, which sends every value separately from the SQL, so SQL injection is not possible. The one hand-written statement is a fixed clean-up in `clear_expired_cache`, which takes no user input. |
 | Rate limit notes | The log in limits keep IP addresses in the cache table. Django only clears expired rows once there are more than 300, so `clear_expired_cache` deletes them on every release (see the `Procfile`). |
 | Integrity | Rules are enforced by the database itself, not only by forms: one entry per user per card, quantities of at least 1, ratings from 1 to 5, unique card numbers per set. |
-| Least data | No email address or real name for an account; the date of birth is checked and thrown away; passwords are stored only as salted PBKDF2 hashes. |
+| Least data | No email address or real name for an account (django-allauth's add-an-email and password reset pages are switched off, bug #72); the date of birth is checked and thrown away; passwords are stored only as salted PBKDF2 hashes. |
 | Deletion | Deleting an account deletes its My Cards entries and reviews with it (`on_delete=CASCADE`). Contact messages are deleted once handled. |
 | Backups | A full backup every day at 03:00 (UK time), set up with `heroku pg:backups:schedule`, plus Heroku's own continuous protection. The first backup (19 October 2026) was checked: it contains all 18 tables. Restore with `heroku pg:backups:restore`. |
 | If the password leaked | `heroku pg:credentials:rotate` issues a new database password and Heroku updates `DATABASE_URL` and restarts the app. |
@@ -468,8 +463,10 @@ committed; the cache stays local (see `.gitignore`).
 
 Everything below is live on
 [the Heroku site](https://cardvault-0a18b8d773ca.herokuapp.com/) and
-was tested there on 14 October 2026 (see [TESTING.md](./TESTING.md)).
-Screenshots are from that test run, using the Base Set and the AAA, BBB and CCC tester
+was tested there (see [TESTING.md](./TESTING.md)). The first features
+were tested on 14 October 2026 and the rest as each was built, so
+earlier screenshots show the header before the Home and Contact links
+were added. They use the Base Set and the AAA, BBB and CCC tester
 cards.
 
 ### Accounts
@@ -507,7 +504,7 @@ cards.
   a clear link.
 - **Filters** (US09): Rarity and Set dropdowns that combine with the
   search and stay selected when moving between pages.
-- **Card page** (US10): set, number, rarity, average star rating and
+- **Card page** (US10): set, number, rarity, average Poké Ball rating and
   every review.
 
 ![Browse cards showing the first 12 Base Set cards with their pictures](./docs/images/screenshots/catalogue.png)
@@ -521,7 +518,7 @@ From any card's page a logged-in user can:
   list goes to that entry's edit page instead of creating a second
   one.
 - **Read** (US12): My Cards lists every entry with All, Owned and
-  Wanted tabs. Each row shows your own star rating for the card (or a
+  Wanted tabs. Each row shows your own Poké Ball rating for the card (or a
   Rate it link) and a one-line preview of your notes; hover for the
   whole note, or open Edit. On phones and small tablets each row
   stacks into a labelled card showing the full note.
@@ -556,21 +553,21 @@ On top of the CRUD, My Cards helps with a growing collection:
   <img src="./docs/images/screenshots/my-cards-wanted-mobile.png" alt="Wanted cards on a phone in dark mode, each with a Got it! button" width="160">
 </p>
 
-### Reviews: comments and star ratings
+### Reviews: comments and Poké Ball ratings
 
 - **Create** (US18): press Write a review on a card's page, then rate
-  it from 1 to 5 stars and write a comment on the review page. Each
+  it from 1 to 5 Poké Balls and write a comment on the review page. Each
   page has only one form, so nothing you type can be lost. Each user
   reviews a card once; after that the button is replaced by their
   review with Edit and Delete buttons.
 - **Read** (US21): reviews are listed newest first with the
-  username, stars, date and comment, under the card's average rating.
+  username, Poké Ball rating, date and comment, under the card's average rating.
 - **Update** (US19): edit your own review; it is then marked
   "(edited)".
 - **Delete** (US20): delete your own review after a confirmation
   page.
 
-![A 4-star review with its comment and the card's average rating](./docs/images/screenshots/review-success.png)
+![A 4 out of 5 Poké Ball review with its comment and the card's average rating](./docs/images/screenshots/review-success.png)
 
 ### Privacy, safety and accessibility
 
@@ -723,13 +720,14 @@ CardVault never collects email addresses.
 
 ### Still to build
 
-- Every feature is built and tested, including on a real phone. What
-  remains is the final testing write-up and the submission checks.
+Nothing: all 34 user stories are built and tested, including on a
+real phone. Ideas for after the submission are in
+[docs/POTENTIAL_UPSCALE.md](./docs/POTENTIAL_UPSCALE.md).
 
 Every notification message the app shows (login success, duplicate
 username, "thank you for your review", and so on) is written out
 exactly in **[docs/NOTIFICATION_MESSAGES.md](./docs/NOTIFICATION_MESSAGES.md)**,
-so the UI text stays consistent across views as it's built.
+so the wording stays the same everywhere it appears.
 
 ## Agile methodology
 
@@ -760,7 +758,7 @@ the sprints table below.
 - **Four columns:** `Backlog` (planned for a later sprint), `To do`
   (in the current sprint), `In progress` and `Done` (built, and its
   manual test passed). Cards moved across as the work did.
-- **71 issues:** 34 user stories, 21 development tasks and 14 bugs,
+- **72 issues:** 34 user stories, 21 development tasks and 15 bugs,
   plus Jamie's own testing note (#40) and the submission checklist
   (#70). Each story's issue title starts with its ID (for example
   `US01: Register an account`) and holds its acceptance criteria and
@@ -917,9 +915,10 @@ log out and log in.
    deploy** was ticked, but the repository had no CI yet. GitHub then
    reports every commit's checks as "pending" for ever, so Heroku
    received each push and never deployed it. The option was switched
-   off; it goes back on once the GitHub Actions workflow (issue #39)
-   is running, so that a commit with failing tests can never reach the
-   live site.
+   off until the GitHub Actions workflow (issue #39) was running, then
+   switched back on on 19 October 2026, so a commit with failing tests
+   can never reach the live site (see
+   [Continuous integration](TESTING.md#continuous-integration)).
 5. **Create a superuser on Heroku** (one-off, after the first
    deploy):
    ```bash
@@ -1073,4 +1072,5 @@ the AI's own mistakes.
 | 2026-10-29 | Planning (mind map) | Asked Claude to check whether the mind map can be trusted, starting with the 19 links it guessed for the `Card` model. Claude wrote a script that reads every class and function in the code for a reference to `Card`, and compared the two: all 19 claimed links were correct, but the graph missed 2 real uses. Rather than stop there, it formed two explanations and tested them on the other models: graphify never links a reference inside a decorator (none of the four admin classes) or to a class in the same file (`Card` to `CardSet`), but always links one made through an import. Recorded in the mind map section. |
 | 2026-10-29 | Automated tests | Finished the testing write-up (#36) with Claude. It ran a coverage report for the first time (99% of the site's code; the rest is production-only settings) and found three small untested paths, which it covered with new tests. It added a table giving every user story's manual test and result, and re-checked three stories with fresh evidence: reviews on the live site (US21), loading the catalogue twice into a brand-new database with no duplicates (US27), and a full secret scan of all 60 commits (US26). A link check then exposed a mistake from its own earlier edit: adding the Load testing section had deleted the Validators heading, which it restored. |
 | 2026-10-29 | Documentation | Asked Claude for an architecture diagram and a tidy of the Agile section for the submission checklist (#70). Claude first read which apps actually import from which, then drew three Mermaid diagrams (the whole system, how the code is organised, and one request from start to finish) and rendered all five diagrams in the README in Chrome with the same Mermaid library GitHub uses, to prove they draw. It rewrote the Agile section from setup instructions into an account of what was done, with the real issue and milestone counts from GitHub; checking those against GitHub caught one error before it was committed (the error pages were in Sprint 3, not Sprint 2). |
+| 2026-10-30 | Debugging | Final review before submission with Claude. It re-ran every check (229 tests, flake8, the W3C validators on nine live pages, every link and image in the docs, the live security headers and backups) and found the docs out of date in places: USER_STORIES.md had every acceptance criterion unticked although each was ticked on its GitHub issue (Claude compared all 267 one by one before ticking 266; the VoiceOver check stays unticked, as it was not done), and some pages still described ratings as stars. While validating, it noticed allauth's password reset page still answered, although bug #42 had removed its link. Testing it locally showed that sending the form crashes (the site has no mail server), and that a logged-in user could add an email address at `/accounts/email/`, against the Privacy page. Logged as bug #72; those pages now show the 404 page, the site cannot send email at all, and 5 new tests failed before the fix and pass after it. |
 | 2026-10-29 | Documentation | Gave Claude my folders of screenshots from the project to sort for the submission. Claude read all 56 conversation screenshots one by one, kept 50 with a description of each in docs/AI_CONVERSATIONS.md, and chose 10 of my 44 manual-test screenshots for TESTING.md. It covered personal details with a script using the Mac's own text recognition (my email, the Mac's username, a one-time login code), then scanned every image again, including the 90 already in the repo, and found the Mac's username in two terminal screenshots committed earlier, which it replaced. Reading Heroku's metrics from that week, it noticed they contradict its own 19 October conclusion about the load test: the 50 stalled requests most likely did reach Heroku and timed out. It corrected TESTING.md and the README rather than leave the earlier claim. |

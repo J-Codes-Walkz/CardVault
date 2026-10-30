@@ -2,11 +2,11 @@
 from django.contrib import admin
 from django.shortcuts import redirect
 from django.templatetags.static import static
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.views.generic import TemplateView
 
 from accounts.views import DeleteAccountView, SignupView
-from accounts.views import admin_allowed, admin_login
+from accounts.views import admin_allowed, admin_login, no_email_pages
 from cards.views import HomeView
 
 delete_account = DeleteAccountView.as_view()
@@ -19,6 +19,10 @@ def favicon(request):
 
 
 accessibility = TemplateView.as_view(template_name="accessibility.html")
+
+# No email addresses are collected, so allauth's pages for adding one,
+# confirming one and password reset are refused (bug #72).
+NO_EMAIL_PAGES = r"^accounts/(email|confirm-email|password/reset)/"
 
 # The admin's own login form has no limit on password guesses, so
 # admin log ins go through django-allauth instead, and only
@@ -37,6 +41,7 @@ urlpatterns = [
     # deletion come before allauth's URLs, so they take priority.
     path("accounts/signup/", SignupView.as_view(), name="account_signup"),
     path("accounts/delete/", delete_account, name="delete_account"),
+    re_path(NO_EMAIL_PAGES, no_email_pages),
     path("accounts/", include("allauth.urls")),
     path("cards/mine/", include("collection.urls")),
     path("cards/", include("cards.urls")),

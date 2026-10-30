@@ -7,12 +7,12 @@ CardVault is tested in these ways:
 
 | Method | What it covers | Result |
 |---|---|---|
-| [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site | 57 of 57 checks passed |
+| [Manual testing](#manual-testing) | Every front-end action a user can take, done in a real browser on the live site or a local copy | 71 of 71 checks passed |
 | [Responsive testing](#responsive-testing) | Layout at 320, 375, 768, 1024 and 1440px | No sideways scrolling at any width |
-| [Automated testing](#automated-testing) | 224 Django tests, including two-user ownership and security tests; 99% code coverage | 224 passed |
+| [Automated testing](#automated-testing) | 229 Django tests, including two-user ownership and security tests; 99% code coverage | 229 passed |
 | [Continuous integration](#continuous-integration) | flake8, Django checks, the tests, Bandit and pip-audit on every push, on GitHub Actions | Passing since 19 October 2026 |
 | [Load testing](#load-testing) | 2,000 visits to the live site, 25 at a time | All succeeded; median 0.21 seconds |
-| [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only, Lighthouse and WAVE | No violations (one keyboard bug found and fixed); Lighthouse Accessibility 100 on every page |
+| [Accessibility testing](#accessibility-testing) | axe (WCAG 2.2 AA) on every page, 200% zoom, high contrast, keyboard only, Lighthouse and WAVE | No violations (two keyboard bugs found and fixed, #56 and #71); Lighthouse Accessibility 100 on every page |
 | [Security testing](#security-testing) | Headers, log in limits, admin access, secrets, dependencies, code scanning | No issues found |
 | [Validators](#validators) | HTML (W3C), CSS (Jigsaw), JavaScript, Python (PEP8) | 0 errors |
 
@@ -68,10 +68,10 @@ linked.
 | US15 Collection summary | Known owned quantities and one wanted card | Pass | [Summary, sorting and Got it!](#my-cards-summary-sorting-and-got-it-us15-to-us17) |
 | US16 Sort and filter my cards | Sort by name; filter by set; switch tabs | Pass | [Summary, sorting and Got it!](#my-cards-summary-sorting-and-got-it-us15-to-us17) |
 | US17 Got it! | Press Got it! on a wanted card and confirm the quantity | Pass | [Summary, sorting and Got it!](#my-cards-summary-sorting-and-got-it-us15-to-us17) |
-| US18 Submit a review | Review a card; try to review it again | Pass | [Reviews](#reviews-comment-and-star-rating-us18-to-us21) |
-| US19 Edit my review | Edit and save | Pass | [Reviews](#reviews-comment-and-star-rating-us18-to-us21) |
-| US20 Delete my review | Delete and confirm; delete and cancel | Pass | [Reviews](#reviews-comment-and-star-rating-us18-to-us21) |
-| US21 Read reviews | A card with reviews, then one with none. Checked again on the live site on 29 October 2026: Alakazam and Charizard show their reviews and average; Diglett shows "No reviews yet. Be the first to review this card." | Pass | [Reviews](#reviews-comment-and-star-rating-us18-to-us21) |
+| US18 Submit a review | Review a card; try to review it again | Pass | [Reviews](#reviews-comment-and-poké-ball-rating-us18-to-us21) |
+| US19 Edit my review | Edit and save | Pass | [Reviews](#reviews-comment-and-poké-ball-rating-us18-to-us21) |
+| US20 Delete my review | Delete and confirm; delete and cancel | Pass | [Reviews](#reviews-comment-and-poké-ball-rating-us18-to-us21) |
+| US21 Read reviews | A card with reviews, then one with none. Checked again on the live site on 29 October 2026: Alakazam and Charizard show their reviews and average; Diglett shows "No reviews yet. Be the first to review this card." | Pass | [Reviews](#reviews-comment-and-poké-ball-rating-us18-to-us21) |
 | US22 Any device | Every page at 320 to 1440px, and on a real phone | Pass | [Responsive](#responsive-testing), [Real phone](#on-a-real-phone-us22), [Lighthouse](#lighthouse) |
 | US23 Read and use the site easily | Keyboard only; Lighthouse and WAVE on each page | Pass | [Accessibility](#accessibility-testing), [Lighthouse](#lighthouse), [WAVE](#wave) |
 | US24 Feedback on every action | Register, log in, log out, create, edit, delete | Pass: every row in the tables above records the message shown, with "Success:" or "Error:" as well as colour | [Notification messages](./docs/NOTIFICATION_MESSAGES.md) |
@@ -107,8 +107,8 @@ linked.
 | Story | Test | Expected | Result | Screenshot |
 |---|---|---|---|---|
 | US06 | Open the home page logged out | Headline says what the site is for; Create account and Browse cards buttons; featured cards | Pass | [home-logged-out](./docs/images/screenshots/home-logged-out.png) |
-| US07 | Open Browse cards | 12 Base Set cards on page 1 (Alakazam first), each with its picture, set, number and rarity; all 12 pictures load | Pass |
-| US08 | Search for `aaa` | Only the tester card AAA, which shows the placeholder image | Pass | | [catalogue](./docs/images/screenshots/catalogue.png) |
+| US07 | Open Browse cards | 12 Base Set cards on page 1 (Alakazam first), each with its picture, set, number and rarity; all 12 pictures load | Pass | [catalogue](./docs/images/screenshots/catalogue.png) |
+| US08 | Search for `aaa` | Only the tester card AAA, which shows the placeholder image | Pass | |
 | US08 | Search for `bb` | Only BBB, with "1 card found" | Pass | [search-result](./docs/images/screenshots/search-result.png) |
 | US08 | Search for `zzz` | 'No cards match "zzz". Try a different name, set or rarity.' | Pass | |
 | US08 | Search for `Holo`, then `Holo Rare` (Jamie's manual test, 15 October) | Before the fix: 0 results, because only names were searched. After: the 16 Base Set holos plus tester card CCC | Pass after fix | [search-1440](./docs/images/screenshots/search-1440.png) |
@@ -122,7 +122,7 @@ linked.
 | US11 | Add a card with quantity 0 | Not saved; "Please correct the errors below and try again." | Pass | [add-card-invalid-quantity](./docs/images/screenshots/add-card-invalid-quantity.png) |
 | US11 | Add a card as Owned, quantity 2, with a note | "Alakazam was added to your cards." and it is listed in My Cards | Pass | [add-card-success](./docs/images/screenshots/add-card-success.png) |
 | US12 | View My Cards with a long note at 320, 375, 768, 900, 1024 and 1440px | No sideways scrolling; below 900px each entry stacks as a labelled card; from 900px the card name never overlaps the Set column, Edit and Remove sit side by side inside the table (notes were later moved to a one-line preview; see the next row) | Pass after fix (bug #57) | [my-cards-mobile](./docs/images/screenshots/my-cards-mobile.png) |
-| US12 | View My Cards after reviewing one card but not another (Jamie asked to replace the large notes box with stars, 15 October) | A My rating column with my stars, or a Rate it link; notes as a one-line preview under the card name (full note on hover, on the Edit page and on phones); rows about 100px tall instead of about 260px | Pass | |
+| US12 | View My Cards after reviewing one card but not another (Jamie asked to replace the large notes box with stars, 15 October) | A My rating column with my Poké Ball rating, or a Rate it link; notes as a one-line preview under the card name (full note on hover, on the Edit page and on phones); rows about 100px tall instead of about 260px | Pass | |
 | US11 | Open the same card again | Card page says "On your list" instead of showing the add form | Pass | |
 | US11 | Try to add the same card again | Sent to that entry's edit page with "You already have Alakazam on your list. Edit that entry to change it." | Pass | |
 | US13 | Edit the entry to Wanted, quantity 3 | "Your entry for Alakazam was updated." and the list shows Wanted, 3 | Pass | [edit-card-form](./docs/images/screenshots/edit-card-form.png), [edit-card-success](./docs/images/screenshots/edit-card-success.png) |
@@ -152,14 +152,14 @@ the Status column is set not to wrap. The browser check measures each
 Got it! button against its table cell; it now sits on its own line
 under "Wanted", and the check passed at all five widths.
 
-### Reviews: comment and star rating (US18 to US21)
+### Reviews: comment and Poké Ball rating (US18 to US21)
 
 | Story | Test | Expected | Result | Screenshot |
 |---|---|---|---|---|
 | US18 | Open a card's page | At most one form on the page (Add to My Cards), plus a Write a review button, so nothing typed can be lost by submitting another form | Pass after fix (bug #58) | |
 | US18 | Press Write a review, then submit it empty | The review page opens; the browser blocks the empty form (rating and comment are required) | Pass | [review-form](./docs/images/screenshots/review-form.png) |
-| US18 | Give 4 stars with a comment | "Thank you for submitting your review!"; the review shows ★★★★☆ and the comment; the average updates | Pass | [review-success](./docs/images/screenshots/review-success.png) |
-| US19 | Edit the review to 5 stars | "Your review was updated successfully." and ★★★★★ | Pass | [review-edit-form](./docs/images/screenshots/review-edit-form.png) |
+| US18 | Give 4 Poké Balls with a comment | "Thank you for submitting your review!"; the review shows 4 full Poké Balls and 1 empty, and the comment; the average updates | Pass | [review-success](./docs/images/screenshots/review-success.png) |
+| US19 | Edit the review to 5 Poké Balls | "Your review was updated successfully." and 5 full Poké Balls | Pass | [review-edit-form](./docs/images/screenshots/review-edit-form.png) |
 | US20 | Delete the review | Confirmation page; then "Your review was deleted." and "No reviews yet" | Pass | [review-delete-confirm](./docs/images/screenshots/review-delete-confirm.png) |
 
 ### Privacy, safety and accessibility (US29 to US32)
@@ -325,9 +325,9 @@ Run with:
 python manage.py test
 ```
 
-224 tests, all passing on 29 October 2026. Jamie ran the suite in his
-own terminal on 26 October 2026, before US15 to US17, US28 and the
-coverage gaps added 33 more:
+229 tests, all passing in the final check on 30 October 2026. Jamie
+ran the suite in his own terminal on 26 October 2026, before US15 to
+US17, US28, the coverage gaps and bug #72 added 38 more:
 
 ![python manage.py test: Ran 191 tests, OK](./docs/images/screenshots/tests-passing.png)
 
@@ -338,8 +338,8 @@ on Heroku, which does not exist on a development machine.
 
 | File | Tests | What they check |
 |---|---|---|
-| `accounts/tests.py` | 67 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (a third wrong password is an ordinary error, the fourth is blocked, even a correct one while locked; the lock follows the username across addresses; one address cannot guess across many usernames; other visitors can still log in; a faked first `X-Forwarded-For` entry does not help), the eleventh registration in an hour gets the 429 page, expired cache rows are deleted, the 10-second query limit, and the admin log in going through django-allauth (superusers in; ordinary users and staff who are not superusers refused; unsafe `next` addresses ignored and safe ones followed), the admin itself (titled for CardVault, every model listed and no Email addresses, cards searchable by set, a wrong card name corrected through the admin, a picture preview, and "No picture link" without one), the Admin header link (superusers only); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie, and an email address refused as a username, the privacy page's browser-storage section, and `/favicon.ico` |
-| `cards/tests.py` | 69 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the star filter, the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404; search across name, set and rarity in any order ("holo rare", "rare holo", "holos"; "common" not matching Uncommon), the Rarity and Set filters alone and combined, unknown filter values ignored, filters kept in page links; Poké Ball ratings (full, empty, rounded averages, hidden from screen readers), the five-ball picker on the review form, the 1999 rarity symbols and which cards shimmer, and searches cut to 100 characters and 5 words |
+| `accounts/tests.py` | 72 | Register (valid, taken username, each of the four password rules, mismatched passwords), log in (valid, wrong password, unknown username, return to the requested page, no password-reset link; allauth's email and password reset pages show the 404 page and send no email, while password change still works), log out (POST logs out, GET does not), navigation in both states; security headers (CSP, Permissions Policy, no framing, no inline scripts), log in rate limiting (a third wrong password is an ordinary error, the fourth is blocked, even a correct one while locked; the lock follows the username across addresses; one address cannot guess across many usernames; other visitors can still log in; a faked first `X-Forwarded-For` entry does not help), the eleventh registration in an hour gets the 429 page, expired cache rows are deleted, the 10-second query limit, and the admin log in going through django-allauth (superusers in; ordinary users and staff who are not superusers refused; unsafe `next` addresses ignored and safe ones followed), the admin itself (titled for CardVault, every model listed and no Email addresses, cards searchable by set, a wrong card name corrected through the admin, a picture preview, and "No picture link" without one), the Admin header link (superusers only); the age check (13 today allowed, one day short refused, registration then closed for the session, future dates rejected, date of birth not stored), deleting an account (password check, everything of yours deleted, other users untouched), the privacy and accessibility pages and footer links, and no `messages` cookie, and an email address refused as a username, the privacy page's browser-storage section, and `/favicon.ico` |
+| `cards/tests.py` | 69 | Model constraints (unique set names, unique number per set, rating 1 to 5 in the form and the database, one review per user per card), the Base Set (102 cards, matching the printed set) and tester fixtures (load twice without duplicates), the "edited" marker, catalogue paging and search, the card page logged in and out, average rating, and review create, edit and delete, including another user's review returning 404; search across name, set and rarity in any order ("holo rare", "rare holo", "holos"; "common" not matching Uncommon), the Rarity and Set filters alone and combined, unknown filter values ignored, filters kept in page links; Poké Ball ratings (full, empty, rounded averages, hidden from screen readers), the five-ball picker on the review form, the 1999 rarity symbols and which cards shimmer, and searches cut to 100 characters and 5 words |
 | `collection/tests.py` | 56 | Entry constraints (one per user per card, quantity at least 1), My Cards tabs and empty states, add (the form opens for the card; owned, wanted, quantity 0, duplicate, unknown card, logged out), edit and remove, including another user's entry returning 404 and staying unchanged; My Cards shows my own rating (not other people's) or a Rate it link, the notes preview, and a fixed number of database queries however long the list; the collection totals (owned copies, different cards, wanted not counted, unaffected by tab or filters, hidden when empty), sorting (newest, oldest, name, set and number; unknown sorts ignored), the set filter (only my sets offered; unknown values ignored; an empty set says so), choices kept in the tabs, and Got it! (button only on wanted entries, quantity filled in, moves to owned keeping notes, quantity below 1 refused, owned and other users' entries 404, logged out sent to log in) |
 | `contact/tests.py` | 20 | The Contact page for anyone, every field required, a bad email address and a message over 2,000 characters refused, a valid message saved with the thank you message, the username filled in when logged in, the bot trap (thanked but not saved), the 5-an-hour limit and that it is per visitor, the IP address hashed and taken from the address Heroku adds, the admin (message read-only, only "handled" editable, no adding messages), Home and Contact links on every page with `aria-current="page"` on the current one, and the Privacy page's Contact section |
 | `cardvault/tests.py` | 12 | The error pages (US25): an unknown address and an unknown card show the 404 page, which links home, offers a card search, keeps the logged-in header and shows no technical detail; an ordinary user opening the admin gets the 403 page; a form sent without a valid CSRF token gets the "This form has expired" page; an unknown host gets the 400 page; a forced crash gets the 500 page with no technical detail, is logged with its traceback, and the 500 page uses no template tags |
@@ -391,7 +391,7 @@ coverage run --source=accounts,cards,collection,contact,cardvault manage.py test
 coverage report -m --omit='*/migrations/*,*/tests.py,cardvault/asgi.py,cardvault/wsgi.py'
 ```
 
-**775 of 783 lines of the site's code run during the tests (99%).**
+**780 of 788 lines of the site's code run during the tests (99%, rechecked on 30 October 2026).**
 Every app, model, form, view, admin class, template tag, middleware
 and management command is at 100%. The only lines not run are the 8
 production-only security settings at the end of
@@ -429,9 +429,10 @@ same accessibility engine Lighthouse uses; it was run with every WCAG
 
 ![The yellow Skip to main content link shown after pressing Tab](./docs/images/screenshots/skip-link.png)
 
-**Still to do by hand:** a recorded pass with VoiceOver, the Mac's
-built-in screen reader (US32). Jamie tried on 29 October 2026, but
-VoiceOver did not start in the recording. The page structure it
+**Not done:** a recorded pass with VoiceOver, the Mac's built-in
+screen reader (US32). Jamie tried on 29 October 2026, but VoiceOver
+did not start in the recording, and he chose not to retry before
+submission. The page structure it
 relies on (landmarks, a logical heading order, labelled fields, alt
 text on every card picture) passes axe, Lighthouse (Accessibility 100
 on every page) and WAVE.
@@ -651,6 +652,12 @@ validated by URL). The logged-out pages (home, Browse cards, a search
 with no results, two card pages, Log in and Register) were also
 validated by URL on the live site: 0 errors, 0 warnings.
 
+**Final check, 30 October 2026:** nine public pages on the live site
+(home, Browse cards, a card page, Contact, Log in, Register, Privacy,
+Accessibility and the 404 page) validated by URL: 0 errors, 0
+warnings on each. The live stylesheet
+passed Jigsaw with 0 errors.
+
 | Pages | Errors | Warnings |
 |---|---|---|
 | Home (logged out and logged in) | 0 | 0 |
@@ -688,8 +695,13 @@ on 26 October 2026. Three warnings remain, all expected:
 
 ### JavaScript
 
-`static/js/nav.js` (the Menu button) passes a syntax check with
-JavaScriptCore. It uses `const`, strict equality and no globals.
+All four files pass a syntax check with Node 22 (`node --check`,
+30 October 2026): `nav.js` (the Menu button), `intro.js` (the
+first-visit intro and the Pause animation button), `image-fallback.js`
+(the placeholder for a missing card picture) and `js-enabled.js`
+(marks the page as having JavaScript). Each uses strict equality and
+keeps its variables inside a function, so nothing leaks into the
+page's global scope.
 
 ### Python: PEP8
 
@@ -731,7 +743,7 @@ privately, as described in [SECURITY.md](./SECURITY.md).
 
 | Issue | Bug | Fix | Status |
 |---|---|---|---|
-| [#41](https://github.com/J-Codes-Walkz/CardVault/issues/41) | Heroku never deployed pushes from GitHub: "Wait for CI" was on, but there was no CI, so every commit stayed "pending" | Option switched off until the GitHub Actions workflow (#39) exists | Fixed |
+| [#41](https://github.com/J-Codes-Walkz/CardVault/issues/41) | Heroku never deployed pushes from GitHub: "Wait for CI" was on, but there was no CI, so every commit stayed "pending" | Option switched off until the GitHub Actions workflow (#39) existed, then switched back on on 19 October 2026 once CI passed | Fixed |
 | [#42](https://github.com/J-Codes-Walkz/CardVault/issues/42) | Log in page linked to a password reset that could never work (no email addresses are collected) | Link removed in `accounts/forms.py`; covered by a test | Fixed |
 | [#43](https://github.com/J-Codes-Walkz/CardVault/issues/43) | `.gitignore` was GitHub's generic 240-line template | Cut to the 35 lines this project uses; the ignored files are unchanged | Fixed |
 | [#44](https://github.com/J-Codes-Walkz/CardVault/issues/44) | Some Python statements were split across lines with non-standard indentation | Rewritten as single lines | Fixed |
@@ -745,6 +757,7 @@ privately, as described in [SECURITY.md](./SECURITY.md).
 | [#67](https://github.com/J-Codes-Walkz/CardVault/issues/67) | A search with thousands of words built one huge, slow database query | Searches cut to 100 characters and 5 words; Postgres stops any query after 10 seconds | Fixed |
 | [#69](https://github.com/J-Codes-Walkz/CardVault/issues/69) | Crashes on the live site left no trace in the logs: with `DEBUG` off, Django printed nothing | A `LOGGING` setting sends warnings and errors, with tracebacks, to the console that Heroku collects; tested | Fixed |
 | [#71](https://github.com/J-Codes-Walkz/CardVault/issues/71) | The "Skip to main content" link was hard to see when it appeared: white on navy, on top of the navy header (Jamie's manual keyboard test) | Shown in the brand's yellow with dark text (9.98:1 and 11.27:1), a white focus outline and a shadow; re-tested with real Tab presses, light and dark | Fixed |
+| [#72](https://github.com/J-Codes-Walkz/CardVault/issues/72) | django-allauth's email pages still answered (found in the final review): sending the password reset form crashed with a 500, as the site has no mail server, and a logged-in user could add an email address at `/accounts/email/`, against the Privacy page | Those pages show the 404 page, and Django's email sending is switched off (`EMAIL_BACKEND` set to the dummy backend); 5 tests, which failed before the fix | Fixed |
 
 Found and fixed while building, before they reached the live site:
 

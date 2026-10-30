@@ -4,6 +4,8 @@ Every story follows the standard template: **As a** &lt;role&gt;, **I want** &lt
 
 Each user story's ID (for example `US01`) is used as its GitHub Issue title prefix and as a label on the project board, so a story, its issue and its card can always be matched up.
 
+A ticked box means the criterion or task is done and was ticked on its GitHub Issue when the story closed. The one box left unticked, the VoiceOver check in US32, was not done.
+
 ## All stories at a glance
 
 | ID | Story | Epic | Priority |
@@ -62,19 +64,19 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] The form asks for a username, a password and a password confirmation.
-- [ ] After registering I am logged in straight away, taken to My Cards and see "Your account has been created. Welcome to CardVault, <username>!"
-- [ ] If the username already exists I see "That username is already taken. Please choose another."
-- [ ] If the password is too weak I am asked for a more complex one and told which rule it broke (minimum length, too common, numbers only, too similar to the username).
-- [ ] If the two passwords differ I see an error and no account is created.
-- [ ] An email address cannot be used as a username, because usernames are shown publicly next to reviews.
+- [x] The form asks for a username, a password and a password confirmation.
+- [x] After registering I am logged in straight away, taken to My Cards and see "Your account has been created. Welcome to CardVault, <username>!"
+- [x] If the username already exists I see "That username is already taken. Please choose another."
+- [x] If the password is too weak I am asked for a more complex one and told which rule it broke (minimum length, too common, numbers only, too similar to the username).
+- [x] If the two passwords differ I see an error and no account is created.
+- [x] An email address cannot be used as a username, because usernames are shown publicly next to reviews.
 
 **Development tasks**
 
-- [ ] Use Django's built-in User model with django-allauth's registration form (no custom user model needed).
-- [ ] Include django-allauth's URLs and write the register template.
-- [ ] Add the success and error messages (see the notification messages table in the README).
-- [ ] Write tests for a duplicate username, a weak password and mismatched passwords.
+- [x] Use Django's built-in User model with django-allauth's registration form (no custom user model needed).
+- [x] Include django-allauth's URLs and write the register template.
+- [x] Add the success and error messages (see the notification messages table in the README).
+- [x] Write tests for a duplicate username, a weak password and mismatched passwords.
 
 **Manual test**
 
@@ -89,16 +91,16 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] A correct username and password logs me in and I see "Welcome back, <username>!".
-- [ ] A wrong username or password shows "Invalid username or password. Please try again." and does not reveal which part was wrong.
-- [ ] After logging in I land on My Cards, or on the page I was originally trying to reach.
+- [x] A correct username and password logs me in and I see "Welcome back, <username>!".
+- [x] A wrong username or password shows "Invalid username or password. Please try again." and does not reveal which part was wrong.
+- [x] After logging in I land on My Cards, or on the page I was originally trying to reach.
 
 **Development tasks**
 
-- [ ] Add the login view and template.
-- [ ] Configure the redirect after login.
-- [ ] Add the welcome and error messages.
-- [ ] Write tests for valid and invalid credentials.
+- [x] Add the login view and template.
+- [x] Configure the redirect after login.
+- [x] Add the welcome and error messages.
+- [x] Write tests for valid and invalid credentials.
 
 **Manual test**
 
@@ -113,16 +115,16 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] A Log out button is visible in the navigation whenever I am logged in.
-- [ ] Logging out ends my session and shows "You have been logged out. See you soon!"
-- [ ] Logout is sent as a POST request with a CSRF token (Django 5 does not allow logging out through a plain link).
-- [ ] After logging out, my private pages redirect to the login page.
+- [x] A Log out button is visible in the navigation whenever I am logged in.
+- [x] Logging out ends my session and shows "You have been logged out. See you soon!"
+- [x] Logout is sent as a POST request with a CSRF token (Django 5 does not allow logging out through a plain link).
+- [x] After logging out, my private pages redirect to the login page.
 
 **Development tasks**
 
-- [ ] Add a logout form (POST) to the navigation.
-- [ ] Show the logged-out message and check it still displays after the session is cleared.
-- [ ] Test that logged-out users are redirected from private pages.
+- [x] Add a logout form (POST) to the navigation.
+- [x] Show the logged-out message and check it still displays after the session is cleared.
+- [x] Test that logged-out users are redirected from private pages.
 
 **Manual test**
 
@@ -137,15 +139,15 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] When logged in, the navigation shows "Logged in as <username>", My Cards and Log out.
-- [ ] When logged out, the navigation shows only Browse cards, Log in and Register (no private links).
-- [ ] The same states appear in the mobile menu.
+- [x] When logged in, the navigation shows "Logged in as <username>", My Cards and Log out.
+- [x] When logged out, the navigation shows only Browse cards, Log in and Register (no private links).
+- [x] The same states appear in the mobile menu.
 
 **Development tasks**
 
-- [ ] Build the navigation in the base template using user.is_authenticated.
-- [ ] Build the matching mobile menu.
-- [ ] Check both states on every page.
+- [x] Build the navigation in the base template using user.is_authenticated.
+- [x] Build the matching mobile menu.
+- [x] Check both states on every page.
 
 **Manual test**
 
@@ -160,17 +162,17 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] A logged-out visitor opening a private page is sent to the login page with "Please log in to view that page."
-- [ ] Changing the ID in the address bar to another user's record returns a 404 page and changes nothing.
-- [ ] Edit and Remove buttons only appear on records I own.
-- [ ] Tests with two users prove that user B cannot view, edit or delete user A's records.
+- [x] A logged-out visitor opening a private page is sent to the login page with "Please log in to view that page."
+- [x] Changing the ID in the address bar to another user's record returns a 404 page and changes nothing.
+- [x] Edit and Remove buttons only appear on records I own.
+- [x] Tests with two users prove that user B cannot view, edit or delete user A's records.
 
 **Development tasks**
 
-- [ ] Protect every private view with LoginRequiredMixin (or login_required).
-- [ ] Filter every private queryset by request.user so other users' IDs return 404.
-- [ ] Only render Edit and Remove for the record owner.
-- [ ] Write two-user tests for view, edit and delete.
+- [x] Protect every private view with LoginRequiredMixin (or login_required).
+- [x] Filter every private queryset by request.user so other users' IDs return 404.
+- [x] Only render Edit and Remove for the record owner.
+- [x] Write two-user tests for view, edit and delete.
 
 **Manual test**
 
@@ -187,17 +189,17 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] The home page headline and one-line description say what the site is for.
-- [ ] Clear calls to action: "Create account" and "Browse cards" for visitors, "Go to My Cards" for logged-in users.
-- [ ] A row of featured cards shows what the catalogue looks like.
-- [ ] The navigation shows where everything is.
+- [x] The home page headline and one-line description say what the site is for.
+- [x] Clear calls to action: "Create account" and "Browse cards" for visitors, "Go to My Cards" for logged-in users.
+- [x] A row of featured cards shows what the catalogue looks like.
+- [x] The navigation shows where everything is.
 
 **Development tasks**
 
-- [ ] Build the home view and template.
-- [ ] Add the hero section and calls to action (different when logged in).
-- [ ] Query a few featured cards for the home page.
-- [ ] Test the page for logged-in and logged-out users.
+- [x] Build the home view and template.
+- [x] Add the hero section and calls to action (different when logged in).
+- [x] Query a few featured cards for the home page.
+- [x] Test the page for logged-in and logged-out users.
 
 **Manual test**
 
@@ -212,17 +214,17 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Cards appear in a grid, 12 per page, each showing image, name, set, number and rarity.
-- [ ] Previous, Next and page numbers let me move between pages.
-- [ ] Each card links to its detail page.
-- [ ] It works without logging in, images have alt text, and a missing image shows a placeholder.
+- [x] Cards appear in a grid, 12 per page, each showing image, name, set, number and rarity.
+- [x] Previous, Next and page numbers let me move between pages.
+- [x] Each card links to its detail page.
+- [x] It works without logging in, images have alt text, and a missing image shows a placeholder.
 
 **Development tasks**
 
-- [ ] Build a paginated catalogue ListView.
-- [ ] Create a reusable card tile template.
-- [ ] Add a placeholder image for missing artwork.
-- [ ] Test pagination.
+- [x] Build a paginated catalogue ListView.
+- [x] Create a reusable card tile template.
+- [x] Add a placeholder image for missing artwork.
+- [x] Test pagination.
 
 **Manual test**
 
@@ -237,17 +239,17 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] A search box on the catalogue finds partial, case-insensitive matches on a card's name, set or rarity, with the words in any order (for example "char" finds Charizard, and "holo rare" or "rare holo" finds every Rare Holo card).
-- [ ] The number of results is shown.
-- [ ] No match shows "No cards match '<term>'. Try a different name." with a link to clear the search.
-- [ ] The search term stays in the box and in the pagination links.
+- [x] A search box on the catalogue finds partial, case-insensitive matches on a card's name, set or rarity, with the words in any order (for example "char" finds Charizard, and "holo rare" or "rare holo" finds every Rare Holo card).
+- [x] The number of results is shown.
+- [x] No match shows "No cards match '<term>'. Try a different name." with a link to clear the search.
+- [x] The search term stays in the box and in the pagination links.
 
 **Development tasks**
 
-- [ ] Add a search form (GET) to the catalogue.
-- [ ] Filter the queryset with name__icontains.
-- [ ] Keep the search term in pagination links.
-- [ ] Write tests for a match and for no match.
+- [x] Add a search form (GET) to the catalogue.
+- [x] Filter the queryset with name__icontains.
+- [x] Keep the search term in pagination links.
+- [x] Write tests for a match and for no match.
 
 **Manual test**
 
@@ -262,17 +264,17 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Set and rarity dropdowns filter the catalogue.
-- [ ] Filters combine with the name search.
-- [ ] A Clear filters link resets everything.
-- [ ] Filters are kept when I move between pages.
+- [x] Set and rarity dropdowns filter the catalogue.
+- [x] Filters combine with the name search.
+- [x] A Clear filters link resets everything.
+- [x] Filters are kept when I move between pages.
 
 **Development tasks**
 
-- [ ] Add the filter form and populate the dropdowns from the CardSet table and the Card rarity choices.
-- [ ] Apply the filters to the queryset.
-- [ ] Keep filters in pagination links.
-- [ ] Write tests for combined filters.
+- [x] Add the filter form and populate the dropdowns from the CardSet table and the Card rarity choices.
+- [x] Apply the filters to the queryset.
+- [x] Keep filters in pagination links.
+- [x] Write tests for combined filters.
 
 **Manual test**
 
@@ -287,18 +289,18 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] The page shows a large image, name, set, number and rarity.
-- [ ] The average rating and number of reviews are shown.
-- [ ] When logged in I see the add-to-My-Cards and review controls.
-- [ ] When logged out I see "Log in to add this card" instead of the controls.
-- [ ] An unknown card ID shows a 404 page.
+- [x] The page shows a large image, name, set, number and rarity.
+- [x] The average rating and number of reviews are shown.
+- [x] When logged in I see the add-to-My-Cards and review controls.
+- [x] When logged out I see "Log in to add this card" instead of the controls.
+- [x] An unknown card ID shows a 404 page.
 
 **Development tasks**
 
-- [ ] Build the card DetailView and template.
-- [ ] Show the controls only to logged-in users.
-- [ ] Add the average rating and review count (Avg and Count).
-- [ ] Write tests for logged-in, logged-out and unknown ID.
+- [x] Build the card DetailView and template.
+- [x] Show the controls only to logged-in users.
+- [x] Add the average rating and review count (Avg and Count).
+- [x] Write tests for logged-in, logged-out and unknown ID.
 
 **Manual test**
 
@@ -315,18 +317,18 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] The form lets me choose a status (Owned or Wanted, default Owned) and a quantity (minimum 1).
-- [ ] Success shows "<Card> was added to your cards."
-- [ ] Adding a card that's already on my list shows "You already have <Card> on your list. Edit that entry to change it." with a link to edit it.
-- [ ] A quantity of 0 or less is rejected with an error.
-- [ ] The new entry appears in My Cards under the status I chose.
+- [x] The form lets me choose a status (Owned or Wanted, default Owned) and a quantity (minimum 1).
+- [x] Success shows "<Card> was added to your cards."
+- [x] Adding a card that's already on my list shows "You already have <Card> on your list. Edit that entry to change it." with a link to edit it.
+- [x] A quantity of 0 or less is rejected with an error.
+- [x] The new entry appears in My Cards under the status I chose.
 
 **Development tasks**
 
-- [ ] Create the CollectionEntry form and the create view (card taken from the URL).
-- [ ] Handle duplicates with a friendly form error as well as the database's unique-together constraint on (user, card).
-- [ ] Add the success and error messages.
-- [ ] Write tests for create, duplicate and invalid quantity.
+- [x] Create the CollectionEntry form and the create view (card taken from the URL).
+- [x] Handle duplicates with a friendly form error as well as the database's unique-together constraint on (user, card).
+- [x] Add the success and error messages.
+- [x] Write tests for create, duplicate and invalid quantity.
 
 **Manual test**
 
@@ -341,18 +343,18 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Each entry shows image, name, set, status, quantity, my own star rating (or a Rate it link) and a one-line preview of my notes, newest first.
-- [ ] A tab or filter switches between Owned, Wanted and All.
-- [ ] Only my own entries are listed.
-- [ ] An empty list shows "Your cards list is empty. Browse cards to add your first one." with a link to the catalogue.
-- [ ] Every entry has Edit and Remove buttons.
+- [x] Each entry shows image, name, set, status, quantity, my own star rating (or a Rate it link) and a one-line preview of my notes, newest first.
+- [x] A tab or filter switches between Owned, Wanted and All.
+- [x] Only my own entries are listed.
+- [x] An empty list shows "Your cards list is empty. Browse cards to add your first one." with a link to the catalogue.
+- [x] Every entry has Edit and Remove buttons.
 
 **Development tasks**
 
-- [ ] Build the My Cards ListView filtered by request.user, with a status query parameter.
-- [ ] Build the table layout for desktop and stacked layout for mobile.
-- [ ] Add the empty state (per status and overall).
-- [ ] Test that users only see their own entries and that the status filter works.
+- [x] Build the My Cards ListView filtered by request.user, with a status query parameter.
+- [x] Build the table layout for desktop and stacked layout for mobile.
+- [x] Add the empty state (per status and overall).
+- [x] Test that users only see their own entries and that the status filter works.
 
 **Manual test**
 
@@ -367,16 +369,16 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Edit opens a pre-filled form (status, quantity and notes).
-- [ ] Saving shows "Your entry for <Card> was updated."
-- [ ] A quantity below 1 shows an error.
-- [ ] I cannot edit another user's entry (404).
+- [x] Edit opens a pre-filled form (status, quantity and notes).
+- [x] Saving shows "Your entry for <Card> was updated."
+- [x] A quantity below 1 shows an error.
+- [x] I cannot edit another user's entry (404).
 
 **Development tasks**
 
-- [ ] Build the UpdateView limited to the current user's entries.
-- [ ] Add the success message.
-- [ ] Write tests for a valid edit, an invalid edit and another user's entry.
+- [x] Build the UpdateView limited to the current user's entries.
+- [x] Add the success message.
+- [x] Write tests for a valid edit, an invalid edit and another user's entry.
 
 **Manual test**
 
@@ -391,18 +393,18 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Remove opens a confirmation page that names the card.
-- [ ] Confirming deletes the entry and shows "<Card> was removed from your cards."
-- [ ] Cancel returns to My Cards with no changes.
-- [ ] Deleting another user's entry returns a 404.
-- [ ] The card itself stays in the catalogue.
+- [x] Remove opens a confirmation page that names the card.
+- [x] Confirming deletes the entry and shows "<Card> was removed from your cards."
+- [x] Cancel returns to My Cards with no changes.
+- [x] Deleting another user's entry returns a 404.
+- [x] The card itself stays in the catalogue.
 
 **Development tasks**
 
-- [ ] Build the DeleteView limited to the current user's entries.
-- [ ] Create the confirmation template.
-- [ ] Add the success message.
-- [ ] Write tests for delete, cancel and another user's entry.
+- [x] Build the DeleteView limited to the current user's entries.
+- [x] Create the confirmation template.
+- [x] Add the success message.
+- [x] Write tests for delete, cancel and another user's entry.
 
 **Manual test**
 
@@ -417,14 +419,14 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] My Cards shows total owned cards (sum of quantities where status is Owned) and the number of different cards owned.
-- [ ] Wanted entries are excluded from the totals.
+- [x] My Cards shows total owned cards (sum of quantities where status is Owned) and the number of different cards owned.
+- [x] Wanted entries are excluded from the totals.
 
 **Development tasks**
 
-- [ ] Add aggregate queries (Sum and Count) filtered to status=OWNED.
-- [ ] Add the summary section to the template.
-- [ ] Write tests with known quantities.
+- [x] Add aggregate queries (Sum and Count) filtered to status=OWNED.
+- [x] Add the summary section to the template.
+- [x] Write tests with known quantities.
 
 **Manual test**
 
@@ -439,15 +441,15 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] I can sort by name, set or date added.
-- [ ] I can filter by set and by status.
-- [ ] My choices appear in the address so the page can be bookmarked.
+- [x] I can sort by name, set or date added.
+- [x] I can filter by set and by status.
+- [x] My choices appear in the address so the page can be bookmarked.
 
 **Development tasks**
 
-- [ ] Add the sort and filter form.
-- [ ] Only allow known sort fields (whitelist).
-- [ ] Write tests for sorting and filtering.
+- [x] Add the sort and filter form.
+- [x] Only allow known sort fields (whitelist).
+- [x] Write tests for sorting and filtering.
 
 **Manual test**
 
@@ -462,16 +464,16 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] A "Got it!" button appears on Wanted entries.
-- [ ] Pressing it changes that entry's status to Owned and asks for the quantity.
-- [ ] Success shows "<Card> moved to your collection."
-- [ ] I cannot flip another user's entry (404).
+- [x] A "Got it!" button appears on Wanted entries.
+- [x] Pressing it changes that entry's status to Owned and asks for the quantity.
+- [x] Success shows "<Card> moved to your collection."
+- [x] I cannot flip another user's entry (404).
 
 **Development tasks**
 
-- [ ] Add a small status-change view limited to the current user's Wanted entries.
-- [ ] Pre-fill the quantity field.
-- [ ] Write tests for the status change and for another user's entry.
+- [x] Add a small status-change view limited to the current user's Wanted entries.
+- [x] Pre-fill the quantity field.
+- [x] Write tests for the status change and for another user's entry.
 
 **Manual test**
 
@@ -488,18 +490,18 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] The review form (rating 1-5 and text) is only shown to logged-in users.
-- [ ] Submitting shows "Thank you for submitting your review!"
-- [ ] I can only review a card once: if I already have, the form is replaced by my review and an Edit button.
-- [ ] Rating and text are required.
-- [ ] The review appears in the card's review list straight away.
+- [x] The review form (rating 1-5 and text) is only shown to logged-in users.
+- [x] Submitting shows "Thank you for submitting your review!"
+- [x] I can only review a card once: if I already have, the form is replaced by my review and an Edit button.
+- [x] Rating and text are required.
+- [x] The review appears in the card's review list straight away.
 
 **Development tasks**
 
-- [ ] Create the ReviewForm and the create view.
-- [ ] Enforce one review per user per card (form check as well as the database constraint).
-- [ ] Add the success message.
-- [ ] Write tests for create, duplicate and logged-out access.
+- [x] Create the ReviewForm and the create view.
+- [x] Enforce one review per user per card (form check as well as the database constraint).
+- [x] Add the success message.
+- [x] Write tests for create, duplicate and logged-out access.
 
 **Manual test**
 
@@ -514,17 +516,17 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Edit opens a pre-filled form.
-- [ ] Saving shows "Your review was updated successfully."
-- [ ] An edited review is marked as edited in the list.
-- [ ] I cannot edit anyone else's review (404).
+- [x] Edit opens a pre-filled form.
+- [x] Saving shows "Your review was updated successfully."
+- [x] An edited review is marked as edited in the list.
+- [x] I cannot edit anyone else's review (404).
 
 **Development tasks**
 
-- [ ] Build the UpdateView limited to the current user's reviews.
-- [ ] Show an "edited" marker when updated_at differs from created_at.
-- [ ] Add the success message.
-- [ ] Write tests including another user's review.
+- [x] Build the UpdateView limited to the current user's reviews.
+- [x] Show an "edited" marker when updated_at differs from created_at.
+- [x] Add the success message.
+- [x] Write tests including another user's review.
 
 **Manual test**
 
@@ -539,16 +541,16 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Delete opens a confirmation page.
-- [ ] Confirming shows "Your review was deleted."
-- [ ] Cancel changes nothing.
-- [ ] I cannot delete anyone else's review (404).
+- [x] Delete opens a confirmation page.
+- [x] Confirming shows "Your review was deleted."
+- [x] Cancel changes nothing.
+- [x] I cannot delete anyone else's review (404).
 
 **Development tasks**
 
-- [ ] Build the DeleteView limited to the current user's reviews.
-- [ ] Create the confirmation template and message.
-- [ ] Write tests for delete, cancel and another user's review.
+- [x] Build the DeleteView limited to the current user's reviews.
+- [x] Create the confirmation template and message.
+- [x] Write tests for delete, cancel and another user's review.
 
 **Manual test**
 
@@ -563,18 +565,18 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Reviews are listed newest first with username, star rating, text and date.
-- [ ] The average rating and review count are shown at the top.
-- [ ] No reviews shows "No reviews yet. Be the first to review this card."
-- [ ] Reviews are visible to logged-out visitors.
-- [ ] Edit and Delete only appear on my own reviews.
+- [x] Reviews are listed newest first with username, star rating, text and date.
+- [x] The average rating and review count are shown at the top.
+- [x] No reviews shows "No reviews yet. Be the first to review this card."
+- [x] Reviews are visible to logged-out visitors.
+- [x] Edit and Delete only appear on my own reviews.
 
 **Development tasks**
 
-- [ ] Query the reviews for the card.
-- [ ] Calculate the average rating and count.
-- [ ] Build the review list template.
-- [ ] Write tests for the list, the average and the empty state.
+- [x] Query the reviews for the card.
+- [x] Calculate the average rating and count.
+- [x] Build the review list template.
+- [x] Write tests for the list, the average and the empty state.
 
 **Manual test**
 
@@ -591,17 +593,17 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Pages are usable and readable from 320px wide up to large desktop screens.
-- [ ] The navigation collapses into a menu on small screens.
-- [ ] There is no horizontal scrolling and images scale.
-- [ ] Buttons and links are large enough to tap comfortably.
+- [x] Pages are usable and readable from 320px wide up to large desktop screens.
+- [x] The navigation collapses into a menu on small screens.
+- [x] There is no horizontal scrolling and images scale.
+- [x] Buttons and links are large enough to tap comfortably.
 
 **Development tasks**
 
-- [ ] Write mobile-first CSS with sensible breakpoints.
-- [ ] Build the responsive navigation.
-- [ ] Test at 320, 768, 1024 and 1440px and on a real phone.
-- [ ] Run Lighthouse on mobile.
+- [x] Write mobile-first CSS with sensible breakpoints.
+- [x] Build the responsive navigation.
+- [x] Test at 320, 768, 1024 and 1440px and on a real phone.
+- [x] Run Lighthouse on mobile.
 
 **Manual test**
 
@@ -616,19 +618,19 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Pages use header, nav, main and footer landmarks and a logical heading order.
-- [ ] Every form field has a visible label.
-- [ ] Card images have alt text (the card name).
-- [ ] Text and controls meet WCAG AA colour contrast.
-- [ ] Everything can be reached by keyboard with a visible focus outline.
-- [ ] Interactive elements are recognisable without relying on colour alone.
+- [x] Pages use header, nav, main and footer landmarks and a logical heading order.
+- [x] Every form field has a visible label.
+- [x] Card images have alt text (the card name).
+- [x] Text and controls meet WCAG AA colour contrast.
+- [x] Everything can be reached by keyboard with a visible focus outline.
+- [x] Interactive elements are recognisable without relying on colour alone.
 
 **Development tasks**
 
-- [ ] Audit every template for landmarks, headings, labels and alt text.
-- [ ] Check the colour palette contrast.
-- [ ] Test keyboard-only navigation.
-- [ ] Run Lighthouse and WAVE and record the results.
+- [x] Audit every template for landmarks, headings, labels and alt text.
+- [x] Check the colour palette contrast.
+- [x] Test keyboard-only navigation.
+- [x] Run Lighthouse and WAVE and record the results.
 
 **Manual test**
 
@@ -643,17 +645,17 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Each of those actions shows a message (see the notification messages table in the README).
-- [ ] Success and error messages look different, using an icon and text as well as colour.
-- [ ] Messages are announced to screen readers (role="status" for success, role="alert" for errors).
-- [ ] Messages stay visible until dismissed or the next page loads.
+- [x] Each of those actions shows a message (see the notification messages table in the README).
+- [x] Success and error messages look different, using an icon and text as well as colour.
+- [x] Messages are announced to screen readers (role="status" for success, role="alert" for errors).
+- [x] Messages stay visible until dismissed or the next page loads.
 
 **Development tasks**
 
-- [ ] Build a messages partial in the base template.
-- [ ] Style success, info and error messages.
-- [ ] Use Django's messages framework in every view that changes data.
-- [ ] Write tests that the messages appear.
+- [x] Build a messages partial in the base template.
+- [x] Style success, info and error messages.
+- [x] Use Django's messages framework in every view that changes data.
+- [x] Write tests that the messages appear.
 
 **Manual test**
 
@@ -668,15 +670,15 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Custom 404 (not found), 403 (forbidden) and 500 (server error) pages explain the problem in plain language.
-- [ ] Each has a link back to the home page.
-- [ ] They show no technical details and appear when DEBUG is False.
+- [x] Custom 404 (not found), 403 (forbidden) and 500 (server error) pages explain the problem in plain language.
+- [x] Each has a link back to the home page.
+- [x] They show no technical details and appear when DEBUG is False.
 
 **Development tasks**
 
-- [ ] Create 404.html, 403.html and 500.html.
-- [ ] Keep the 500 page free of template logic that could fail.
-- [ ] Test with DEBUG set to False.
+- [x] Create 404.html, 403.html and 500.html.
+- [x] Keep the 500 page free of template logic that could fail.
+- [x] Test with DEBUG set to False.
 
 **Manual test**
 
@@ -691,17 +693,17 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] No SECRET_KEY, database password or API key is in the repository or its history.
-- [ ] Settings read secrets from environment variables, and DEBUG is False unless explicitly set to True.
-- [ ] .env is listed in .gitignore and a .env.example file lists the variable names without values.
-- [ ] The live Heroku app holds its secrets as config vars and shows no debug pages.
+- [x] No SECRET_KEY, database password or API key is in the repository or its history.
+- [x] Settings read secrets from environment variables, and DEBUG is False unless explicitly set to True.
+- [x] .env is listed in .gitignore and a .env.example file lists the variable names without values.
+- [x] The live Heroku app holds its secrets as config vars and shows no debug pages.
 
 **Development tasks**
 
-- [ ] Load settings from environment variables.
-- [ ] Add .env to .gitignore and create .env.example.
-- [ ] Set the config vars on Heroku.
-- [ ] Scan the repository for secrets before each submission.
+- [x] Load settings from environment variables.
+- [x] Add .env to .gitignore and create .env.example.
+- [x] Set the config vars on Heroku.
+- [x] Scan the repository for secrets before each submission.
 
 **Manual test**
 
@@ -716,15 +718,15 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] A JSON fixture (or entries typed into Django admin) provides enough Card rows to demo every feature.
-- [ ] Loading the fixture with manage.py loaddata can be re-run safely (it replaces matching rows rather than duplicating them).
-- [ ] The data covers more than one set and more than one rarity, so the filter and search stories have something to find.
+- [x] A JSON fixture (or entries typed into Django admin) provides enough Card rows to demo every feature.
+- [x] Loading the fixture with manage.py loaddata can be re-run safely (it replaces matching rows rather than duplicating them).
+- [x] The data covers more than one set and more than one rarity, so the filter and search stories have something to find.
 
 **Development tasks**
 
-- [ ] Decide fixture vs. admin entry (a fixture is easier to re-run after resetting the database).
-- [ ] Write cards/fixtures/cards.json with a representative set of cards, or enter them in Django admin.
-- [ ] Document the one command (python manage.py loaddata cards) needed to seed a fresh database.
+- [x] Decide fixture vs. admin entry (a fixture is easier to re-run after resetting the database).
+- [x] Write cards/fixtures/cards.json with a representative set of cards, or enter them in Django admin.
+- [x] Document the one command (python manage.py loaddata cards) needed to seed a fresh database.
 
 **Manual test**
 
@@ -739,15 +741,15 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Card, CollectionEntry and Review are registered with sensible list columns and search.
-- [ ] Only superusers can log in to the admin.
-- [ ] I can correct a wrong card detail from the admin.
+- [x] Card, CollectionEntry and Review are registered with sensible list columns and search.
+- [x] Only superusers can log in to the admin.
+- [x] I can correct a wrong card detail from the admin.
 
 **Development tasks**
 
-- [ ] Register the models in each app's admin.py.
-- [ ] Add list_display and search_fields.
-- [ ] Create a superuser locally and on Heroku.
+- [x] Register the models in each app's admin.py.
+- [x] Add list_display and search_fields.
+- [x] Create a superuser locally and on Heroku.
 
 **Manual test**
 
@@ -764,18 +766,18 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] The registration form asks for a date of birth, not "Are you 13 or older?", so it does not hint at the answer.
-- [ ] Anyone under 13 sees "Sorry, you need to be 13 or older to create a CardVault account." and no account is created.
-- [ ] After an under-13 attempt, registration stays closed for the rest of that browser session.
-- [ ] A date in the future or more than 120 years ago is rejected.
-- [ ] The date of birth is checked and thrown away: it is never stored.
+- [x] The registration form asks for a date of birth, not "Are you 13 or older?", so it does not hint at the answer.
+- [x] Anyone under 13 sees "Sorry, you need to be 13 or older to create a CardVault account." and no account is created.
+- [x] After an under-13 attempt, registration stays closed for the rest of that browser session.
+- [x] A date in the future or more than 120 years ago is rejected.
+- [x] The date of birth is checked and thrown away: it is never stored.
 
 **Development tasks**
 
-- [ ] Add a date of birth field to the allauth signup form and check the age.
-- [ ] Close registration for the session after an under-13 attempt (adapter `is_open_for_signup`).
-- [ ] Override the registration-closed template.
-- [ ] Write tests for exactly 13 today, one day short, a future date and the closed session.
+- [x] Add a date of birth field to the allauth signup form and check the age.
+- [x] Close registration for the session after an under-13 attempt (adapter `is_open_for_signup`).
+- [x] Override the registration-closed template.
+- [x] Write tests for exactly 13 today, one day short, a future date and the closed session.
 
 **Manual test**
 
@@ -790,18 +792,18 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] A Delete my account link is in the footer when logged in.
-- [ ] The page lists what will be deleted (my account, my cards and my reviews) and asks for my password.
-- [ ] A wrong password deletes nothing and shows "That password is not correct."
-- [ ] The right password deletes the account, its cards and reviews, logs me out and shows "Your account, cards and reviews have been deleted."
-- [ ] Other users' data and the cards in the catalogue are not affected.
+- [x] A Delete my account link is in the footer when logged in.
+- [x] The page lists what will be deleted (my account, my cards and my reviews) and asks for my password.
+- [x] A wrong password deletes nothing and shows "That password is not correct."
+- [x] The right password deletes the account, its cards and reviews, logs me out and shows "Your account, cards and reviews have been deleted."
+- [x] Other users' data and the cards in the catalogue are not affected.
 
 **Development tasks**
 
-- [ ] Build the delete account view with a password confirmation form.
-- [ ] Log out, then delete the user (entries and reviews cascade).
-- [ ] Link it from the footer and the privacy page.
-- [ ] Write tests for logged out, wrong password, right password and other users' data.
+- [x] Build the delete account view with a password confirmation form.
+- [x] Log out, then delete the user (entries and reviews cascade).
+- [x] Link it from the footer and the privacy page.
+- [x] Write tests for logged out, wrong password, right password and other users' data.
 
 **Manual test**
 
@@ -816,17 +818,17 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] A Privacy and cookies page is linked in the footer of every page.
-- [ ] It lists exactly what is stored, how long it is kept and how to delete it.
-- [ ] It lists every cookie the site sets (only sessionid and csrftoken), what each does and how long it lasts.
-- [ ] It explains why there is no cookie banner: both cookies are strictly necessary.
-- [ ] It names the other services involved (Heroku, the Pokémon TCG image server).
+- [x] A Privacy and cookies page is linked in the footer of every page.
+- [x] It lists exactly what is stored, how long it is kept and how to delete it.
+- [x] It lists every cookie the site sets (only sessionid and csrftoken), what each does and how long it lasts.
+- [x] It explains why there is no cookie banner: both cookies are strictly necessary.
+- [x] It names the other services involved (Heroku, the Pokémon TCG image server).
 
 **Development tasks**
 
-- [ ] Write the privacy page and link it in the footer.
-- [ ] Store messages in the session so the site sets no extra `messages` cookie.
-- [ ] Write tests for the page, the footer link and the absence of a messages cookie.
+- [x] Write the privacy page and link it in the footer.
+- [x] Store messages in the session so the site sets no extra `messages` cookie.
+- [x] Write tests for the page, the footer link and the absence of a messages cookie.
 
 **Manual test**
 
@@ -841,18 +843,18 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Every page works at 200% zoom without sideways scrolling.
-- [ ] If the device asks for more contrast, the site switches to darker text and thicker borders.
-- [ ] Every page passes an automated WCAG 2.2 AA check (axe) with no violations, logged in and out.
-- [ ] Nothing depends on sound: there is no audio or video, and every message is on-screen text.
-- [ ] An Accessibility page in the footer states the standard, what was tested, known limitations and how to report a problem.
+- [x] Every page works at 200% zoom without sideways scrolling.
+- [x] If the device asks for more contrast, the site switches to darker text and thicker borders.
+- [x] Every page passes an automated WCAG 2.2 AA check (axe) with no violations, logged in and out.
+- [x] Nothing depends on sound: there is no audio or video, and every message is on-screen text.
+- [x] An Accessibility page in the footer states the standard, what was tested, known limitations and how to report a problem.
 
 **Development tasks**
 
-- [ ] Add a `prefers-contrast: more` style.
-- [ ] Write the accessibility statement page and link it in the footer.
-- [ ] Run axe on every page and check 200% zoom; record the results in TESTING.md.
-- [ ] Test with VoiceOver by hand.
+- [x] Add a `prefers-contrast: more` style.
+- [x] Write the accessibility statement page and link it in the footer.
+- [x] Run axe on every page and check 200% zoom; record the results in TESTING.md.
+- [ ] Test with VoiceOver by hand (not done: see the note under [Accessibility testing](../TESTING.md#accessibility-testing)).
 
 **Manual test**
 
@@ -869,15 +871,15 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] Every page has a "Home" link in the header, logged in or out, that opens the home page.
-- [ ] The link for the page you are on is marked with `aria-current="page"` and a yellow underline, not colour alone.
-- [ ] The header fits on one line on wide screens; below 1024px the links collapse behind the Menu button.
+- [x] Every page has a "Home" link in the header, logged in or out, that opens the home page.
+- [x] The link for the page you are on is marked with `aria-current="page"` and a yellow underline, not colour alone.
+- [x] The header fits on one line on wide screens; below 1024px the links collapse behind the Menu button.
 
 **Development tasks**
 
-- [ ] Add Home to the header links in `base.html` and mark the current page.
-- [ ] Move the Menu breakpoint from 768px to 1024px so the extra links never wrap.
-- [ ] Write tests for the links and the current-page marker.
+- [x] Add Home to the header links in `base.html` and mark the current page.
+- [x] Move the Menu breakpoint from 768px to 1024px so the extra links never wrap.
+- [x] Write tests for the links and the current-page marker.
 
 **Manual test**
 
@@ -892,19 +894,19 @@ Each user story's ID (for example `US01`) is used as its GitHub Issue title pref
 
 **Acceptance criteria**
 
-- [ ] A Contact page, linked in the header and footer, asks for a name, an email address and a message (up to 2,000 characters); all three are required.
-- [ ] Sending it shows: "Thank you for your enquiry. We aim to reply within 2 to 3 days. If nothing arrives in your inbox, please check your junk or spam folder."
-- [ ] Messages are saved for the site owner to read and mark as handled in the Django admin, and cannot be changed there.
-- [ ] Logged-in users find their username already filled in as their name.
-- [ ] Spam is limited: a hidden trap field catches bots, and each visitor can send 5 messages an hour.
-- [ ] The Privacy page explains why the email address is asked for and how long it is kept.
+- [x] A Contact page, linked in the header and footer, asks for a name, an email address and a message (up to 2,000 characters); all three are required.
+- [x] Sending it shows: "Thank you for your enquiry. We aim to reply within 2 to 3 days. If nothing arrives in your inbox, please check your junk or spam folder."
+- [x] Messages are saved for the site owner to read and mark as handled in the Django admin, and cannot be changed there.
+- [x] Logged-in users find their username already filled in as their name.
+- [x] Spam is limited: a hidden trap field catches bots, and each visitor can send 5 messages an hour.
+- [x] The Privacy page explains why the email address is asked for and how long it is kept.
 
 **Development tasks**
 
-- [ ] Add a `contact` app with a `ContactMessage` model, form, view, template and admin.
-- [ ] Add the trap field and the rate limit, storing a one-way hash of the visitor's IP address, never the address itself.
-- [ ] Update the Privacy page, the schema and the notification messages.
-- [ ] Write tests for sending, errors, the trap, the rate limit and the admin.
+- [x] Add a `contact` app with a `ContactMessage` model, form, view, template and admin.
+- [x] Add the trap field and the rate limit, storing a one-way hash of the visitor's IP address, never the address itself.
+- [x] Update the Privacy page, the schema and the notification messages.
+- [x] Write tests for sending, errors, the trap, the rate limit and the admin.
 
 **Manual test**
 

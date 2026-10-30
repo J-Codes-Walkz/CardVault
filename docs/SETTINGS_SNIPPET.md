@@ -66,6 +66,7 @@ ACCOUNT_FORMS = {"login": "accounts.forms.LoginForm"}
 ACCOUNT_LOGIN_METHODS = {"username"}
 ACCOUNT_SIGNUP_FIELDS = ["username*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "none"
+EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
 ACCOUNT_SESSION_REMEMBER = True
 
 LOGIN_URL = "account_login"

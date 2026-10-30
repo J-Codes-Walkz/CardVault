@@ -70,10 +70,16 @@ explains this for users.
 - The Contact page has a hidden trap field that bots fill in and
   people never see, and each visitor can send 5 messages an hour. The
   limit is kept against a one-way hash of the visitor's IP address,
-  never the address itself. CardVault sends no email, so the form
-  cannot be used to send mail to other people.
-- The database is only reached through Django's ORM (no hand-written
-  SQL), which prevents SQL injection.
+  never the address itself. CardVault cannot send email at all
+  (Django's email sending is switched off), so the form cannot be
+  used to send mail to other people.
+- django-allauth's pages for adding an email address to an account
+  and for resetting a password by email are switched off (they show
+  the 404 page), so no email address can be stored for an account
+  ([bug #72](https://github.com/J-Codes-Walkz/CardVault/issues/72)).
+- The database is only reached through Django's ORM, which prevents
+  SQL injection. The one hand-written statement, the cache clean-up
+  in `clear_expired_cache`, is fixed and takes no user input.
 - Django escapes everything users type before showing it, and a
   Content Security Policy stops the browser running any script that is
   not one of the site's own files, as a second line of defence against

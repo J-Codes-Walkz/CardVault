@@ -124,6 +124,10 @@ ACCOUNT_LOGIN_METHODS = {"username"}
 ACCOUNT_SIGNUP_FIELDS = ["username*", "password1*", "password2*"]
 # No email address is collected, so there is nothing to verify.
 ACCOUNT_EMAIL_VERIFICATION = "none"
+# The site never sends email (Contact replies are sent by hand), so any
+# attempt is dropped rather than crashing on a mail server that does
+# not exist (bug #72).
+EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
 ACCOUNT_SESSION_REMEMBER = True
 
 # Heroku's router sits in front of the app, so every request arrives

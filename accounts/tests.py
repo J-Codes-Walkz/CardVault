@@ -7,8 +7,10 @@ from datetime import timedelta
 from io import StringIO
 from unittest import mock
 
+from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.core.cache import cache
 from django.core.management import call_command
 from django.db import connection
@@ -18,6 +20,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from cards.models import Card, CardSet, Review
+from cardvault import settings as project_settings
 from collection.models import CollectionEntry
 
 from .adapter import LOCKED, LOGIN_FAILED
@@ -151,6 +154,53 @@ class LoginTests(TestCase):
     def test_login_page_has_no_password_reset_link(self):
         response = self.client.get(reverse("account_login"))
         self.assertNotContains(response, "Forgot")
+
+
+class NoEmailPagesTests(TestCase):
+    """django-allauth's email pages are refused (bug #72)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("misty", password=STRONG_PASSWORD)
+
+    def test_every_email_page_shows_the_404_page(self):
+        names = [
+            ("account_email", []),
+            ("account_email_verification_sent", []),
+            ("account_confirm_email", ["abc"]),
+            ("account_reset_password", []),
+            ("account_reset_password_done", []),
+            ("account_reset_password_from_key", ["abc", "set-password"]),
+            ("account_reset_password_from_key_done", []),
+        ]
+        self.client.force_login(self.user)
+        for name, args in names:
+            with self.subTest(name):
+                response = self.client.get(reverse(name, args=args))
+                self.assertEqual(response.status_code, 404)
+                self.assertTemplateUsed(response, "404.html")
+
+    def test_password_reset_request_sends_no_email(self):
+        data = {"email": "someone@example.com"}
+        response = self.client.post(reverse("account_reset_password"), data)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_an_email_address_cannot_be_added(self):
+        self.client.force_login(self.user)
+        data = {"action_add": "", "email": "misty@example.com"}
+        response = self.client.post(reverse("account_email"), data)
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(EmailAddress.objects.exists())
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_password_change_still_works(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("account_change_password"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_the_site_never_sends_email(self):
+        dummy = "django.core.mail.backends.dummy.EmailBackend"
+        self.assertEqual(project_settings.EMAIL_BACKEND, dummy)
 
 
 class LogoutTests(TestCase):

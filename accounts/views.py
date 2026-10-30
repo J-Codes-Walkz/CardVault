@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
+from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -22,6 +23,16 @@ def admin_allowed(request):
     that to superusers.
     """
     return request.user.is_active and request.user.is_superuser
+
+
+def no_email_pages(request, *args, **kwargs):
+    """Refuse django-allauth's email pages with the 404 page (bug #72).
+
+    CardVault collects no email addresses, so adding one, confirming one or
+    resetting a password by email could never work, and the site has no mail
+    server to send from.
+    """
+    raise Http404
 
 
 def admin_login(request, extra_context=None):
